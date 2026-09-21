@@ -1,52 +1,38 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import ThemeToggle from "./ThemeToggle.jsx";
 import MainSidebar from "./MainSidebar.jsx";
+import UserProfileModal from "./UserProfileModal.jsx";
+import ThemeToggle from "./ThemeToggle.jsx";
 import { useAuth } from "../../hooks/useAuth.js";
-import { useChatStore } from "../../store/chatStore.js";
-import { IconMap, IconGuide, IconUser } from "./Icons.jsx";
+import { IconUser } from "./Icons.jsx";
 
 export default function Navbar() {
   const { isAuthenticated, user } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [sidebarTab, setSidebarTab] = useState("guide");
-  const openMap = useChatStore((s) => s.openMap);
-
-  const handleOpenGuide = () => {
-    setSidebarTab("guide");
-    setSidebarOpen(true);
-  };
-
-  const handleOpenProfile = () => {
-    setSidebarTab("profile");
-    setSidebarOpen(true);
-  };
+  const [profileModalOpen, setProfileModalOpen] = useState(false);
 
   return (
     <>
-      <header className="sticky top-0 z-40 w-full border-b border-slate-200/80 dark:border-slate-800/80 bg-white/80 dark:bg-slate-950/80 backdrop-blur-xl shrink-0 transition-colors">
-        <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-14 sm:h-16 flex items-center justify-between gap-2">
-          {/* Left: Mobile Drawer Trigger & Brand Lockup */}
+      <header className="sticky top-0 z-40 w-full border-b border-slate-200/80 dark:border-slate-800/80 bg-white/85 dark:bg-slate-950/85 backdrop-blur-xl shrink-0 transition-colors">
+        <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-14 sm:h-16 flex items-center justify-between gap-3">
+          {/* Left: Hamburger Navigation Trigger & Brand Lockup */}
           <div className="flex items-center gap-2.5 sm:gap-3.5 min-w-0">
-            {/* Hamburger Button for Drawer */}
+            {/* Hamburger Button for Full Navigation Drawer */}
             <button
-              onClick={() => {
-                setSidebarTab("guide");
-                setSidebarOpen(true);
-              }}
-              className="p-2 rounded-xl text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-100 dark:hover:bg-slate-800/80 border border-slate-200 dark:border-slate-800 transition-all active:scale-95 shrink-0"
-              aria-label="Open sidebar menu"
-              title="Event Menu & Guide"
+              onClick={() => setSidebarOpen(true)}
+              className="p-2 sm:p-2.5 rounded-2xl text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-100 dark:hover:bg-slate-800/80 border border-slate-200/80 dark:border-slate-800 transition-all active:scale-95 shrink-0 cursor-pointer shadow-xs"
+              aria-label="Open menu"
+              title="Open Navigation Menu"
             >
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h10M4 18h16" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.2} d="M4 6h16M4 12h16M4 18h16" />
               </svg>
             </button>
 
             {/* Official Logo & Brand Lockup */}
             <Link to="/" className="flex items-center gap-2.5 sm:gap-3 group min-w-0">
               <div className="relative shrink-0">
-                <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl overflow-hidden ring-1 ring-blue-500/30 group-hover:ring-blue-500 transition-all shadow-sm bg-slate-100 dark:bg-slate-900 flex items-center justify-center p-0.5">
+                <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl overflow-hidden ring-1 ring-blue-500/30 group-hover:ring-blue-500 transition-all shadow-sm bg-white dark:bg-slate-900 flex items-center justify-center p-0.5">
                   <img src="/logo.jpg" alt="Coders' Club Logo" className="w-full h-full object-cover rounded-lg" />
                 </div>
                 {/* Live Pulse Indicator */}
@@ -71,54 +57,33 @@ export default function Navbar() {
             </Link>
           </div>
 
-          {/* Right: Actions (Campus Map, Guide, Theme, Profile) */}
-          <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
-            {/* 1. Campus Map Button */}
-            <button
-              type="button"
-              onClick={() => openMap()}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 sm:py-2 rounded-xl text-xs font-semibold text-white bg-blue-600 hover:bg-blue-500 active:bg-blue-700 shadow-sm shadow-blue-500/20 transition-all active:scale-95"
-              title="Open Campus Map & Navigation"
-            >
-              <IconMap className="w-3.5 h-3.5" />
-              <span>Campus Map</span>
-            </button>
-
-            {/* 2. Guide Button */}
-            <button
-              type="button"
-              onClick={handleOpenGuide}
-              className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-200 bg-slate-100 dark:bg-slate-800/80 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 transition active:scale-95"
-              title="CodeX 4.0 Event Guide"
-            >
-              <IconGuide className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
-              <span className="hidden sm:inline">Guide</span>
-            </button>
-
-            {/* 3. Theme Toggle */}
+          {/* Right: Dedicated Profile Section (+ Quick Theme Switch) */}
+          <div className="flex items-center gap-2 shrink-0">
             <ThemeToggle />
 
-            {/* 4. Profile / Sign In */}
             {isAuthenticated ? (
+              /* Profile Button Trigger (Opens dedicated Profile panel) */
               <button
                 type="button"
-                onClick={handleOpenProfile}
-                className="flex items-center gap-1.5 p-1 sm:px-2.5 sm:py-1 rounded-xl bg-slate-100 dark:bg-slate-800/80 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 transition text-xs font-semibold text-slate-800 dark:text-slate-200"
-                title="Open user profile & session"
+                onClick={() => setProfileModalOpen(true)}
+                className="flex items-center gap-2 p-1 sm:px-3 sm:py-1.5 rounded-2xl bg-slate-100 dark:bg-slate-800/80 hover:bg-slate-200/80 dark:hover:bg-slate-700/80 border border-slate-200/80 dark:border-slate-700 transition-all text-xs font-semibold text-slate-800 dark:text-slate-100 shadow-xs cursor-pointer active:scale-95 group"
+                title="View Profile Details"
               >
-                <div className="w-6 h-6 rounded-lg bg-blue-600 text-white font-bold flex items-center justify-center text-xs uppercase shrink-0">
-                  {user?.name ? user.name[0] : "U"}
+                <div className="w-7 h-7 rounded-xl bg-blue-600 text-white font-bold flex items-center justify-center text-xs uppercase shrink-0 shadow-sm shadow-blue-500/20 group-hover:scale-105 transition-transform">
+                  {user?.name ? user.name[0].toUpperCase() : "U"}
                 </div>
-                <span className="hidden sm:inline truncate max-w-[85px]">
+                <span className="hidden sm:inline truncate max-w-[100px] font-medium">
                   {user?.name?.split(" ")[0] || "Profile"}
                 </span>
+                <span className="hidden sm:inline text-slate-400 text-[10px]">▼</span>
               </button>
             ) : (
+              /* Sign In Trigger */
               <Link
                 to="/login"
-                className="inline-flex items-center gap-1.5 px-3 sm:px-3.5 py-1.5 rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-200 bg-slate-100 dark:bg-slate-800/80 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 transition active:scale-95"
+                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-2xl text-xs font-semibold text-white bg-blue-600 hover:bg-blue-500 active:bg-blue-700 shadow-sm shadow-blue-500/20 transition-all active:scale-95"
               >
-                <IconUser className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
+                <IconUser className="w-3.5 h-3.5" />
                 <span>Sign In</span>
               </Link>
             )}
@@ -126,11 +91,17 @@ export default function Navbar() {
         </div>
       </header>
 
-      {/* Slide-out Sidebar Drawer */}
+      {/* Slide-out Full Hamburger Menu Drawer */}
       <MainSidebar
         open={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
-        defaultTab={sidebarTab}
+        onOpenProfile={() => setProfileModalOpen(true)}
+      />
+
+      {/* Dedicated User Profile Modal */}
+      <UserProfileModal
+        open={profileModalOpen}
+        onClose={() => setProfileModalOpen(false)}
       />
     </>
   );
