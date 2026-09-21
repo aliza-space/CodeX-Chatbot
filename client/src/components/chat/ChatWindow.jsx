@@ -139,15 +139,14 @@ export default function ChatWindow({ variant = "widget", onOpenEventGuide }) {
             </button>
           )}
 
-          {/* Campus Map & Live GPS Button */}
+          {/* Campus Map Button (Visible on desktop; mobile accesses map from top Navbar) */}
           <button
             onClick={() => openMap()}
-            className="inline-flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-200 bg-slate-100 dark:bg-slate-800/90 hover:bg-slate-200 dark:hover:bg-slate-700/80 border border-slate-200/80 dark:border-slate-700/80 transition-all shadow-sm active:scale-95"
+            className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-200 bg-slate-100 dark:bg-slate-800/90 hover:bg-slate-200 dark:hover:bg-slate-700/80 border border-slate-200/80 dark:border-slate-700/80 transition-all shadow-sm active:scale-95"
             title="Open GPREC Campus Map & Live Directions"
           >
             <span>🗺️</span>
-            <span className="hidden sm:inline">Campus Map</span>
-            <span className="sm:hidden">Map</span>
+            <span>Campus Map</span>
           </button>
 
           <button
