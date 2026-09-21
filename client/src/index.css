@@ -4,7 +4,7 @@
 @tailwind utilities;
 
 :root {
-  color-scheme: dark;
+  color-scheme: light dark;
 }
 
 html, body, #root {
@@ -12,118 +12,51 @@ html, body, #root {
 }
 
 body {
-  background-color: #080c0a;
-  color: #e1f0e8;
-  font-family: "Inter", "Plus Jakarta Sans", system-ui, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  @apply bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 antialiased selection:bg-primary-500/20 selection:text-primary-700 dark:selection:text-primary-300;
+  font-family: "Plus Jakarta Sans", "Inter", system-ui, sans-serif;
 }
 
-::selection {
-  background-color: rgba(16, 185, 129, 0.3);
-  color: #6ee7b7;
+/* Glass Panels */
+.glass-panel {
+  background-color: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(226, 232, 240, 0.8);
+}
+.dark .glass-panel {
+  background-color: rgba(15, 23, 42, 0.85);
+  border-color: rgba(30, 41, 59, 0.8);
 }
 
-/* Cyberpunk HUD Grid Pattern with Pan Animation */
-.bg-hud-grid {
-  background-image: 
-    linear-gradient(to right, rgba(16, 185, 129, 0.04) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(16, 185, 129, 0.04) 1px, transparent 1px);
-  background-size: 40px 40px;
-}
-
-/* Chamfered / Clipped Polygon Corners */
-.chamfer-card {
-  clip-path: polygon(
-    0 8px,
-    8px 0,
-    calc(100% - 8px) 0,
-    100% 8px,
-    100% calc(100% - 8px),
-    calc(100% - 8px) 100%,
-    8px 100%,
-    0 calc(100% - 8px)
-  );
-}
-
-.chamfer-sm {
-  clip-path: polygon(
-    0 4px,
-    4px 0,
-    calc(100% - 4px) 0,
-    100% 4px,
-    100% calc(100% - 4px),
-    calc(100% - 4px) 100%,
-    4px 100%,
-    0 calc(100% - 4px)
-  );
-}
-
-/* HUD Scan Line */
-.hud-scan-line {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, rgba(52, 211, 153, 0.6), transparent);
-  box-shadow: 0 0 12px rgba(16, 185, 129, 0.8);
-  pointer-events: none;
-  z-index: 20;
-  animation: scan 7s linear infinite;
-  opacity: 0.7;
-}
-
-/* Terminal Glass HUD Panel */
-.terminal-hud-panel {
-  background-color: rgba(10, 14, 12, 0.9);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  border: 1px solid #1f2b24;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.5);
-}
-
-.terminal-hud-interactive {
-  background-color: rgba(10, 14, 12, 0.9);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  border: 1px solid #1f2b24;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
-  transition: all 0.2s ease;
-}
-.terminal-hud-interactive:hover {
-  border-color: rgba(16, 185, 129, 0.5);
-  box-shadow: 0 0 20px -3px rgba(16, 185, 129, 0.35);
-}
-
-/* Custom modern terminal scrollbar */
+/* Custom modern scrollbar */
 ::-webkit-scrollbar {
   width: 5px;
   height: 5px;
 }
 ::-webkit-scrollbar-track {
-  background: rgba(8, 12, 10, 0.6);
+  background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #1f2b24;
+  background-color: rgba(148, 163, 184, 0.5);
   border-radius: 9999px;
-  border: 1px solid rgba(16, 185, 129, 0.2);
+}
+.dark ::-webkit-scrollbar-thumb {
+  background-color: rgba(51, 65, 85, 0.6);
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #2d3f35;
-  border-color: rgba(52, 211, 153, 0.4);
+  background-color: rgba(100, 116, 139, 0.8);
 }
 
-/* Markdown typography in Terminal HUD style */
+/* Markdown typography */
 .markdown-body pre {
   border-radius: 0.75rem;
   overflow-x: auto;
   font-size: 0.875rem;
   margin-top: 0.75rem;
   margin-bottom: 0.75rem;
-  border: 1px solid #1f2b24;
-  background-color: #050806;
-  color: #e1f0e8;
+  border: 1px solid #1e293b;
+  background-color: #0f172a;
+  color: #f8fafc;
 }
 .markdown-body code {
   font-family: "JetBrains Mono", "Fira Code", monospace;
@@ -150,12 +83,18 @@ body {
 }
 .markdown-body strong {
   font-weight: 600;
-  color: #6ee7b7;
+  color: #0f172a;
+}
+.dark .markdown-body strong {
+  color: #f8fafc;
 }
 .markdown-body a {
-  color: #34d399;
+  color: #2563eb;
   font-weight: 500;
   text-decoration: underline;
+}
+.dark .markdown-body a {
+  color: #60a5fa;
 }
 
 /* Leaflet Custom Map Styles */
@@ -165,45 +104,44 @@ body {
 }
 
 .custom-map-tooltip {
-  background: rgba(10, 14, 12, 0.95) !important;
-  color: #34d399 !important;
-  border: 1px solid rgba(16, 185, 129, 0.4) !important;
-  border-radius: 6px !important;
-  padding: 4px 8px !important;
+  background: rgba(15, 23, 42, 0.95) !important;
+  color: #f8fafc !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  border-radius: 8px !important;
+  padding: 4px 9px !important;
   font-size: 11px !important;
-  font-family: "JetBrains Mono", monospace !important;
   font-weight: 600 !important;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
 }
 .custom-map-tooltip::before {
-  border-top-color: rgba(10, 14, 12, 0.95) !important;
+  border-top-color: rgba(15, 23, 42, 0.95) !important;
 }
 
-/* Terminal Live GPS Dot and Halo */
-.terminal-user-dot {
+/* User Live GPS Dot */
+.user-live-dot {
   position: relative;
   width: 18px;
   height: 18px;
   border-radius: 50%;
-  background: #10b981;
-  border: 2px solid #ffffff;
-  box-shadow: 0 0 12px #10b981;
+  background: #2563eb;
+  border: 3px solid #ffffff;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.5);
 }
-.terminal-user-halo {
+.user-live-halo {
   position: absolute;
   inset: -10px;
   border-radius: 50%;
-  background: rgba(16, 185, 129, 0.3);
-  animation: terminal-radar-pulse 2s cubic-bezier(0.24, 0, 0.38, 1) infinite;
+  background: rgba(37, 99, 235, 0.25);
+  animation: user-pulse 2s cubic-bezier(0.24, 0, 0.38, 1) infinite;
   pointer-events: none;
 }
-@keyframes terminal-radar-pulse {
+@keyframes user-pulse {
   0% { transform: scale(0.6); opacity: 0.9; }
   100% { transform: scale(1.6); opacity: 0; }
 }
 
-/* Terminal Venue Pin */
-.terminal-pin-container {
+/* Venue Pin Styling */
+.venue-pin-container {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -211,6 +149,6 @@ body {
   cursor: pointer;
   transition: transform 0.15s ease-out;
 }
-.terminal-pin-container:hover {
-  transform: translate(-50%, -108%) scale(1.08);
+.venue-pin-container:hover {
+  transform: translate(-50%, -108%) scale(1.06);
 }

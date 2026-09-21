@@ -48,9 +48,9 @@ export default function ChatWindow({ variant = "widget" }) {
 
   return (
     <div
-      className={`relative flex flex-col overflow-hidden bg-terminal-dark/95 border border-terminal-border shadow-2xl backdrop-blur-xl ${
+      className={`relative flex flex-col overflow-hidden bg-white/90 dark:bg-slate-900/90 border border-slate-200/80 dark:border-slate-800/80 shadow-xl backdrop-blur-xl transition-colors ${
         variant === "widget"
-          ? "h-[580px] w-[400px] rounded-2xl"
+          ? "h-[580px] w-[400px] rounded-3xl"
           : "h-full w-full rounded-none sm:rounded-3xl"
       }`}
     >
@@ -64,21 +64,21 @@ export default function ChatWindow({ variant = "widget" }) {
           <div className="flex flex-col items-center justify-center min-h-[320px] sm:min-h-[380px] text-center px-2 py-6 sm:py-8">
             {/* Coders' Club Logo in Welcome Hero */}
             <div className="relative mb-3">
-              <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl ring-2 ring-brand-500/50 p-0.5 bg-terminal-panel shadow-terminal-glow animate-float overflow-hidden flex items-center justify-center">
+              <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl ring-2 ring-blue-500/30 p-0.5 bg-white dark:bg-slate-900 shadow-lg shadow-blue-500/10 animate-float overflow-hidden flex items-center justify-center">
                 <img src="/logo.jpg" alt="Coders' Club Logo" className="w-full h-full object-cover rounded-xl" />
               </div>
             </div>
 
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] sm:text-xs font-mono font-bold bg-brand-500/15 text-brand-400 border border-brand-500/30 mb-2 shadow-xs">
-              <span className="w-1.5 h-1.5 rounded-full bg-brand-400 animate-ping" />
-              <span>SYS://ONLINE • CODEX_RAG_V4</span>
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] sm:text-xs font-bold bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800 mb-2 shadow-xs">
+              <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
+              <span>CodeBuddy Assistant • CodeX 4.0</span>
             </div>
 
-            <h3 className="font-display font-bold text-lg sm:text-2xl text-white tracking-tight mb-1">
-              Welcome to CodeBuddy
+            <h3 className="font-display font-bold text-xl sm:text-2xl text-slate-900 dark:text-white tracking-tight mb-1">
+              How can I help you today?
             </h3>
-            <p className="text-xs sm:text-sm text-terminal-muted max-w-md mb-2 leading-relaxed px-2 font-mono">
-              // Ask anything regarding CodeX 4.0 hackathon rules, venue maps, schedules, and prizes.
+            <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 max-w-md mb-2 leading-relaxed px-2">
+              Ask anything regarding CodeX 4.0 hackathon rules, venue maps, schedules, and prizes.
             </p>
 
             <QuickActionCards onPick={handleSend} />
@@ -102,8 +102,8 @@ export default function ChatWindow({ variant = "widget" }) {
         ))}
       </div>
 
-      {/* Terminal Command Deck (Input Area) */}
-      <div className="relative p-2.5 sm:p-4 border-t border-terminal-border bg-terminal-panel/90 backdrop-blur-xl shrink-0">
+      {/* Input Deck Area */}
+      <div className="relative p-2.5 sm:p-4 border-t border-slate-200/80 dark:border-slate-800/80 bg-white/80 dark:bg-slate-950/80 backdrop-blur-xl shrink-0">
         {/* Slash Command Autocomplete Menu */}
         {showSlashMenu && (
           <SlashCommandMenu
@@ -115,16 +115,16 @@ export default function ChatWindow({ variant = "widget" }) {
           />
         )}
 
-        <div className="relative flex items-center gap-1.5 sm:gap-2 rounded-2xl border border-terminal-border bg-terminal-dark p-1 sm:p-1.5 shadow-sm focus-within:border-brand-500/60 focus-within:ring-2 focus-within:ring-brand-500/20 transition-all">
+        <div className="relative flex items-center gap-1.5 sm:gap-2 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 p-1 sm:p-1.5 shadow-sm focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500/20 transition-all">
           <textarea
             ref={inputRef}
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="Type your query or / for command list..."
+            placeholder="Ask CodeBuddy or type / for commands..."
             rows={1}
             aria-label="Message input"
-            className="flex-1 resize-none bg-transparent px-3 py-1.5 sm:py-2 text-sm text-terminal-text focus:outline-none placeholder:text-terminal-muted max-h-28 sm:max-h-32 leading-relaxed font-mono"
+            className="flex-1 resize-none bg-transparent px-3 py-1.5 sm:py-2 text-sm text-slate-900 dark:text-white focus:outline-none placeholder:text-slate-400 max-h-28 sm:max-h-32 leading-relaxed"
           />
 
           {/* Voice Input */}
@@ -138,7 +138,7 @@ export default function ChatWindow({ variant = "widget" }) {
           </div>
 
           {isStreaming ? (
-            // Stop button with Red Alert pulse
+            // Stop Streaming Button
             <button
               onClick={stopStreaming}
               aria-label="Stop response"
@@ -148,12 +148,12 @@ export default function ChatWindow({ variant = "widget" }) {
               <IconStop className="w-4 h-4" />
             </button>
           ) : (
-            // Terminal Send Button
+            // Send Button
             <button
               onClick={() => handleSend()}
               disabled={!input.trim()}
               aria-label="Send query"
-              className="inline-flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 rounded-xl text-terminal-dark bg-brand-400 hover:bg-brand-300 active:bg-brand-500 disabled:opacity-30 disabled:pointer-events-none shadow-terminal-glow transition-all focus:outline-none shrink-0 active:scale-95"
+              className="inline-flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 rounded-xl text-white bg-blue-600 hover:bg-blue-500 active:bg-blue-700 disabled:opacity-30 disabled:pointer-events-none shadow-sm shadow-blue-500/20 transition-all focus:outline-none shrink-0 active:scale-95"
             >
               <IconSend className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             </button>
@@ -161,10 +161,10 @@ export default function ChatWindow({ variant = "widget" }) {
         </div>
 
         {/* Status Line */}
-        <div className="hidden sm:flex items-center justify-between mt-1.5 px-1 text-[10px] font-mono text-terminal-muted">
+        <div className="hidden sm:flex items-center justify-between mt-1.5 px-1 text-[11px] text-slate-400">
           <span className="flex items-center gap-1">
-            <IconSparkles className="w-3 h-3 text-brand-400" />
-            <span>[RAG STREAMING ENGINE ACTIVE]</span>
+            <IconSparkles className="w-3.5 h-3.5 text-blue-500" />
+            <span>RAG-powered live intelligence</span>
           </span>
           <span>Press Enter ↵ to send</span>
         </div>

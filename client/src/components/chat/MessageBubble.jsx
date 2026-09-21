@@ -24,7 +24,7 @@ export default function MessageBubble({ message, onRegenerate, onPickSuggestion 
       {/* Assistant Avatar with Coders' Club Logo */}
       {!isUser && (
         <div className="shrink-0 pt-0.5">
-          <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl overflow-hidden ring-1 ring-brand-500/50 bg-terminal-panel shadow-terminal-glow flex items-center justify-center p-0.5">
+          <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl overflow-hidden ring-1 ring-blue-500/30 bg-white dark:bg-slate-800 shadow-sm flex items-center justify-center p-0.5">
             <img src="/logo.jpg" alt="Coders' Club" className="w-full h-full object-cover rounded-lg" />
           </div>
         </div>
@@ -32,9 +32,9 @@ export default function MessageBubble({ message, onRegenerate, onPickSuggestion 
 
       <div className={`max-w-[92%] sm:max-w-[80%] flex flex-col ${isUser ? "items-end" : "items-start"}`}>
         {/* Name & Time Header */}
-        <div className="flex items-center gap-1.5 px-1 mb-1 text-[10px] font-mono text-terminal-muted">
-          <span className="font-semibold text-brand-400">
-            {isUser ? "// user_query" : "// codebuddy_ai"}
+        <div className="flex items-center gap-1.5 px-1 mb-1 text-[10px] text-slate-400">
+          <span className="font-semibold text-slate-600 dark:text-slate-300">
+            {isUser ? "You" : "CodeBuddy"}
           </span>
           <span>•</span>
           <span>{time}</span>
@@ -44,8 +44,8 @@ export default function MessageBubble({ message, onRegenerate, onPickSuggestion 
         <div
           className={`rounded-2xl px-4 py-3 text-[13.5px] sm:text-[14px] leading-relaxed shadow-sm transition-all break-words ${
             isUser
-              ? "bg-gradient-to-r from-brand-600 via-brand-700 to-emerald-800 text-white rounded-tr-xs shadow-terminal-glow"
-              : "bg-terminal-panel border border-terminal-border text-terminal-text rounded-tl-xs backdrop-blur-md"
+              ? "bg-blue-600 text-white rounded-tr-xs shadow-blue-500/10"
+              : "bg-slate-100 dark:bg-slate-800/90 border border-slate-200/80 dark:border-slate-700/80 text-slate-800 dark:text-slate-100 rounded-tl-xs backdrop-blur-md"
           }`}
         >
           {message.streaming && !message.content ? (
@@ -71,8 +71,8 @@ export default function MessageBubble({ message, onRegenerate, onPickSuggestion 
                           padding: "0.75rem 0.85rem",
                           maxWidth: "100%",
                           overflowX: "auto",
-                          background: "#060907",
-                          border: "1px solid rgba(16, 185, 129, 0.25)",
+                          background: "#0f172a",
+                          border: "1px solid rgba(148, 163, 184, 0.2)",
                         }}
                         {...props}
                       >
@@ -80,7 +80,7 @@ export default function MessageBubble({ message, onRegenerate, onPickSuggestion 
                       </SyntaxHighlighter>
                     ) : (
                       <code
-                        className="bg-terminal-dark text-brand-300 rounded px-1.5 py-0.5 font-mono text-[12px] font-semibold border border-brand-500/25"
+                        className="bg-slate-200 dark:bg-slate-900 text-blue-700 dark:text-blue-300 rounded px-1.5 py-0.5 font-mono text-[12px] font-semibold border border-slate-300 dark:border-slate-700"
                         {...props}
                       >
                         {children}
@@ -94,11 +94,11 @@ export default function MessageBubble({ message, onRegenerate, onPickSuggestion 
             </div>
           )}
 
-          {/* Interactive Campus Radar Trigger when locations are discussed */}
+          {/* Interactive Campus Map Trigger when campus locations are discussed */}
           {!isUser && !message.streaming && message.content && /(cafeteria|canteen|food court|library|amphitheatre|amphi|auditorium|csm lab|csm department|campus map|directions|where is|navigate|location|hostel|stadium|ground|admin|atm|health)/i.test(message.content) && (() => {
             const c = message.content.toLowerCase();
             let destId = "csm-labs";
-            let label = "GPREC Campus Radar";
+            let label = "GPREC Campus Map";
 
             if (c.includes("food court")) { destId = "food-court"; label = "Food Court"; }
             else if (c.includes("cafeteria") || c.includes("canteen")) { destId = "cafeteria"; label = "Main Cafeteria"; }
@@ -113,17 +113,17 @@ export default function MessageBubble({ message, onRegenerate, onPickSuggestion 
             else if (c.includes("ground") || c.includes("cricket")) { destId = "sports-ground"; label = "Sports Ground"; }
             else if (c.includes("admin") || c.includes("principal")) { destId = "admin-block"; label = "Admin Block"; }
             else if (c.includes("atm") || c.includes("health") || c.includes("doctor")) { destId = "atm-health"; label = "ATM & Dispensary"; }
-            else { destId = null; label = "Campus Radar & Navigation"; }
+            else { destId = null; label = "Campus Map & Wayfinding"; }
 
             return (
-              <div className="mt-3 pt-2.5 border-t border-terminal-border flex flex-wrap items-center gap-2">
+              <div className="mt-3 pt-2.5 border-t border-slate-200 dark:border-slate-700/80 flex flex-wrap items-center gap-2">
                 <button
                   type="button"
                   onClick={() => openMap(destId)}
-                  className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-mono font-bold text-terminal-dark bg-brand-400 hover:bg-brand-300 shadow-terminal-glow active:scale-95 transition-all cursor-pointer"
+                  className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-semibold text-white bg-blue-600 hover:bg-blue-500 shadow-sm shadow-blue-500/20 active:scale-95 transition-all cursor-pointer"
                 >
                   <IconMap className="w-3.5 h-3.5" />
-                  <span>[Launch Radar: {label}]</span>
+                  <span>Open on Campus Map ({label})</span>
                   <span>→</span>
                 </button>
               </div>
@@ -154,7 +154,7 @@ export default function MessageBubble({ message, onRegenerate, onPickSuggestion 
       {/* User Avatar */}
       {isUser && (
         <div className="shrink-0 pt-0.5">
-          <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-terminal-panel border border-brand-500/40 text-brand-300 flex items-center justify-center text-xs font-bold shadow-xs">
+          <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-blue-600 text-white flex items-center justify-center text-xs font-bold shadow-sm shadow-blue-500/20">
             <IconUser className="w-4 h-4" />
           </div>
         </div>

@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, Link } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth.js";
 import { useAuthStore } from "../store/authStore.js";
 import api from "../api/axios.js";
@@ -88,7 +88,7 @@ export default function Login() {
 
         if (googleBtnRef.current) {
           window.google.accounts.id.renderButton(googleBtnRef.current, {
-            theme: "filled_black",
+            theme: "outline",
             size: "large",
             width: "100%",
             text: "continue_with",
@@ -178,44 +178,41 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-[100dvh] flex flex-col justify-between bg-terminal-bg bg-hud-grid text-terminal-text px-3 sm:px-4 py-3 sm:py-6 font-mono">
-      {/* Laser Scanline */}
-      <div className="hud-scan-line hidden md:block" />
-
+    <div className="min-h-[100dvh] flex flex-col justify-between bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 px-3 sm:px-4 py-4 sm:py-6 transition-colors">
       {/* Top Header */}
       <div className="max-w-5xl mx-auto w-full flex items-center justify-between">
-        <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-xl overflow-hidden ring-1 ring-brand-500/40 bg-terminal-panel flex items-center justify-center shadow-terminal-glow p-0.5">
+        <Link to="/" className="flex items-center gap-2.5">
+          <div className="w-8 h-8 rounded-xl overflow-hidden ring-1 ring-blue-500/30 bg-white dark:bg-slate-900 flex items-center justify-center shadow-sm p-0.5">
             <img src="/logo.jpg" alt="Coders' Club Logo" className="w-full h-full object-cover rounded-lg" />
           </div>
           <div>
-            <span className="font-display font-bold text-sm tracking-tight text-white">
-              CodeX <span className="text-brand-400">4.0</span>
+            <span className="font-display font-bold text-sm tracking-tight text-slate-900 dark:text-white">
+              CodeX <span className="text-blue-600 dark:text-blue-400">4.0</span>
             </span>
           </div>
-        </div>
+        </Link>
         <ThemeToggle />
       </div>
 
       {/* Main Card */}
       <div className="w-full max-w-md mx-auto my-auto py-4">
-        <div className="rounded-3xl p-6 sm:p-8 bg-terminal-dark border border-terminal-border shadow-2xl backdrop-blur-xl">
+        <div className="rounded-3xl p-6 sm:p-8 bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800/80 shadow-xl backdrop-blur-xl">
           {/* Header */}
           <div className="text-center mb-6">
             <div className="relative inline-block mb-3">
-              <div className="w-16 h-16 rounded-2xl ring-2 ring-brand-500/50 p-0.5 bg-terminal-panel shadow-terminal-glow mx-auto overflow-hidden flex items-center justify-center">
+              <div className="w-16 h-16 rounded-2xl ring-2 ring-blue-500/30 p-0.5 bg-white dark:bg-slate-900 shadow-md mx-auto overflow-hidden flex items-center justify-center">
                 <img src="/logo.jpg" alt="Coders' Club Logo" className="w-full h-full object-cover rounded-[14px]" />
               </div>
-              <span className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-brand-500 rounded-full ring-2 ring-terminal-dark" title="SYS ONLINE" />
+              <span className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-blue-500 rounded-full ring-2 ring-white dark:ring-slate-900" title="Online" />
             </div>
 
-            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-mono font-bold bg-brand-500/15 text-brand-400 border border-brand-500/30 mb-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-brand-400 animate-pulse" />
-              <span>// CODEX_AUTH_GATEWAY</span>
+            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800 mb-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
+              <span>Participant Portal</span>
             </div>
 
-            <h1 className="font-display font-bold text-2xl sm:text-3xl text-white tracking-tight">
-              CodeBuddy <span className="text-brand-400">Terminal</span>
+            <h1 className="font-display font-bold text-2xl sm:text-3xl text-slate-900 dark:text-white tracking-tight">
+              CodeBuddy <span className="text-blue-600 dark:text-blue-400">Account</span>
             </h1>
           </div>
 
@@ -226,17 +223,17 @@ export default function Login() {
                 type="button"
                 onClick={handleGoogleSignInClick}
                 disabled={loading}
-                className="w-full flex items-center justify-center gap-3 py-2.5 px-4 rounded-xl border border-terminal-border bg-terminal-panel hover:bg-terminal-border text-white font-mono text-xs transition-all shadow-sm disabled:opacity-50"
+                className="w-full flex items-center justify-center gap-3 py-2.5 px-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/80 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-semibold transition-all shadow-xs disabled:opacity-50"
               >
                 {loading ? (
                   <span className="inline-flex items-center gap-2">
-                    <span className="w-4 h-4 border-2 border-brand-400 border-t-transparent rounded-full animate-spin" />
-                    <span>// Authenticating...</span>
+                    <span className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
+                    <span>Signing in...</span>
                   </span>
                 ) : (
                   <>
-                    <IconUser className="w-4 h-4 text-brand-400" />
-                    <span>[Continue with Google]</span>
+                    <IconUser className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                    <span>Continue with Google</span>
                   </>
                 )}
               </button>
@@ -245,44 +242,44 @@ export default function Login() {
 
           {/* Divider */}
           <div className="relative my-4 flex items-center justify-center">
-            <div className="border-t border-terminal-border w-full" />
-            <span className="bg-terminal-dark px-3 text-[10px] font-mono text-terminal-muted uppercase tracking-wider">
-              // OR EMAIL AUTH
+            <div className="border-t border-slate-200 dark:border-slate-800 w-full" />
+            <span className="bg-white dark:bg-slate-900 px-3 text-[11px] text-slate-400 uppercase tracking-wider">
+              Or with email
             </span>
           </div>
 
           {/* Mode Switcher */}
-          <div className="flex p-1 rounded-xl bg-terminal-panel border border-terminal-border mb-4">
+          <div className="flex p-1 rounded-xl bg-slate-100 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-800 mb-4">
             <button
               type="button"
               onClick={() => setMode("login")}
-              className={`flex-1 py-1.5 rounded-lg text-xs font-mono font-semibold transition-all ${
+              className={`flex-1 py-1.5 rounded-lg text-xs font-semibold transition-all ${
                 mode === "login"
-                  ? "bg-terminal-dark text-brand-400 border border-brand-500/30 shadow-xs"
-                  : "text-terminal-muted hover:text-white"
+                  ? "bg-white dark:bg-slate-900 text-blue-600 dark:text-blue-400 shadow-xs"
+                  : "text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
               }`}
             >
-              [Sign In]
+              Sign In
             </button>
             <button
               type="button"
               onClick={() => setMode("register")}
-              className={`flex-1 py-1.5 rounded-lg text-xs font-mono font-semibold transition-all ${
+              className={`flex-1 py-1.5 rounded-lg text-xs font-semibold transition-all ${
                 mode === "register"
-                  ? "bg-terminal-dark text-brand-400 border border-brand-500/30 shadow-xs"
-                  : "text-terminal-muted hover:text-white"
+                  ? "bg-white dark:bg-slate-900 text-blue-600 dark:text-blue-400 shadow-xs"
+                  : "text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
               }`}
             >
-              [Register]
+              Register
             </button>
           </div>
 
           {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-3 font-mono">
+          <form onSubmit={handleSubmit} className="space-y-3">
             {mode === "register" && (
               <div>
-                <label className="block text-xs text-terminal-muted mb-1">
-                  // FULL_NAME
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  Full Name
                 </label>
                 <input
                   type="text"
@@ -290,15 +287,15 @@ export default function Login() {
                   value={form.name}
                   onChange={(e) => setForm({ ...form, name: e.target.value })}
                   autoComplete="name"
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-terminal-border bg-terminal-panel text-white text-sm focus:outline-none focus:border-brand-500/60 focus:ring-2 focus:ring-brand-500/20 transition-all font-mono"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/60 text-slate-900 dark:text-white text-sm focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all"
                   required
                 />
               </div>
             )}
 
             <div>
-              <label className="block text-xs text-terminal-muted mb-1">
-                // COLLEGE_EMAIL
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                Email Address
               </label>
               <input
                 type="email"
@@ -306,14 +303,14 @@ export default function Login() {
                 value={form.email}
                 onChange={(e) => setForm({ ...form, email: e.target.value })}
                 autoComplete="email"
-                className="w-full px-3.5 py-2.5 rounded-xl border border-terminal-border bg-terminal-panel text-white text-sm focus:outline-none focus:border-brand-500/60 focus:ring-2 focus:ring-brand-500/20 transition-all font-mono"
+                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/60 text-slate-900 dark:text-white text-sm focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all"
                 required
               />
             </div>
 
             <div>
-              <label className="block text-xs text-terminal-muted mb-1">
-                // ACCESS_PASSWORD
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                Password
               </label>
               <input
                 type="password"
@@ -321,32 +318,32 @@ export default function Login() {
                 value={form.password}
                 onChange={(e) => setForm({ ...form, password: e.target.value })}
                 autoComplete={mode === "login" ? "current-password" : "new-password"}
-                className="w-full px-3.5 py-2.5 rounded-xl border border-terminal-border bg-terminal-panel text-white text-sm focus:outline-none focus:border-brand-500/60 focus:ring-2 focus:ring-brand-500/20 transition-all font-mono"
+                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/60 text-slate-900 dark:text-white text-sm focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all"
                 required
                 minLength={6}
               />
             </div>
 
             {error && (
-              <div className="p-2.5 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-400 text-xs font-mono">
-                // ERR: {error}
+              <div className="p-2.5 rounded-xl bg-rose-50 dark:bg-rose-950/50 border border-rose-200 dark:border-rose-900 text-rose-600 dark:text-rose-400 text-xs font-medium">
+                {error}
               </div>
             )}
 
             <button
               type="submit"
               disabled={loading}
-              className="w-full mt-2 py-3 rounded-xl text-xs font-mono font-bold text-terminal-dark bg-brand-400 hover:bg-brand-300 active:bg-brand-500 disabled:opacity-50 shadow-terminal-glow transition-all flex items-center justify-center gap-2"
+              className="w-full mt-2 py-2.5 rounded-xl text-xs font-semibold text-white bg-blue-600 hover:bg-blue-500 active:bg-blue-700 disabled:opacity-50 shadow-sm shadow-blue-500/20 transition-all flex items-center justify-center gap-2 cursor-pointer"
             >
               {loading ? (
                 <span className="inline-flex items-center gap-2">
-                  <span className="w-4 h-4 border-2 border-terminal-dark border-t-transparent rounded-full animate-spin" />
-                  // processing...
+                  <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  <span>Processing...</span>
                 </span>
               ) : mode === "login" ? (
-                "[SUBMIT SIGN IN]"
+                "Sign In"
               ) : (
-                "[CREATE ACCOUNT]"
+                "Create Account"
               )}
             </button>
           </form>
@@ -354,8 +351,8 @@ export default function Login() {
       </div>
 
       {/* Bottom Footer */}
-      <div className="text-center text-[10px] sm:text-xs text-terminal-muted py-2 font-mono">
-        // Coders' Club • G. Pulla Reddy Engineering College (Autonomous), Kurnool
+      <div className="text-center text-[11px] text-slate-400 py-2">
+        Coders' Club • G. Pulla Reddy Engineering College (Autonomous), Kurnool
       </div>
     </div>
   );
