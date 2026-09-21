@@ -7,6 +7,7 @@ import FeedbackButtons from "./FeedbackButtons.jsx";
 import TypingIndicator from "./TypingIndicator.jsx";
 import SuggestionChips from "./SuggestionChips.jsx";
 import { useChatStore } from "../../store/chatStore.js";
+import { IconCpu, IconUser, IconMap } from "../common/Icons.jsx";
 
 export default function MessageBubble({ message, onRegenerate, onPickSuggestion }) {
   const isUser = message.role === "user";
@@ -15,25 +16,25 @@ export default function MessageBubble({ message, onRegenerate, onPickSuggestion 
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 6 }}
+      initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.2, ease: "easeOut" }}
-      className={`mb-3.5 sm:mb-5 flex gap-2 sm:gap-3 ${isUser ? "justify-end" : "justify-start"}`}
+      className={`mb-4 sm:mb-5 flex gap-2.5 sm:gap-3.5 ${isUser ? "justify-end" : "justify-start"}`}
     >
-      {/* Assistant Avatar with Coders' Club Logo */}
+      {/* Assistant Avatar Badge */}
       {!isUser && (
         <div className="shrink-0 pt-0.5">
-          <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl overflow-hidden ring-2 ring-primary-500/40 bg-white shadow-sm flex items-center justify-center">
-            <img src="/logo.jpg" alt="Coders' Club" className="w-full h-full object-cover" />
+          <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-gradient-to-tr from-cyan-600 to-primary-600 text-white flex items-center justify-center shadow-md shadow-cyan-500/20 ring-1 ring-cyan-400/40">
+            <IconCpu className="w-4 h-4" />
           </div>
         </div>
       )}
 
-      <div className={`max-w-[90%] sm:max-w-[78%] flex flex-col ${isUser ? "items-end" : "items-start"}`}>
-        {/* Name & Time Header */}
-        <div className="flex items-center gap-1.5 px-1 mb-1 text-[10px] sm:text-[11px] text-slate-400 dark:text-slate-500">
+      <div className={`max-w-[92%] sm:max-w-[80%] flex flex-col ${isUser ? "items-end" : "items-start"}`}>
+        {/* Name & Timestamp Header */}
+        <div className="flex items-center gap-1.5 px-1 mb-1 text-[10px] font-mono text-slate-400 dark:text-slate-500">
           <span className="font-semibold text-slate-600 dark:text-slate-400">
-            {isUser ? "You" : "CodeBuddy"}
+            {isUser ? "You" : "CodeBuddy AI"}
           </span>
           <span>•</span>
           <span>{time}</span>
@@ -41,10 +42,10 @@ export default function MessageBubble({ message, onRegenerate, onPickSuggestion 
 
         {/* Message Bubble Container */}
         <div
-          className={`rounded-2xl px-3.5 py-2.5 sm:px-4 sm:py-3 text-[13.5px] sm:text-[14px] leading-relaxed shadow-sm transition-all break-words ${
+          className={`rounded-2xl px-4 py-3 text-[13.5px] sm:text-[14px] leading-relaxed shadow-sm transition-all break-words ${
             isUser
-              ? "bg-gradient-to-r from-primary-600 to-primary-700 text-white rounded-tr-sm shadow-primary-500/10"
-              : "bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 text-slate-800 dark:text-slate-100 rounded-tl-sm"
+              ? "bg-gradient-to-r from-cyan-600 via-primary-600 to-primary-700 text-white rounded-tr-xs shadow-cyan-500/10"
+              : "bg-white/95 dark:bg-[#0c1322]/95 border border-slate-200/90 dark:border-cyan-500/20 text-slate-800 dark:text-slate-100 rounded-tl-xs backdrop-blur-md shadow-sm"
           }`}
         >
           {message.streaming && !message.content ? (
@@ -70,6 +71,8 @@ export default function MessageBubble({ message, onRegenerate, onPickSuggestion 
                           padding: "0.75rem 0.85rem",
                           maxWidth: "100%",
                           overflowX: "auto",
+                          background: "#080d1a",
+                          border: "1px solid rgba(56, 189, 248, 0.2)",
                         }}
                         {...props}
                       >
@@ -77,7 +80,7 @@ export default function MessageBubble({ message, onRegenerate, onPickSuggestion 
                       </SyntaxHighlighter>
                     ) : (
                       <code
-                        className="bg-slate-100 dark:bg-slate-800 text-primary-600 dark:text-primary-400 rounded-md px-1.5 py-0.5 font-mono text-[12px] font-semibold"
+                        className="bg-slate-100 dark:bg-cyan-950/60 text-cyan-600 dark:text-cyan-400 rounded-md px-1.5 py-0.5 font-mono text-[12px] font-semibold border border-transparent dark:border-cyan-500/30"
                         {...props}
                       >
                         {children}
@@ -91,37 +94,37 @@ export default function MessageBubble({ message, onRegenerate, onPickSuggestion 
             </div>
           )}
 
-          {/* Intelligent Campus Map Trigger when locations are discussed */}
+          {/* Interactive Campus Radar Trigger when campus spots are mentioned */}
           {!isUser && !message.streaming && message.content && /(cafeteria|canteen|food court|library|amphitheatre|amphi|auditorium|csm lab|csm department|campus map|directions|where is|navigate|location|hostel|stadium|ground|admin|atm|health)/i.test(message.content) && (() => {
             const c = message.content.toLowerCase();
             let destId = "csm-labs";
-            let label = "GPREC Campus Map";
-            let icon = "🗺️";
+            let label = "GPREC Campus Radar";
 
-            if (c.includes("food court")) { destId = "food-court"; label = "Food Court"; icon = "🍕"; }
-            else if (c.includes("cafeteria") || c.includes("canteen")) { destId = "cafeteria"; label = "Main Cafeteria"; icon = "🍽️"; }
-            else if (c.includes("library")) { destId = "central-library"; label = "Central Library"; icon = "📚"; }
-            else if (c.includes("amphi")) { destId = "amphitheatre"; label = "Amphitheatre"; icon = "🎪"; }
-            else if (c.includes("auditorium")) { destId = "auditorium"; label = "Central Auditorium"; icon = "🎭"; }
-            else if (c.includes("csm department") || c.includes("aiml department") || c.includes("ai & ml department")) { destId = "csm-department"; label = "CSM Department"; icon = "🏢"; }
-            else if (c.includes("csm") || c.includes("hackathon hub") || c.includes("intel")) { destId = "csm-labs"; label = "CSM Labs (Hackathon Hub)"; icon = "💻"; }
-            else if (c.includes("girls hostel")) { destId = "girls-hostel"; label = "Girls Hostel"; icon = "🏡"; }
-            else if (c.includes("boys hostel") || c.includes("hostel")) { destId = "boys-hostel"; label = "Boys Hostel"; icon = "🏢"; }
-            else if (c.includes("stadium") || c.includes("gym")) { destId = "indoor-stadium"; label = "Indoor Stadium"; icon = "🏸"; }
-            else if (c.includes("ground") || c.includes("cricket")) { destId = "sports-ground"; label = "Sports Ground"; icon = "🏏"; }
-            else if (c.includes("admin") || c.includes("principal")) { destId = "admin-block"; label = "Admin Block"; icon = "🏛️"; }
-            else if (c.includes("atm") || c.includes("health") || c.includes("doctor")) { destId = "atm-health"; label = "ATM & Dispensary"; icon = "🏥"; }
-            else { destId = null; label = "Campus Map & Wayfinding"; icon = "🗺️"; }
+            if (c.includes("food court")) { destId = "food-court"; label = "Food Court"; }
+            else if (c.includes("cafeteria") || c.includes("canteen")) { destId = "cafeteria"; label = "Main Cafeteria"; }
+            else if (c.includes("library")) { destId = "central-library"; label = "Central Library"; }
+            else if (c.includes("amphi")) { destId = "amphitheatre"; label = "Amphitheatre"; }
+            else if (c.includes("auditorium")) { destId = "auditorium"; label = "Central Auditorium"; }
+            else if (c.includes("csm department") || c.includes("aiml department") || c.includes("ai & ml department")) { destId = "csm-department"; label = "CSM Department"; }
+            else if (c.includes("csm") || c.includes("hackathon hub") || c.includes("intel")) { destId = "csm-labs"; label = "CSM Labs (Hackathon Hub)"; }
+            else if (c.includes("girls hostel")) { destId = "girls-hostel"; label = "Girls Hostel"; }
+            else if (c.includes("boys hostel") || c.includes("hostel")) { destId = "boys-hostel"; label = "Boys Hostel"; }
+            else if (c.includes("stadium") || c.includes("gym")) { destId = "indoor-stadium"; label = "Indoor Stadium"; }
+            else if (c.includes("ground") || c.includes("cricket")) { destId = "sports-ground"; label = "Sports Ground"; }
+            else if (c.includes("admin") || c.includes("principal")) { destId = "admin-block"; label = "Admin Block"; }
+            else if (c.includes("atm") || c.includes("health") || c.includes("doctor")) { destId = "atm-health"; label = "ATM & Dispensary"; }
+            else { destId = null; label = "Campus Radar & Navigation"; }
 
             return (
-              <div className="mt-2.5 pt-2.5 border-t border-slate-100 dark:border-slate-800/80 flex flex-wrap items-center gap-2">
+              <div className="mt-3 pt-2.5 border-t border-slate-100 dark:border-slate-800/80 flex flex-wrap items-center gap-2">
                 <button
                   type="button"
                   onClick={() => openMap(destId)}
-                  className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-primary-600 to-indigo-600 hover:from-primary-700 hover:to-indigo-700 shadow-sm shadow-primary-500/20 active:scale-95 transition-all cursor-pointer"
+                  className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-display font-bold text-white bg-gradient-to-r from-cyan-600 to-primary-600 hover:from-cyan-500 hover:to-primary-500 shadow-sm shadow-cyan-500/20 active:scale-95 transition-all cursor-pointer"
                 >
-                  <span className="text-sm">{icon}</span>
-                  <span>Open {label} with Live Compass ➔</span>
+                  <IconMap className="w-3.5 h-3.5" />
+                  <span>Navigate to {label}</span>
+                  <span className="font-mono text-cyan-200">→</span>
                 </button>
               </div>
             );
@@ -139,7 +142,7 @@ export default function MessageBubble({ message, onRegenerate, onPickSuggestion 
 
         {/* Suggestion Chips */}
         {!isUser && !message.streaming && message.suggestions && message.suggestions.length > 0 && (
-          <div className="w-full">
+          <div className="w-full mt-1.5">
             <SuggestionChips
               suggestions={message.suggestions}
               onPick={(q) => onPickSuggestion?.(q)}
@@ -148,11 +151,11 @@ export default function MessageBubble({ message, onRegenerate, onPickSuggestion 
         )}
       </div>
 
-      {/* User Initial / Avatar */}
+      {/* User Avatar Badge */}
       {isUser && (
         <div className="shrink-0 pt-0.5">
-          <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-slate-200 dark:bg-slate-800 flex items-center justify-center text-slate-700 dark:text-slate-200 text-xs font-bold shadow-sm">
-            👤
+          <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 flex items-center justify-center text-xs font-bold shadow-sm ring-1 ring-slate-300/50 dark:ring-slate-700">
+            <IconUser className="w-4 h-4" />
           </div>
         </div>
       )}
