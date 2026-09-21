@@ -9,7 +9,8 @@ import {
 } from "../../data/campusGuideData.js";
 import {
   IconSearch,
-  IconSparkles
+  IconSparkles,
+  IconPin
 } from "../common/Icons.jsx";
 
 export default function CampusInteractiveMap({
@@ -28,7 +29,7 @@ export default function CampusInteractiveMap({
   // Live GPS Tracking State
   const [gpsStatus, setGpsStatus] = useState("idle"); // 'idle' | 'tracking' | 'on_campus' | 'off_campus' | 'denied'
   const [userGpsCoords, setUserGpsCoords] = useState(null);
-  const [gpsMessage, setGpsMessage] = useState("");
+  const [gpsToast, setGpsToast] = useState(null); // { type: 'info'|'warning'|'success', message: '' }
 
   // Map Pan & Zoom Viewport
   const [zoom, setZoom] = useState(1);
@@ -49,19 +50,26 @@ export default function CampusInteractiveMap({
   const handleToggleGps = () => {
     if (!navigator.geolocation) {
       setGpsStatus("denied");
-      setGpsMessage("Geolocation not supported by browser");
+      setGpsToast({
+        type: "warning",
+        message: "Geolocation is not supported by your browser."
+      });
       return;
     }
 
     if (gpsStatus === "tracking" || gpsStatus === "on_campus") {
       setGpsStatus("idle");
       setStartNodeId("node_main_gate");
-      setGpsMessage("");
+      setGpsToast(null);
       return;
     }
 
     setGpsStatus("tracking");
-    setGpsMessage("Locating on campus...");
+    setGpsToast({
+      type: "info",
+      message: "Detecting your live position on GPREC campus..."
+    });
+
     navigator.geolocation.getCurrentPosition(
       (pos) => {
         const { latitude, longitude } = pos.coords;
@@ -87,18 +95,27 @@ export default function CampusInteractiveMap({
           }
           setStartNodeId(nearest);
           setGpsStatus("on_campus");
-          setGpsMessage(`Live GPS: Near ${CAMPUS_NAV_NODES[nearest]?.label || "Campus"}`);
+          setGpsToast({
+            type: "success",
+            message: `Live on campus: Near ${CAMPUS_NAV_NODES[nearest]?.label || "GPREC Campus"}`
+          });
         } else {
           setGpsStatus("off_campus");
           setStartNodeId("node_main_gate");
-          setGpsMessage("Off-campus: Defaulting Start to Main Gate");
+          setGpsToast({
+            type: "warning",
+            message: "Off-campus position detected. Defaulting Start to Main Gate."
+          });
         }
       },
       (err) => {
         console.warn("GPS error:", err);
         setGpsStatus("denied");
         setStartNodeId("node_main_gate");
-        setGpsMessage("Location access denied. Using Main Gate.");
+        setGpsToast({
+          type: "warning",
+          message: "Location access denied. Defaulting Start to Main Gate."
+        });
       },
       { enableHighAccuracy: true, timeout: 8000 }
     );
@@ -253,7 +270,7 @@ export default function CampusInteractiveMap({
               onChange={(e) => {
                 setStartNodeId(e.target.value);
                 setGpsStatus("idle");
-                setGpsMessage("");
+                setGpsToast(null);
               }}
               className="bg-transparent text-slate-200 outline-none cursor-pointer max-w-[125px] truncate font-medium"
             >
@@ -274,11 +291,11 @@ export default function CampusInteractiveMap({
           <button
             onClick={handleToggleGps}
             title="Use Live Geolocation"
-            className={`px-2.5 py-1 rounded-xl font-semibold flex items-center gap-1 transition cursor-pointer border text-[11px] ${
+            className={`px-2.5 py-1 rounded-xl font-semibold flex items-center gap-1.5 transition cursor-pointer border text-[11px] shadow-sm ${
               gpsStatus === "on_campus"
-                ? "bg-emerald-600 text-white border-emerald-500 shadow-xs"
+                ? "bg-emerald-600 text-white border-emerald-500 shadow-emerald-500/20"
                 : gpsStatus === "tracking"
-                ? "bg-amber-600 text-white border-amber-500 animate-pulse"
+                ? "bg-amber-600 text-white border-amber-500 animate-pulse shadow-amber-500/20"
                 : "bg-slate-800 text-slate-300 border-slate-700 hover:border-blue-400"
             }`}
           >
@@ -287,13 +304,37 @@ export default function CampusInteractiveMap({
         </div>
       </div>
 
-      {/* GPS Status Message Toast */}
-      {gpsMessage && (
-        <div className="bg-slate-900 px-3 py-1 text-[11px] border-b border-slate-800 flex items-center justify-between text-slate-300">
-          <span>{gpsMessage}</span>
-          <button onClick={() => setGpsMessage("")} className="text-slate-400 hover:text-white">✕</button>
-        </div>
-      )}
+      {/* GPS Status Floating Toast (Dark Theme Glassmorphism) */}
+      <AnimatePresence>
+        {gpsToast && (
+          <motion.div
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            className={`mx-3 mt-2 px-3 py-2 rounded-2xl border backdrop-blur-md flex items-center justify-between gap-2.5 text-xs shadow-lg z-20 ${
+              gpsToast.type === "success"
+                ? "bg-emerald-950/80 border-emerald-500/40 text-emerald-200 shadow-emerald-950/40"
+                : "bg-slate-900/90 border-blue-500/40 text-blue-200 shadow-slate-950/60"
+            }`}
+          >
+            <div className="flex items-center gap-2 min-w-0">
+              <span className="p-1 rounded-lg bg-blue-500/20 text-blue-300 text-xs shrink-0">
+                📍
+              </span>
+              <span className="truncate leading-tight font-medium">
+                {gpsToast.message}
+              </span>
+            </div>
+            <button
+              onClick={() => setGpsToast(null)}
+              className="p-1 text-slate-400 hover:text-white rounded-lg hover:bg-white/10 transition cursor-pointer shrink-0"
+              aria-label="Dismiss message"
+            >
+              ✕
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* ========================================================= */}
       {/* 2. INTERACTIVE VECTOR MAP CANVAS                          */}
@@ -588,17 +629,18 @@ export default function CampusInteractiveMap({
             )}
 
             {/* ========================================================= */}
-            {/* "YOU ARE HERE" PULSATING START BEACON                     */}
+            {/* "YOU ARE HERE" PULSATING START BEACON (BOTH ENDS PULSE)   */}
             {/* ========================================================= */}
             {startPointCoords && (
               <g transform={`translate(${startPointCoords.x}, ${startPointCoords.y})`}>
-                <circle r="20" fill="#3b82f6" opacity="0.25" className="animate-ping" />
-                <circle r="10" fill="#2563eb" opacity="0.6" />
-                <circle r="6" fill="#60a5fa" stroke="#ffffff" strokeWidth="2" />
-                {/* Start Pin Label */}
-                <g transform="translate(0, -22)">
-                  <rect x="-38" y="-12" width="76" height="16" rx="8" fill="#1e3a8a" stroke="#60a5fa" strokeWidth="1" />
-                  <text x="0" y="0" textAnchor="middle" dominantBaseline="middle" fill="#ffffff" fontSize="8.5" fontWeight="bold">
+                {/* Concentric radar pulsing wave */}
+                <circle r="22" fill="#38bdf8" opacity="0.35" className="animate-ping" />
+                <circle r="14" fill="#0284c7" opacity="0.65" />
+                <circle r="7" fill="#38bdf8" stroke="#ffffff" strokeWidth="2.5" />
+                {/* Start Pin Badge */}
+                <g transform="translate(0, -24)">
+                  <rect x="-42" y="-12" width="84" height="18" rx="9" fill="#0c4a6e" stroke="#38bdf8" strokeWidth="1.5" />
+                  <text x="0" y="0" textAnchor="middle" dominantBaseline="middle" fill="#f0f9ff" fontSize="9" fontWeight="bold" letterSpacing="0.5">
                     YOU ARE HERE
                   </text>
                 </g>
@@ -606,16 +648,17 @@ export default function CampusInteractiveMap({
             )}
 
             {/* ========================================================= */}
-            {/* DESTINATION PIN MARKER                                    */}
+            {/* DESTINATION PIN MARKER (ANIMATED PULSE)                   */}
             {/* ========================================================= */}
             {destCoords && (
               <g transform={`translate(${destCoords.x}, ${destCoords.y})`}>
-                <circle r="16" fill="#f59e0b" opacity="0.3" className="animate-ping" />
-                <circle r="8" fill="#d97706" stroke="#ffffff" strokeWidth="2" />
+                <circle r="18" fill="#f59e0b" opacity="0.35" className="animate-ping" />
+                <circle r="10" fill="#d97706" opacity="0.8" />
+                <circle r="6" fill="#fbbf24" stroke="#ffffff" strokeWidth="2.5" />
                 {/* Destination Pin Flag */}
                 <g transform="translate(0, -26)">
-                  <rect x="-35" y="-14" width="70" height="18" rx="9" fill="#78350f" stroke="#fbbf24" strokeWidth="1.5" />
-                  <text x="0" y="-1" textAnchor="middle" dominantBaseline="middle" fill="#fef3c7" fontSize="9" fontWeight="bold">
+                  <rect x="-38" y="-14" width="76" height="18" rx="9" fill="#78350f" stroke="#fbbf24" strokeWidth="1.5" />
+                  <text x="0" y="-1" textAnchor="middle" dominantBaseline="middle" fill="#fef3c7" fontSize="9" fontWeight="bold" letterSpacing="0.5">
                     DESTINATION
                   </text>
                 </g>
