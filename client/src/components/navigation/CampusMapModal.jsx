@@ -426,6 +426,8 @@ export default function CampusMapModal({ isOpen, onClose, initialDestinationId }
 
   // Navigation mode
   const [isNavigating, setIsNavigating] = useState(false);
+  const [isPreviewingRoute, setIsPreviewingRoute] = useState(false);
+  const [hasArrived, setHasArrived] = useState(false);
   const [voiceMuted, setVoiceMuted] = useState(false);
 
   // Map refs
@@ -438,6 +440,16 @@ export default function CampusMapModal({ isOpen, onClose, initialDestinationId }
   const routeGlowRef = useRef(null);
   const watchIdRef = useRef(null);
   const navIntervalRef = useRef(null);
+  const isNavigatingRef = useRef(false);
+  const selectedDestRef = useRef(selectedDest);
+
+  useEffect(() => {
+    isNavigatingRef.current = isNavigating;
+  }, [isNavigating]);
+
+  useEffect(() => {
+    selectedDestRef.current = selectedDest;
+  }, [selectedDest]);
 
   // Sync initialDestinationId
   useEffect(() => {
@@ -520,16 +532,41 @@ export default function CampusMapModal({ isOpen, onClose, initialDestinationId }
     if (navigator.geolocation) {
       watchIdRef.current = navigator.geolocation.watchPosition(
         (pos) => {
-          setUserLocation({
+          const coords = {
             lat: pos.coords.latitude,
             lng: pos.coords.longitude,
             isReal: true,
             accuracy: Math.round(pos.coords.accuracy || 10),
-          });
+          };
+          setUserLocation(coords);
           setGpsStatus("active");
+
+          // If real live navigation is active, follow the user and check physical arrival
+          if (isNavigatingRef.current) {
+            if (mapInstanceRef.current) {
+              mapInstanceRef.current.panTo([coords.lat, coords.lng]);
+            }
+
+            // Real physical distance check to destination
+            const dist = calculateDistanceMeters(
+              coords.lat,
+              coords.lng,
+              selectedDestRef.current.lat,
+              selectedDestRef.current.lng
+            );
+
+            // ONLY trigger arrival if ACTUALLY within 25 meters!
+            if (dist <= 25) {
+              setIsNavigating(false);
+              setHasArrived(true);
+              speakInstruction(`You have arrived at ${selectedDestRef.current.name}!`);
+            }
+          }
         },
-        null,
-        { enableHighAccuracy: true, maximumAge: 3000 }
+        (err) => {
+          console.warn("GPS watch error:", err.message);
+        },
+        { enableHighAccuracy: true, maximumAge: 2000 }
       );
     }
 
@@ -904,25 +941,65 @@ export default function CampusMapModal({ isOpen, onClose, initialDestinationId }
     }
   };
 
-  // Start Google Maps Live Navigation Simulation
-  const startNavigation = () => {
-    if (!routeData.points || routeData.points.length < 2) return;
+  // Start Real Live GPS Navigation Mode (Tracks actual physical movement in real-time)
+  const startLiveNavigation = () => {
+    if (!userLocation.isReal) {
+      speakInstruction("Requesting live GPS location to start navigation.");
+      requestLiveLocation();
+    }
+
+    setHasArrived(false);
+    setIsPreviewingRoute(false);
+    if (navIntervalRef.current) {
+      clearInterval(navIntervalRef.current);
+      navIntervalRef.current = null;
+    }
+
+    const dist = calculateDistanceMeters(
+      activeStartPoint.lat,
+      activeStartPoint.lng,
+      selectedDest.lat,
+      selectedDest.lng
+    );
+
+    // If user is already within 25m of destination
+    if (dist <= 25) {
+      setHasArrived(true);
+      speakInstruction(`You are already at ${selectedDest.name}.`);
+      return;
+    }
+
     setIsNavigating(true);
+
+    const distText = dist >= 1000 ? `${(dist / 1000).toFixed(1)} km` : `${dist} meters`;
+    speakInstruction(`Starting live navigation to ${selectedDest.name}. ${distText} remaining. Follow the blue route.`);
+
+    if (mapInstanceRef.current) {
+      mapInstanceRef.current.flyTo([activeStartPoint.lat, activeStartPoint.lng], 18, { duration: 0.8 });
+    }
+  };
+
+  // Optional Demo Route Walk Simulation (Explicit preview, clearly not live GPS)
+  const startRoutePreview = () => {
+    if (!routeData.points || routeData.points.length < 2) return;
+    setIsNavigating(false);
+    setIsPreviewingRoute(true);
+    setHasArrived(false);
 
     let step = 0;
     const path = routeData.points;
     const totalSteps = path.length;
     const stepJump = Math.max(1, Math.floor(totalSteps / 14));
 
-    speakInstruction(`Starting navigation to ${selectedDest.name}. Follow the blue route.`);
+    speakInstruction(`Previewing route path to ${selectedDest.name}.`);
 
     navIntervalRef.current = setInterval(() => {
       step += stepJump;
       if (step >= totalSteps - 1 || !path[step]) {
-        stopNavigation();
-        speakInstruction(`You have arrived at ${selectedDest.name}.`);
+        stopRoutePreview();
+        speakInstruction(`Route preview completed for ${selectedDest.name}.`);
         if (userMarkerRef.current) {
-          userMarkerRef.current.setLatLng([selectedDest.lat, selectedDest.lng]);
+          userMarkerRef.current.setLatLng([activeStartPoint.lat, activeStartPoint.lng]);
         }
         return;
       }
@@ -930,13 +1007,26 @@ export default function CampusMapModal({ isOpen, onClose, initialDestinationId }
         userMarkerRef.current.setLatLng(path[step]);
         mapInstanceRef.current?.panTo(path[step]);
       }
-    }, 1100);
+    }, 1000);
+  };
+
+  const stopRoutePreview = () => {
+    if (navIntervalRef.current) clearInterval(navIntervalRef.current);
+    navIntervalRef.current = null;
+    setIsPreviewingRoute(false);
+    if (userMarkerRef.current) {
+      userMarkerRef.current.setLatLng([activeStartPoint.lat, activeStartPoint.lng]);
+    }
   };
 
   const stopNavigation = () => {
     if (navIntervalRef.current) clearInterval(navIntervalRef.current);
     navIntervalRef.current = null;
     setIsNavigating(false);
+    setIsPreviewingRoute(false);
+    if (userMarkerRef.current) {
+      userMarkerRef.current.setLatLng([activeStartPoint.lat, activeStartPoint.lng]);
+    }
   };
 
   const focusOnCampus = () => {
@@ -985,6 +1075,24 @@ export default function CampusMapModal({ isOpen, onClose, initialDestinationId }
       ? `${Math.floor(durationMins / 60)} hr ${durationMins % 60} min`
       : `${durationMins} min`;
 
+  // Live distance and duration from active user location to destination
+  const liveRemainingMeters = calculateDistanceMeters(
+    activeStartPoint.lat,
+    activeStartPoint.lng,
+    selectedDest.lat,
+    selectedDest.lng
+  );
+  const liveRemainingDistText =
+    liveRemainingMeters >= 1000
+      ? `${(liveRemainingMeters / 1000).toFixed(1)} km`
+      : `${liveRemainingMeters} m`;
+  const liveSpeed = travelMode === "walk" ? 1.25 : travelMode === "bike" ? 8.3 : 9.7;
+  const liveDurationMinutes = Math.max(1, Math.round(liveRemainingMeters / (liveSpeed * 60)));
+  const liveDurationText =
+    liveDurationMinutes >= 60
+      ? `${Math.floor(liveDurationMinutes / 60)} hr ${liveDurationMinutes % 60} min`
+      : `${liveDurationMinutes} min`;
+
   return (
     <AnimatePresence>
       <div className="fixed inset-0 z-50 flex items-center justify-center p-0 sm:p-3 bg-slate-950/80 backdrop-blur-sm">
@@ -1003,7 +1111,7 @@ export default function CampusMapModal({ isOpen, onClose, initialDestinationId }
 
             {/* 1. Google Maps Emerald Turn-by-Turn Navigation Header */}
             <AnimatePresence>
-              {isNavigating && (
+              {(isNavigating || isPreviewingRoute) && (
                 <motion.div
                   initial={{ y: -80, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
@@ -1012,14 +1120,16 @@ export default function CampusMapModal({ isOpen, onClose, initialDestinationId }
                 >
                   <div className="flex items-center gap-3 min-w-0">
                     <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center text-2xl shrink-0">
-                      ↱
+                      {isPreviewingRoute ? "🎬" : "🧭"}
                     </div>
                     <div className="min-w-0">
                       <div className="text-sm sm:text-base font-bold truncate">
-                        Follow the blue Google Maps route to {selectedDest.name}
+                        {isPreviewingRoute
+                          ? `Previewing Route: ${selectedDest.name}`
+                          : `Live GPS Guidance: Follow route to ${selectedDest.name}`}
                       </div>
-                      <div className="text-xs text-white/80">
-                        {formattedDuration} • {formattedDistance} remaining • Speed 42 km/h
+                      <div className="text-xs text-white/90">
+                        {liveRemainingDistText} remaining • approx {liveDurationText} • {travelMode === "walk" ? "Walking" : travelMode === "bike" ? "Two-wheeler" : "Driving"}
                       </div>
                     </div>
                   </div>
@@ -1028,7 +1138,7 @@ export default function CampusMapModal({ isOpen, onClose, initialDestinationId }
                     <button
                       type="button"
                       onClick={() => setVoiceMuted(!voiceMuted)}
-                      className="p-2 rounded-full hover:bg-white/20 transition-colors text-white"
+                      className="p-2 rounded-full hover:bg-white/20 transition-colors text-white cursor-pointer"
                       title={voiceMuted ? "Unmute Voice Guidance" : "Mute Voice Guidance"}
                     >
                       {voiceMuted ? "🔇" : "🔊"}
@@ -1036,11 +1146,35 @@ export default function CampusMapModal({ isOpen, onClose, initialDestinationId }
                     <button
                       type="button"
                       onClick={stopNavigation}
-                      className="px-3 py-1 rounded-full bg-white/25 hover:bg-white/35 font-bold text-xs transition-colors"
+                      className="px-3 py-1 rounded-full bg-white/25 hover:bg-white/35 font-bold text-xs transition-colors cursor-pointer"
                     >
-                      Exit
+                      Exit Navigation
                     </button>
                   </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            {/* Arrival Banner (Only shown when user physically reaches destination <= 25m) */}
+            <AnimatePresence>
+              {hasArrived && (
+                <motion.div
+                  initial={{ y: -80, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  exit={{ y: -80, opacity: 0 }}
+                  className="absolute top-3 left-1/2 -translate-x-1/2 z-40 bg-emerald-600 text-white px-5 py-3 rounded-2xl shadow-2xl border border-emerald-400 flex items-center gap-3 max-w-md"
+                >
+                  <span className="text-2xl">🎉</span>
+                  <div className="min-w-0 flex-1">
+                    <div className="font-bold text-sm">You have arrived!</div>
+                    <div className="text-xs text-emerald-100">{selectedDest.name} ({selectedDest.floor})</div>
+                  </div>
+                  <button
+                    onClick={() => setHasArrived(false)}
+                    className="px-3 py-1 rounded-lg bg-white/25 hover:bg-white/35 text-xs font-bold transition-colors cursor-pointer"
+                  >
+                    Dismiss
+                  </button>
                 </motion.div>
               )}
             </AnimatePresence>
@@ -1457,14 +1591,27 @@ export default function CampusMapModal({ isOpen, onClose, initialDestinationId }
                 <div className="flex items-center gap-2 pt-2 border-t border-slate-100">
                   <button
                     type="button"
-                    onClick={isNavigating ? stopNavigation : startNavigation}
+                    onClick={isNavigating ? stopNavigation : startLiveNavigation}
                     className={`flex-1 py-2.5 px-3 rounded-xl font-bold text-xs sm:text-sm shadow-sm flex items-center justify-center gap-2 transition-all active:scale-95 cursor-pointer ${
                       isNavigating
                         ? "bg-amber-600 hover:bg-amber-700 text-white animate-pulse"
                         : "bg-[#1a73e8] hover:bg-[#1557b0] text-white"
                     }`}
                   >
-                    <span>{isNavigating ? "⏸️ Pause Navigation" : "🚗 Start Live Navigation"}</span>
+                    <span>{isNavigating ? "⏹️ Stop Live Guidance" : "🚗 Start Live Navigation"}</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={isPreviewingRoute ? stopRoutePreview : startRoutePreview}
+                    className={`py-2.5 px-3 rounded-xl text-xs font-bold transition-colors flex items-center gap-1.5 shrink-0 border cursor-pointer ${
+                      isPreviewingRoute
+                        ? "bg-amber-500 text-white border-amber-600"
+                        : "bg-slate-100 hover:bg-slate-200 text-slate-700 border-slate-200"
+                    }`}
+                    title="Simulate route walk animation"
+                  >
+                    <span>{isPreviewingRoute ? "⏹️ Stop Demo" : "🎬 Demo Walk"}</span>
                   </button>
 
                   <a
