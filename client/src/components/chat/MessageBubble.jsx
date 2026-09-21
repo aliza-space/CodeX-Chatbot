@@ -16,25 +16,25 @@ export default function MessageBubble({ message, onRegenerate, onPickSuggestion 
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 6 }}
+      initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.2, ease: "easeOut" }}
-      className={`mb-3.5 sm:mb-5 flex gap-2.5 sm:gap-3 ${isUser ? "justify-end" : "justify-start"}`}
+      className={`mb-4 sm:mb-5 flex gap-2.5 sm:gap-3.5 ${isUser ? "justify-end" : "justify-start"}`}
     >
       {/* Assistant Avatar with Coders' Club Logo */}
       {!isUser && (
         <div className="shrink-0 pt-0.5">
-          <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl overflow-hidden ring-2 ring-primary-500/40 bg-white shadow-xs flex items-center justify-center p-0.5">
+          <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl overflow-hidden ring-1 ring-brand-500/50 bg-terminal-panel shadow-terminal-glow flex items-center justify-center p-0.5">
             <img src="/logo.jpg" alt="Coders' Club" className="w-full h-full object-cover rounded-lg" />
           </div>
         </div>
       )}
 
-      <div className={`max-w-[90%] sm:max-w-[78%] flex flex-col ${isUser ? "items-end" : "items-start"}`}>
+      <div className={`max-w-[92%] sm:max-w-[80%] flex flex-col ${isUser ? "items-end" : "items-start"}`}>
         {/* Name & Time Header */}
-        <div className="flex items-center gap-1.5 px-1 mb-1 text-[10px] sm:text-[11px] text-slate-400 dark:text-slate-500">
-          <span className="font-semibold text-slate-600 dark:text-slate-400">
-            {isUser ? "You" : "CodeBuddy"}
+        <div className="flex items-center gap-1.5 px-1 mb-1 text-[10px] font-mono text-terminal-muted">
+          <span className="font-semibold text-brand-400">
+            {isUser ? "// user_query" : "// codebuddy_ai"}
           </span>
           <span>•</span>
           <span>{time}</span>
@@ -42,16 +42,16 @@ export default function MessageBubble({ message, onRegenerate, onPickSuggestion 
 
         {/* Message Bubble Container */}
         <div
-          className={`rounded-2xl px-3.5 py-2.5 sm:px-4 sm:py-3 text-[13.5px] sm:text-[14px] leading-relaxed shadow-xs transition-all break-words ${
+          className={`rounded-2xl px-4 py-3 text-[13.5px] sm:text-[14px] leading-relaxed shadow-sm transition-all break-words ${
             isUser
-              ? "bg-gradient-to-r from-primary-600 to-primary-700 text-white rounded-tr-xs shadow-primary-500/10"
-              : "bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 text-slate-800 dark:text-slate-100 rounded-tl-xs shadow-xs"
+              ? "bg-gradient-to-r from-brand-600 via-brand-700 to-emerald-800 text-white rounded-tr-xs shadow-terminal-glow"
+              : "bg-terminal-panel border border-terminal-border text-terminal-text rounded-tl-xs backdrop-blur-md"
           }`}
         >
           {message.streaming && !message.content ? (
             <TypingIndicator />
           ) : isUser ? (
-            <p className="whitespace-pre-wrap">{message.content}</p>
+            <p className="whitespace-pre-wrap font-sans">{message.content}</p>
           ) : (
             <div className="markdown-body overflow-hidden">
               <ReactMarkdown
@@ -71,6 +71,8 @@ export default function MessageBubble({ message, onRegenerate, onPickSuggestion 
                           padding: "0.75rem 0.85rem",
                           maxWidth: "100%",
                           overflowX: "auto",
+                          background: "#060907",
+                          border: "1px solid rgba(16, 185, 129, 0.25)",
                         }}
                         {...props}
                       >
@@ -78,7 +80,7 @@ export default function MessageBubble({ message, onRegenerate, onPickSuggestion 
                       </SyntaxHighlighter>
                     ) : (
                       <code
-                        className="bg-slate-100 dark:bg-slate-800 text-primary-600 dark:text-primary-400 rounded-md px-1.5 py-0.5 font-mono text-[12px] font-semibold"
+                        className="bg-terminal-dark text-brand-300 rounded px-1.5 py-0.5 font-mono text-[12px] font-semibold border border-brand-500/25"
                         {...props}
                       >
                         {children}
@@ -92,11 +94,11 @@ export default function MessageBubble({ message, onRegenerate, onPickSuggestion 
             </div>
           )}
 
-          {/* Intelligent Campus Map Trigger when locations are discussed */}
+          {/* Interactive Campus Radar Trigger when locations are discussed */}
           {!isUser && !message.streaming && message.content && /(cafeteria|canteen|food court|library|amphitheatre|amphi|auditorium|csm lab|csm department|campus map|directions|where is|navigate|location|hostel|stadium|ground|admin|atm|health)/i.test(message.content) && (() => {
             const c = message.content.toLowerCase();
             let destId = "csm-labs";
-            let label = "GPREC Campus Map";
+            let label = "GPREC Campus Radar";
 
             if (c.includes("food court")) { destId = "food-court"; label = "Food Court"; }
             else if (c.includes("cafeteria") || c.includes("canteen")) { destId = "cafeteria"; label = "Main Cafeteria"; }
@@ -111,17 +113,18 @@ export default function MessageBubble({ message, onRegenerate, onPickSuggestion 
             else if (c.includes("ground") || c.includes("cricket")) { destId = "sports-ground"; label = "Sports Ground"; }
             else if (c.includes("admin") || c.includes("principal")) { destId = "admin-block"; label = "Admin Block"; }
             else if (c.includes("atm") || c.includes("health") || c.includes("doctor")) { destId = "atm-health"; label = "ATM & Dispensary"; }
-            else { destId = null; label = "Campus Map & Wayfinding"; }
+            else { destId = null; label = "Campus Radar & Navigation"; }
 
             return (
-              <div className="mt-2.5 pt-2.5 border-t border-slate-100 dark:border-slate-800/80 flex flex-wrap items-center gap-2">
+              <div className="mt-3 pt-2.5 border-t border-terminal-border flex flex-wrap items-center gap-2">
                 <button
                   type="button"
                   onClick={() => openMap(destId)}
-                  className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-primary-600 to-indigo-600 hover:from-primary-700 hover:to-indigo-700 shadow-xs active:scale-95 transition-all cursor-pointer"
+                  className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-mono font-bold text-terminal-dark bg-brand-400 hover:bg-brand-300 shadow-terminal-glow active:scale-95 transition-all cursor-pointer"
                 >
                   <IconMap className="w-3.5 h-3.5" />
-                  <span>Open {label} with Live Compass ➔</span>
+                  <span>[Launch Radar: {label}]</span>
+                  <span>→</span>
                 </button>
               </div>
             );
@@ -139,7 +142,7 @@ export default function MessageBubble({ message, onRegenerate, onPickSuggestion 
 
         {/* Suggestion Chips */}
         {!isUser && !message.streaming && message.suggestions && message.suggestions.length > 0 && (
-          <div className="w-full">
+          <div className="w-full mt-1.5">
             <SuggestionChips
               suggestions={message.suggestions}
               onPick={(q) => onPickSuggestion?.(q)}
@@ -151,7 +154,7 @@ export default function MessageBubble({ message, onRegenerate, onPickSuggestion 
       {/* User Avatar */}
       {isUser && (
         <div className="shrink-0 pt-0.5">
-          <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-slate-200 dark:bg-slate-800 flex items-center justify-center text-slate-700 dark:text-slate-200 text-xs font-bold shadow-xs">
+          <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-terminal-panel border border-brand-500/40 text-brand-300 flex items-center justify-center text-xs font-bold shadow-xs">
             <IconUser className="w-4 h-4" />
           </div>
         </div>

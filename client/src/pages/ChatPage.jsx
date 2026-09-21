@@ -9,7 +9,7 @@ import { IconExternal, IconSparkles } from "../components/common/Icons.jsx";
 export default function ChatPage() {
   const { isMapOpen, closeMap, mapDestinationId } = useChatStore();
   const [announcement, setAnnouncement] = useState(
-    "CodeX 4.0 registrations close on 23 September 2026 — register before it's too late!"
+    "CodeX 4.0 registrations close on 23 September 2026 — register before slots fill up!"
   );
   const [showBanner, setShowBanner] = useState(true);
 
@@ -26,29 +26,32 @@ export default function ChatPage() {
   }, []);
 
   return (
-    <div className="relative flex flex-col h-[100dvh] overflow-hidden bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 subtle-grid-bg">
-      {/* Top Announcement Banner (Dismissible) */}
+    <div className="relative flex flex-col h-[100dvh] overflow-hidden bg-terminal-bg text-terminal-text bg-hud-grid">
+      {/* Laser Scanline animation */}
+      <div className="hud-scan-line hidden md:block" />
+
+      {/* Top Announcement Ticker */}
       {showBanner && (
-        <div className="relative z-50 bg-gradient-to-r from-primary-600 via-primary-700 to-accent-600 text-white px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-medium flex items-center justify-between shadow-md shrink-0">
-          <div className="max-w-7xl mx-auto flex items-center justify-center gap-1.5 sm:gap-2 text-center w-full px-2 min-w-0">
-            <span className="p-0.5 rounded-full bg-white/20 text-white shrink-0">
+        <div className="relative z-50 bg-gradient-to-r from-emerald-900 via-emerald-800 to-teal-950 text-white px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-mono flex items-center justify-between border-b border-brand-500/30 shadow-md shrink-0">
+          <div className="max-w-7xl mx-auto flex items-center justify-center gap-2 text-center w-full px-2 min-w-0">
+            <span className="p-0.5 rounded bg-brand-500/30 text-brand-300 shrink-0">
               <IconSparkles className="w-3.5 h-3.5" />
             </span>
-            <span className="truncate max-w-[240px] sm:max-w-xl font-sans">{announcement}</span>
+            <span className="truncate max-w-[240px] sm:max-w-xl font-mono">// {announcement}</span>
             <a
               href="https://codex4-0-registration-portal.codersclubgprec.in"
               target="_blank"
               rel="noopener noreferrer"
-              className="hidden md:inline-flex items-center gap-1 font-semibold underline hover:text-white/80 shrink-0 ml-1.5"
+              className="hidden md:inline-flex items-center gap-1 font-mono font-bold underline hover:text-brand-300 shrink-0 ml-1.5"
             >
-              <span>Register Portal</span>
+              <span>[Register Portal]</span>
               <IconExternal className="w-3 h-3" />
             </a>
           </div>
           <button
             onClick={() => setShowBanner(false)}
             aria-label="Dismiss banner"
-            className="p-1 rounded hover:bg-white/20 transition-colors text-white/80 hover:text-white shrink-0 ml-1 cursor-pointer"
+            className="p-1 rounded hover:bg-white/10 transition-colors text-white/80 hover:text-white shrink-0 ml-1 cursor-pointer"
           >
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -57,17 +60,17 @@ export default function ChatPage() {
         </div>
       )}
 
-      {/* Top Clean Navbar */}
+      {/* Top Navbar */}
       <Navbar />
 
-      {/* Main Content Area: Centered, clean, modern chat interface */}
+      {/* Main Chat Interface Container */}
       <div className="relative flex-1 flex overflow-hidden p-0 sm:p-3 lg:p-4 max-w-5xl mx-auto w-full min-h-0">
         <main className="relative flex-1 flex flex-col h-full overflow-hidden min-w-0">
           <ChatWindow variant="full" />
         </main>
       </div>
 
-      {/* Live Campus Map & GPS Walking Navigation Modal */}
+      {/* Live Campus Radar & GPS Navigation Modal */}
       <CampusMapModal
         isOpen={isMapOpen}
         onClose={closeMap}

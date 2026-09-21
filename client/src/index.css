@@ -4,7 +4,7 @@
 @tailwind utilities;
 
 :root {
-  color-scheme: light dark;
+  color-scheme: dark;
 }
 
 html, body, #root {
@@ -12,47 +12,91 @@ html, body, #root {
 }
 
 body {
-  @apply bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 antialiased selection:bg-primary-500/20 selection:text-primary-700 dark:selection:text-primary-300;
-  font-family: "Plus Jakarta Sans", Inter, system-ui, sans-serif;
+  @apply bg-terminal-bg text-terminal-text antialiased selection:bg-brand-500/30 selection:text-brand-300;
+  font-family: "Inter", "Plus Jakarta Sans", system-ui, sans-serif;
+  background-color: #080c0a;
 }
 
-/* Subtle modern background texture */
-.subtle-grid-bg {
+/* Cyberpunk HUD Grid Pattern with Pan Animation */
+.bg-hud-grid {
   background-image: 
-    radial-gradient(circle at 50% 0%, rgba(37, 99, 235, 0.05) 0%, transparent 60%),
-    linear-gradient(to right, rgba(148, 163, 184, 0.04) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(148, 163, 184, 0.04) 1px, transparent 1px);
-  background-size: 100% 100%, 32px 32px, 32px 32px;
+    linear-gradient(to right, rgba(16, 185, 129, 0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(16, 185, 129, 0.04) 1px, transparent 1px);
+  background-size: 40px 40px;
 }
 
-.dark .subtle-grid-bg {
-  background-image: 
-    radial-gradient(circle at 50% 0%, rgba(37, 99, 235, 0.08) 0%, transparent 60%),
-    linear-gradient(to right, rgba(30, 41, 59, 0.3) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(30, 41, 59, 0.3) 1px, transparent 1px);
-  background-size: 100% 100%, 32px 32px, 32px 32px;
+/* Chamfered / Clipped Polygon Corners */
+.chamfer-card {
+  clip-path: polygon(
+    0 8px,
+    8px 0,
+    calc(100% - 8px) 0,
+    100% 8px,
+    100% calc(100% - 8px),
+    calc(100% - 8px) 100%,
+    8px 100%,
+    0 calc(100% - 8px)
+  );
 }
 
-/* Glass Panels */
-.glass-panel {
-  @apply bg-white/80 dark:bg-slate-900/85 backdrop-blur-md border border-slate-200/80 dark:border-slate-800/80;
+.chamfer-sm {
+  clip-path: polygon(
+    0 4px,
+    4px 0,
+    calc(100% - 4px) 0,
+    100% 4px,
+    100% calc(100% - 4px),
+    calc(100% - 4px) 100%,
+    4px 100%,
+    0 calc(100% - 4px)
+  );
 }
 
-/* Custom modern scrollbar */
+/* HUD Scan Line */
+.hud-scan-line {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(52, 211, 153, 0.6), transparent);
+  box-shadow: 0 0 12px rgba(16, 185, 129, 0.8);
+  pointer-events: none;
+  z-index: 20;
+  animation: scan 7s linear infinite;
+  opacity: 0.7;
+}
+
+/* Terminal Glass HUD Panel */
+.terminal-hud-panel {
+  @apply bg-terminal-dark/90 backdrop-blur-xl border border-terminal-border shadow-xl;
+}
+
+.terminal-hud-interactive {
+  @apply terminal-hud-panel hover:border-brand-500/50 hover:shadow-terminal-glow transition-all duration-200;
+}
+
+/* Custom modern terminal scrollbar */
 ::-webkit-scrollbar {
   width: 5px;
   height: 5px;
 }
 ::-webkit-scrollbar-track {
-  background: transparent;
+  background: rgba(8, 12, 10, 0.6);
 }
 ::-webkit-scrollbar-thumb {
-  @apply bg-slate-300 dark:bg-slate-700/70 rounded-full hover:bg-slate-400 dark:hover:bg-slate-600 transition-colors;
+  background: #1f2b24;
+  border-radius: 9999px;
+  border: 1px solid rgba(16, 185, 129, 0.2);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #2d3f35;
+  border-color: rgba(52, 211, 153, 0.4);
 }
 
-/* Markdown typography */
+/* Markdown typography in Terminal HUD style */
 .markdown-body pre {
-  @apply rounded-xl overflow-x-auto text-xs sm:text-sm my-3 border border-slate-200 dark:border-slate-800 bg-slate-900 text-slate-100;
+  @apply rounded-xl overflow-x-auto text-xs sm:text-sm my-3 border border-terminal-border bg-[#050806] text-terminal-text;
 }
 .markdown-body code {
   font-family: "JetBrains Mono", "Fira Code", monospace;
@@ -73,10 +117,10 @@ body {
   @apply leading-relaxed;
 }
 .markdown-body strong {
-  @apply font-semibold text-slate-900 dark:text-white;
+  @apply font-semibold text-brand-300;
 }
 .markdown-body a {
-  @apply text-primary-600 dark:text-primary-400 font-medium hover:underline;
+  @apply text-brand-400 font-medium hover:underline;
 }
 
 /* Leaflet Custom Map Styles */
@@ -86,44 +130,45 @@ body {
 }
 
 .custom-map-tooltip {
-  background: rgba(15, 23, 42, 0.95) !important;
-  color: #f8fafc !important;
-  border: 1px solid rgba(255, 255, 255, 0.15) !important;
-  border-radius: 8px !important;
-  padding: 4px 9px !important;
+  background: rgba(10, 14, 12, 0.95) !important;
+  color: #34d399 !important;
+  border: 1px solid rgba(16, 185, 129, 0.4) !important;
+  border-radius: 6px !important;
+  padding: 4px 8px !important;
   font-size: 11px !important;
+  font-family: "JetBrains Mono", monospace !important;
   font-weight: 600 !important;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6) !important;
 }
 .custom-map-tooltip::before {
-  border-top-color: rgba(15, 23, 42, 0.95) !important;
+  border-top-color: rgba(10, 14, 12, 0.95) !important;
 }
 
-/* User Live GPS Dot */
-.user-live-dot {
+/* Terminal Live GPS Dot and Halo */
+.terminal-user-dot {
   position: relative;
   width: 18px;
   height: 18px;
   border-radius: 50%;
-  background: #2563eb;
-  border: 3px solid #ffffff;
-  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.5);
+  background: #10b981;
+  border: 2px solid #ffffff;
+  box-shadow: 0 0 12px #10b981;
 }
-.user-live-halo {
+.terminal-user-halo {
   position: absolute;
   inset: -10px;
   border-radius: 50%;
-  background: rgba(37, 99, 235, 0.25);
-  animation: user-pulse 2s cubic-bezier(0.24, 0, 0.38, 1) infinite;
+  background: rgba(16, 185, 129, 0.3);
+  animation: terminal-radar-pulse 2s cubic-bezier(0.24, 0, 0.38, 1) infinite;
   pointer-events: none;
 }
-@keyframes user-pulse {
+@keyframes terminal-radar-pulse {
   0% { transform: scale(0.6); opacity: 0.9; }
   100% { transform: scale(1.6); opacity: 0; }
 }
 
-/* Venue Pin Styling */
-.venue-pin-container {
+/* Terminal Venue Pin */
+.terminal-pin-container {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -131,6 +176,6 @@ body {
   cursor: pointer;
   transition: transform 0.15s ease-out;
 }
-.venue-pin-container:hover {
-  transform: translate(-50%, -108%) scale(1.06);
+.terminal-pin-container:hover {
+  transform: translate(-50%, -108%) scale(1.08);
 }
