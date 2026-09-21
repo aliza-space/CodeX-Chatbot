@@ -6,14 +6,24 @@ import {
   IconCross,
   IconSearch,
   IconSparkles,
-  IconPin,
   IconExternal
 } from "../common/Icons.jsx";
+
+const QUICK_FILTERS = [
+  { id: "all", label: "All Areas", icon: "🌐" },
+  { id: "hackathon", label: "Hackathons & AI", icon: "💻", keyword: "csm" },
+  { id: "startups", label: "Startups & CIE", icon: "🚀", keyword: "cie" },
+  { id: "venues", label: "Event Venues", icon: "🎭", keyword: "auditorium" },
+  { id: "food", label: "Food & Canteen", icon: "🍴", keyword: "food" },
+  { id: "library", label: "Library & Research", icon: "📚", keyword: "library" }
+];
 
 export default function CampusGuideModal({ isOpen, onClose, initialDestinationId }) {
   const [selectedZoneId, setSelectedZoneId] = useState(null);
   const [selectedFacilityId, setSelectedFacilityId] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [activeFilter, setActiveFilter] = useState("all");
+  const [showOverview, setShowOverview] = useState(false);
   const { sendMessage } = useChatStream();
 
   // Sync initial target destination from chatbot trigger
@@ -23,14 +33,15 @@ export default function CampusGuideModal({ isOpen, onClose, initialDestinationId
       if (match) {
         setSelectedZoneId(match.zone.id);
         setSelectedFacilityId(match.facility?.id || null);
+        setActiveFilter("all");
       } else {
         setSelectedZoneId(null);
         setSelectedFacilityId(null);
       }
     } else if (isOpen && !initialDestinationId) {
-      // Default view showing both campus areas
       setSelectedZoneId(null);
       setSelectedFacilityId(null);
+      setActiveFilter("all");
     }
   }, [isOpen, initialDestinationId]);
 
@@ -38,15 +49,17 @@ export default function CampusGuideModal({ isOpen, onClose, initialDestinationId
     return CAMPUS_ZONES.find((z) => z.id === selectedZoneId) || null;
   }, [selectedZoneId]);
 
-  const activeFacility = useMemo(() => {
-    if (!activeZone) return null;
-    return activeZone.facilities.find((f) => f.id === selectedFacilityId) || null;
-  }, [activeZone, selectedFacilityId]);
-
-  // Filter facilities based on search query
+  // Filter facilities based on search query or quick filter
   const searchResults = useMemo(() => {
-    if (!searchQuery.trim()) return [];
-    const q = searchQuery.toLowerCase().trim();
+    let q = searchQuery.toLowerCase().trim();
+    if (!q && activeFilter !== "all") {
+      const filterObj = QUICK_FILTERS.find((f) => f.id === activeFilter);
+      if (filterObj && filterObj.keyword) {
+        q = filterObj.keyword;
+      }
+    }
+
+    if (!q) return [];
     const results = [];
 
     for (const zone of CAMPUS_ZONES) {
@@ -56,6 +69,7 @@ export default function CampusGuideModal({ isOpen, onClose, initialDestinationId
           facility.shortName.toLowerCase().includes(q) ||
           facility.summary.toLowerCase().includes(q) ||
           facility.area.toLowerCase().includes(q) ||
+          (facility.visitorTip && facility.visitorTip.toLowerCase().includes(q)) ||
           facility.highlights.some((h) => h.toLowerCase().includes(q));
 
         if (matches) {
@@ -64,12 +78,13 @@ export default function CampusGuideModal({ isOpen, onClose, initialDestinationId
       }
     }
     return results;
-  }, [searchQuery]);
+  }, [searchQuery, activeFilter]);
 
   const handleSelectFacility = (zoneId, facilityId) => {
     setSelectedZoneId(zoneId);
     setSelectedFacilityId(facilityId);
     setSearchQuery("");
+    setActiveFilter("all");
   };
 
   const handleAskAboutFacility = (facility) => {
@@ -104,23 +119,23 @@ export default function CampusGuideModal({ isOpen, onClose, initialDestinationId
         className="relative w-full max-w-2xl max-h-[90vh] bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800/80 shadow-2xl z-50 flex flex-col overflow-hidden text-slate-900 dark:text-slate-100"
       >
         {/* ========================================================= */}
-        {/* 1. TOP HEADER & SEARCH                                    */}
+        {/* 1. TOP HEADER & VISITOR WELCOME                           */}
         {/* ========================================================= */}
-        <header className="p-4 sm:p-5 border-b border-slate-200/80 dark:border-slate-800/80 bg-slate-50/70 dark:bg-slate-900/60 backdrop-blur-md shrink-0 flex flex-col gap-3">
+        <header className="p-4 sm:p-5 border-b border-slate-200/80 dark:border-slate-800/80 bg-slate-50/80 dark:bg-slate-900/80 backdrop-blur-md shrink-0 flex flex-col gap-3">
           <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-2.5 min-w-0">
-              <div className="w-8 h-8 rounded-xl bg-blue-600 text-white flex items-center justify-center shadow-xs text-sm shrink-0">
-                📍
+              <div className="w-9 h-9 rounded-2xl bg-blue-600 text-white flex items-center justify-center shadow-xs text-base shrink-0">
+                🧭
               </div>
               <div className="min-w-0">
                 <h2 className="font-display font-bold text-sm sm:text-base text-slate-900 dark:text-white tracking-tight flex items-center gap-2 truncate">
-                  <span>GPREC Campus Guide</span>
+                  <span>GPREC Visitor & Campus Guide</span>
                   <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-blue-50 dark:bg-blue-950/80 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
-                    2 Campus Areas
+                    Visitor Edition
                   </span>
                 </h2>
                 <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate">
-                  {GPREC_INFO.name}
+                  {GPREC_INFO.established}
                 </p>
               </div>
             </div>
@@ -134,13 +149,16 @@ export default function CampusGuideModal({ isOpen, onClose, initialDestinationId
             </button>
           </div>
 
-          {/* Quick Facility Search */}
+          {/* Quick Search Bar */}
           <div className="relative">
             <input
               type="text"
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search facilities (e.g. Library, CSM Labs, Food Court, Canteen)..."
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+                if (e.target.value) setActiveFilter("all");
+              }}
+              placeholder="Search venues, labs, canteen, CIE, Wi-Fi, auditorium..."
               className="w-full pl-9 pr-8 py-2 text-xs rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/80 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all"
             />
             <IconSearch className="w-3.5 h-3.5 text-slate-400 absolute left-3.5 top-3" />
@@ -153,32 +171,60 @@ export default function CampusGuideModal({ isOpen, onClose, initialDestinationId
               </button>
             )}
           </div>
+
+          {/* Quick Filter Badges */}
+          <div className="flex items-center gap-1.5 overflow-x-auto pb-0.5 scrollbar-none text-[11px]">
+            {QUICK_FILTERS.map((f) => {
+              const isActive = activeFilter === f.id && !searchQuery;
+              return (
+                <button
+                  key={f.id}
+                  onClick={() => {
+                    setActiveFilter(f.id);
+                    setSearchQuery("");
+                  }}
+                  className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-xl whitespace-nowrap transition cursor-pointer border ${
+                    isActive
+                      ? "bg-blue-600 text-white border-blue-600 font-semibold shadow-xs"
+                      : "bg-white dark:bg-slate-800/80 text-slate-600 dark:text-slate-300 border-slate-200/80 dark:border-slate-700/80 hover:border-blue-400"
+                  }`}
+                >
+                  <span>{f.icon}</span>
+                  <span>{f.label}</span>
+                </button>
+              );
+            })}
+          </div>
         </header>
 
         {/* ========================================================= */}
         {/* 2. BODY CONTENT (SCROLLABLE)                              */}
         {/* ========================================================= */}
         <div className="flex-1 overflow-y-auto p-4 sm:p-5 space-y-4 scrollbar-thin">
-          {/* SEARCH RESULTS VIEW */}
-          {searchQuery.trim() ? (
+          {/* SEARCH / FILTER RESULTS VIEW */}
+          {searchQuery.trim() || activeFilter !== "all" ? (
             <div className="space-y-3 animate-fade-in">
               <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 px-1">
-                <span>Search results for "{searchQuery}"</span>
-                <span>{searchResults.length} found</span>
+                <span>
+                  {searchQuery.trim()
+                    ? `Search results for "${searchQuery}"`
+                    : `Filtered: ${QUICK_FILTERS.find((f) => f.id === activeFilter)?.label}`}
+                </span>
+                <span>{searchResults.length} places found</span>
               </div>
 
               {searchResults.length === 0 ? (
                 <div className="text-center py-10 px-4 bg-slate-50 dark:bg-slate-800/30 rounded-2xl border border-slate-200/60 dark:border-slate-800">
                   <span className="text-2xl">🔍</span>
                   <p className="text-xs font-semibold text-slate-700 dark:text-slate-300 mt-2">
-                    No matching facilities found
+                    No matching venues found
                   </p>
                   <p className="text-[11px] text-slate-400 mt-0.5">
-                    Try searching for "library", "labs", "food", "auditorium", or "sports".
+                    Try searching for "CSM labs", "CIE", "food court", "amphi", or "library".
                   </p>
                 </div>
               ) : (
-                <div className="space-y-2">
+                <div className="space-y-2.5">
                   {searchResults.map(({ zone, facility }) => (
                     <button
                       key={facility.id}
@@ -186,7 +232,7 @@ export default function CampusGuideModal({ isOpen, onClose, initialDestinationId
                       className="w-full p-3.5 rounded-2xl border border-slate-200/80 dark:border-slate-800/80 bg-white dark:bg-slate-800/60 hover:border-blue-400 dark:hover:border-blue-500 text-left transition flex items-start justify-between gap-3 group cursor-pointer shadow-xs"
                     >
                       <div className="flex items-start gap-3 min-w-0">
-                        <span className="text-lg p-1.5 rounded-xl bg-slate-100 dark:bg-slate-700 shrink-0">
+                        <span className="text-lg p-2 rounded-xl bg-slate-100 dark:bg-slate-700 shrink-0">
                           {facility.icon}
                         </span>
                         <div className="min-w-0">
@@ -194,11 +240,16 @@ export default function CampusGuideModal({ isOpen, onClose, initialDestinationId
                             <h4 className="text-xs font-bold text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                               {facility.name}
                             </h4>
-                            <span className="text-[9px] font-semibold px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300">
-                              {zone.shortName}
+                            <span className="text-[9px] font-semibold px-2 py-0.5 rounded-full bg-blue-50 dark:bg-blue-950 text-blue-700 dark:text-blue-300 border border-blue-200/60 dark:border-blue-800/60">
+                              {facility.badge || zone.shortName}
                             </span>
                           </div>
-                          <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 line-clamp-2">
+                          {facility.visitorTip && (
+                            <p className="text-[11px] text-amber-700 dark:text-amber-300 mt-1 font-medium line-clamp-2 bg-amber-50/80 dark:bg-amber-950/40 px-2 py-1 rounded-lg border border-amber-200/40 dark:border-amber-800/40">
+                              💡 {facility.visitorTip}
+                            </p>
+                          )}
+                          <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1 line-clamp-2">
                             {facility.summary}
                           </p>
                         </div>
@@ -212,11 +263,61 @@ export default function CampusGuideModal({ isOpen, onClose, initialDestinationId
               )}
             </div>
           ) : (
-            /* DEFAULT VISUAL MINI CAMPUS GUIDE */
+            /* DEFAULT VISITOR-CENTRIC CAMPUS OVERVIEW */
             <div className="space-y-4">
+              {/* GPREC Campus Welcome Banner */}
+              <div className="p-3.5 rounded-2xl bg-gradient-to-r from-blue-50/90 via-indigo-50/50 to-blue-50/90 dark:from-slate-800/90 dark:via-blue-950/30 dark:to-slate-800/90 border border-blue-200/70 dark:border-blue-800/60 shadow-xs space-y-2">
+                <div className="flex items-start justify-between gap-2">
+                  <div className="flex items-center gap-2">
+                    <span className="text-base">🏛️</span>
+                    <div>
+                      <h3 className="font-display font-bold text-xs sm:text-sm text-slate-900 dark:text-white">
+                        Visiting GPREC for CodeX, Hackathons or Fests?
+                      </h3>
+                      <p className="text-[11px] text-slate-600 dark:text-slate-300 mt-0.5 leading-relaxed">
+                        {GPREC_INFO.visitorHighlight}
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => setShowOverview(!showOverview)}
+                    className="text-[10px] font-semibold text-blue-600 dark:text-blue-400 hover:underline shrink-0 pt-0.5 cursor-pointer"
+                  >
+                    {showOverview ? "Less ▲" : "Key Facts ▼"}
+                  </button>
+                </div>
+
+                {/* Collapsible Key Facts for Outsiders */}
+                <AnimatePresence>
+                  {showOverview && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: "auto" }}
+                      exit={{ opacity: 0, height: 0 }}
+                      className="pt-2 border-t border-blue-200/60 dark:border-blue-900/60 text-[11px] space-y-1.5 text-slate-700 dark:text-slate-300"
+                    >
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        <div className="p-2 rounded-xl bg-white/80 dark:bg-slate-900/60 border border-blue-100 dark:border-slate-800">
+                          <span className="font-bold text-blue-600 dark:text-blue-400 block">
+                            📍 Getting Here
+                          </span>
+                          <span>~6.5 km from Kurnool Railway Station & 5 km from APSRTC New Bus Stand. Autos available 24/7.</span>
+                        </div>
+                        <div className="p-2 rounded-xl bg-white/80 dark:bg-slate-900/60 border border-blue-100 dark:border-slate-800">
+                          <span className="font-bold text-blue-600 dark:text-blue-400 block">
+                            📶 Connectivity & Wi-Fi
+                          </span>
+                          <span>1 Gbps campus fiber with high-speed dual-band Wi-Fi across all lab floors & food court.</span>
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+
               {/* Illustrated Mini Campus Stage */}
               <div className="relative rounded-3xl p-4 sm:p-5 bg-gradient-to-b from-slate-100/90 via-slate-50 to-blue-50/40 dark:from-slate-800/60 dark:via-slate-900/60 dark:to-blue-950/20 border border-slate-200/80 dark:border-slate-800/80 overflow-hidden shadow-sm">
-                {/* Background Campus Grid / Landscape Texture */}
+                {/* Background Campus Grid Texture */}
                 <div className="absolute inset-0 bg-[radial-gradient(#94a3b8_1px,transparent_1px)] dark:bg-[radial-gradient(#334155_1px,transparent_1px)] [background-size:16px_16px] opacity-40 pointer-events-none" />
 
                 {/* Sub-header Banner */}
@@ -224,11 +325,11 @@ export default function CampusGuideModal({ isOpen, onClose, initialDestinationId
                   <div className="flex items-center gap-2">
                     <span className="w-2 h-2 rounded-full bg-blue-500 animate-ping" />
                     <span className="text-[11px] font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300">
-                      GPREC Campus Layout
+                      GPREC Campus Zones
                     </span>
                   </div>
                   <span className="text-[10px] text-slate-400 font-medium">
-                    Select an area to explore
+                    Tap a zone to see visitor details
                   </span>
                 </div>
 
@@ -297,7 +398,7 @@ export default function CampusGuideModal({ isOpen, onClose, initialDestinationId
                               : "border-slate-100 dark:border-slate-700/60 text-blue-600 dark:text-blue-400"
                           }`}
                         >
-                          <span>{zone.facilities.length} Verified Facilities</span>
+                          <span>{zone.facilities.length} Key Venues & Hubs</span>
                           <span>{isSelected ? "Active ✓" : "Explore →"}</span>
                         </div>
                       </motion.button>
@@ -307,9 +408,9 @@ export default function CampusGuideModal({ isOpen, onClose, initialDestinationId
 
                 {/* Illustrated Pedestrian Connector Walkway */}
                 <div className="relative z-10 mt-3 pt-2 flex items-center justify-center gap-2 text-[10px] font-medium text-slate-400 dark:text-slate-500">
-                  <span>🏛️ Academic Quadrangle</span>
-                  <span className="font-mono text-blue-500">┈┈┈ 🌿 Central Campus Walkway ┈┈┈</span>
-                  <span>🌟 Common Amenities</span>
+                  <span>🏛️ Academic & Intel AI Labs</span>
+                  <span className="font-mono text-blue-500">┈┈┈ 🌿 Shaded Central Walkway ┈┈┈</span>
+                  <span>🌟 Auditorium, Food & Amphi</span>
                 </div>
               </div>
 
@@ -323,10 +424,10 @@ export default function CampusGuideModal({ isOpen, onClose, initialDestinationId
                     <div>
                       <h3 className="font-display font-bold text-sm text-slate-900 dark:text-white flex items-center gap-2">
                         <span>{activeZone.icon}</span>
-                        <span>{activeZone.name} Facilities</span>
+                        <span>{activeZone.name}</span>
                       </h3>
                       <p className="text-[11px] text-slate-500 dark:text-slate-400">
-                        {activeZone.tagline}
+                        {activeZone.overview}
                       </p>
                     </div>
 
@@ -403,13 +504,24 @@ export default function CampusGuideModal({ isOpen, onClose, initialDestinationId
                                 transition={{ duration: 0.15 }}
                                 className="px-3 pb-3 pt-0 border-t border-blue-100 dark:border-blue-900/40 text-xs space-y-2.5"
                               >
-                                <p className="text-slate-600 dark:text-slate-300 mt-2 leading-relaxed text-[11px]">
+                                {/* What You Should Know Callout */}
+                                {fac.visitorTip && (
+                                  <div className="p-2.5 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200/60 dark:border-amber-800/40 mt-2 text-slate-800 dark:text-amber-200 text-[11px] leading-relaxed">
+                                    <span className="font-bold text-amber-900 dark:text-amber-300 block mb-0.5 flex items-center gap-1">
+                                      <span>💡</span>
+                                      <span>What You Should Know</span>
+                                    </span>
+                                    {fac.visitorTip}
+                                  </div>
+                                )}
+
+                                <p className="text-slate-600 dark:text-slate-300 leading-relaxed text-[11px]">
                                   {fac.summary}
                                 </p>
 
                                 <div className="space-y-1 bg-white/80 dark:bg-slate-900/60 p-2.5 rounded-xl border border-blue-100/60 dark:border-slate-800">
                                   <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-1">
-                                    Verified Highlights
+                                    Highlights & Amenities
                                   </span>
                                   {fac.highlights.map((h, i) => (
                                     <div
@@ -424,7 +536,7 @@ export default function CampusGuideModal({ isOpen, onClose, initialDestinationId
 
                                 <div className="flex items-center justify-between pt-1">
                                   <span className="text-[10px] text-slate-400">
-                                    Official GPREC verified data
+                                    Official GPREC verified guide
                                   </span>
                                   <button
                                     type="button"
@@ -444,13 +556,13 @@ export default function CampusGuideModal({ isOpen, onClose, initialDestinationId
                   </div>
                 </div>
               ) : (
-                /* QUICK OVERVIEW WHEN NO ZONE IS SELECTED */
+                /* QUICK OVERVIEW HELPER WHEN NO ZONE IS SELECTED */
                 <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200/60 dark:border-slate-800 text-center space-y-1 text-xs">
                   <p className="font-semibold text-slate-800 dark:text-slate-200">
-                    💡 Click either <strong className="text-blue-600 dark:text-blue-400">Academic Area</strong> or <strong className="text-emerald-600 dark:text-emerald-400">Student & Common Facilities</strong> above.
+                    💡 Click either <strong className="text-blue-600 dark:text-blue-400">Academic & Tech Hub</strong> or <strong className="text-emerald-600 dark:text-emerald-400">Student Life & Venues</strong> above.
                   </p>
                   <p className="text-[11px] text-slate-500 dark:text-slate-400">
-                    Discover department blocks, computer labs, dining hubs, library resources, and event venues.
+                    Discover Intel AI labs, Coders' Club hub, CIE incubation, Silver Jubilee Auditorium, Food Court, Canteen, and Amphi.
                   </p>
                 </div>
               )}
@@ -461,10 +573,10 @@ export default function CampusGuideModal({ isOpen, onClose, initialDestinationId
         {/* ========================================================= */}
         {/* 4. MODAL FOOTER                                           */}
         {/* ========================================================= */}
-        <footer className="p-3.5 sm:p-4 border-t border-slate-200/80 dark:border-slate-800/80 bg-slate-50/70 dark:bg-slate-900/60 backdrop-blur-md flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 shrink-0">
+        <footer className="p-3.5 sm:p-4 border-t border-slate-200/80 dark:border-slate-800/80 bg-slate-50/80 dark:bg-slate-900/80 backdrop-blur-md flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 shrink-0">
           <div className="flex items-center gap-1.5 truncate">
             <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" />
-            <span className="truncate">GPREC Campus Guide • Official Portal</span>
+            <span className="truncate">GPREC Campus Guide • Coders' Club GPREC</span>
           </div>
 
           <a
