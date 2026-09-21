@@ -9,6 +9,7 @@ import { useChatStore } from "../../store/chatStore.js";
 
 export default function ChatWindow({ variant = "widget", onOpenEventGuide }) {
   const openMap = useChatStore((s) => s.openMap);
+  const stopStreaming = useChatStore((s) => s.stopStreaming);
   const {
     messages,
     isStreaming,
@@ -245,20 +246,32 @@ export default function ChatWindow({ variant = "widget", onOpenEventGuide }) {
             />
           </div>
 
-          <button
-            onClick={() => handleSend()}
-            disabled={isStreaming || !input.trim()}
-            aria-label="Send query"
-            className="inline-flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 rounded-xl text-white bg-primary-600 hover:bg-primary-700 active:bg-primary-800 disabled:opacity-30 disabled:pointer-events-none shadow-sm shadow-primary-500/30 transition-all focus:outline-none shrink-0"
-          >
-            {isStreaming ? (
-              <span className="w-3.5 h-3.5 sm:w-4 sm:h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-            ) : (
+          {isStreaming ? (
+            // Stop button — shown while AI is responding
+            <button
+              onClick={stopStreaming}
+              aria-label="Stop response"
+              title="Stop response"
+              className="inline-flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 rounded-xl text-white bg-red-500 hover:bg-red-600 active:bg-red-700 shadow-sm shadow-red-500/30 transition-all focus:outline-none shrink-0"
+            >
+              {/* Stop square icon */}
+              <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4" viewBox="0 0 24 24" fill="currentColor">
+                <rect x="5" y="5" width="14" height="14" rx="2" />
+              </svg>
+            </button>
+          ) : (
+            // Send button — shown when idle
+            <button
+              onClick={() => handleSend()}
+              disabled={!input.trim()}
+              aria-label="Send query"
+              className="inline-flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 rounded-xl text-white bg-primary-600 hover:bg-primary-700 active:bg-primary-800 disabled:opacity-30 disabled:pointer-events-none shadow-sm shadow-primary-500/30 transition-all focus:outline-none shrink-0"
+            >
               <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
               </svg>
-            )}
-          </button>
+            </button>
+          )}
         </div>
 
         {/* Clean desktop footer info */}

@@ -4,7 +4,7 @@ const TILES = [
   {
     icon: "🏆",
     title: "Prizes & Perks",
-    desc: "₹1,50,000 prize pool, certificates & internships",
+    desc: "₹50,000 prize pool, certificates & internships",
     badge: "Rewards",
     badgeColor: "bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 border-amber-200 dark:border-amber-800",
     query: "What are the prizes and perks for CodeX 4.0?",

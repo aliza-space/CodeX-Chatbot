@@ -1,11 +1,14 @@
 import axios from "axios";
 import { useAuthStore } from "../store/authStore.js";
+import { getApiBaseUrl } from "./apiUrl.js";
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || "http://localhost:5000",
+  baseURL: getApiBaseUrl(),
 });
 
 api.interceptors.request.use((config) => {
+  // Ensure requests made from another Wi-Fi device use the correct host IP
+  config.baseURL = getApiBaseUrl();
   const token = useAuthStore.getState().token;
   if (token) config.headers.Authorization = `Bearer ${token}`;
   return config;

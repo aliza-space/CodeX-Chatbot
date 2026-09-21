@@ -101,8 +101,8 @@ export default function AdminDashboard() {
           <div className="space-y-6">
             {tab === "Overview" && (
               <>
-                <AnalyticsCards analytics={analytics} />
-                <div className="rounded-2xl p-5 border border-slate-200/90 dark:border-slate-800/90 bg-white dark:bg-slate-900 shadow-sm">
+                <AnalyticsCards analytics={analytics} onRefresh={refresh} />
+                <div className="rounded-2xl p-4 sm:p-5 border border-slate-200/90 dark:border-slate-800/90 bg-white dark:bg-slate-900 shadow-sm">
                   <div className="flex items-center justify-between mb-4">
                     <h2 className="font-display font-bold text-base text-slate-900 dark:text-white">
                       Unanswered Questions Log

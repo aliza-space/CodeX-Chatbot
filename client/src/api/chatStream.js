@@ -2,6 +2,8 @@
 // + Authorization header), so the browser's native EventSource won't work — it
 // only supports GET. We parse the SSE stream manually from a fetch() response.
 
+import { getApiBaseUrl } from "./apiUrl.js";
+
 export async function streamChatMessage({
   message,
   conversationId,
@@ -13,7 +15,7 @@ export async function streamChatMessage({
   onError,
   signal,
 }) {
-  const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000";
+  const apiUrl = getApiBaseUrl();
 
   // Only include conversationId/guestSessionId when they're real values —
   // sending explicit `null` fails backend validation, which expects the
@@ -43,31 +45,38 @@ export async function streamChatMessage({
   let buffer = "";
   let currentEvent = "message";
 
-  while (true) {
-    const { done, value } = await reader.read();
-    if (done) break;
-    buffer += decoder.decode(value, { stream: true });
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      buffer += decoder.decode(value, { stream: true });
 
-    const lines = buffer.split("\n");
-    buffer = lines.pop(); // keep incomplete line for next chunk
+      const lines = buffer.split("\n");
+      buffer = lines.pop(); // keep incomplete line for next chunk
 
-    for (const line of lines) {
-      if (line.startsWith("event: ")) {
-        currentEvent = line.slice(7).trim();
-      } else if (line.startsWith("data: ")) {
-        const raw = line.slice(6).trim();
-        if (!raw) continue;
-        let data;
-        try {
-          data = JSON.parse(raw);
-        } catch {
-          continue;
+      for (const line of lines) {
+        if (line.startsWith("event: ")) {
+          currentEvent = line.slice(7).trim();
+        } else if (line.startsWith("data: ")) {
+          const raw = line.slice(6).trim();
+          if (!raw) continue;
+          let data;
+          try {
+            data = JSON.parse(raw);
+          } catch {
+            continue;
+          }
+          if (currentEvent === "meta") onMeta?.(data);
+          else if (currentEvent === "token") onToken?.(data.token);
+          else if (currentEvent === "final") onFinal?.(data);
+          else if (currentEvent === "error") onError?.(data.message);
         }
-        if (currentEvent === "meta") onMeta?.(data);
-        else if (currentEvent === "token") onToken?.(data.token);
-        else if (currentEvent === "final") onFinal?.(data);
-        else if (currentEvent === "error") onError?.(data.message);
       }
     }
+  } catch (err) {
+    // AbortError is expected when the user clicks Stop — re-throw so the
+    // caller (chatStore.sendMessage) can recognise it and swallow it cleanly.
+    reader.cancel().catch(() => {});
+    throw err;
   }
 }

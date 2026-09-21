@@ -21,6 +21,7 @@ export const useChatStore = create((set, get) => ({
   historyLoading: false,
   isMapOpen: false,
   mapDestinationId: null,
+  _abortController: null,
 
   openMap: (destinationId = null) => set({ isMapOpen: true, mapDestinationId: destinationId }),
   closeMap: () => set({ isMapOpen: false, mapDestinationId: null }),
@@ -76,51 +77,104 @@ export const useChatStore = create((set, get) => ({
     }
   },
 
+  // Stop an in-progress stream
+  stopStreaming: () => {
+    const ctrl = get()._abortController;
+    if (ctrl) ctrl.abort();
+    set((state) => ({
+      isStreaming: false,
+      _abortController: null,
+      messages: state.messages.map((m) =>
+        m.streaming
+          ? { ...m, streaming: false, content: m.content || "_(Response stopped by user)_" }
+          : m
+      ),
+    }));
+  },
+
   sendMessage: async (text) => {
     if (!text.trim() || get().isStreaming) return;
+
+    // Create a fresh AbortController for this request
+    const abortController = new AbortController();
 
     const userMsg = { id: `u-${Date.now()}`, role: "user", content: text };
     const assistantId = `a-${Date.now()}`;
     const assistantMsg = { id: assistantId, role: "assistant", content: "", streaming: true, citations: [], suggestions: [] };
 
-    set((state) => ({ messages: [...state.messages, userMsg, assistantMsg], isStreaming: true, error: null }));
+    set((state) => ({
+      messages: [...state.messages, userMsg, assistantMsg],
+      isStreaming: true,
+      error: null,
+      _abortController: abortController,
+    }));
 
     const token = useAuthStore.getState().token;
 
-    await streamChatMessage({
-      message: text,
-      conversationId: get().conversationId,
-      guestSessionId: getGuestSessionId(),
-      token,
-      onMeta: (meta) => {
-        if (meta.conversationId) set({ conversationId: meta.conversationId });
-      },
-      onToken: (token) => {
-        set((state) => ({
-          messages: state.messages.map((m) => (m.id === assistantId ? { ...m, content: m.content + token } : m)),
-        }));
-      },
-      onFinal: (final) => {
+    try {
+      await streamChatMessage({
+        message: text,
+        conversationId: get().conversationId,
+        guestSessionId: getGuestSessionId(),
+        token,
+        signal: abortController.signal,
+        onMeta: (meta) => {
+          if (meta.conversationId) set({ conversationId: meta.conversationId });
+        },
+        onToken: (tok) => {
+          set((state) => ({
+            messages: state.messages.map((m) =>
+              m.id === assistantId ? { ...m, content: m.content + tok } : m
+            ),
+          }));
+        },
+        onFinal: (final) => {
+          set((state) => ({
+            messages: state.messages.map((m) =>
+              m.id === assistantId
+                ? {
+                    ...m,
+                    streaming: false,
+                    dbId: final.messageId,
+                    citations: final.citations,
+                    suggestions: final.suggestions,
+                    wasAnswered: final.wasAnswered,
+                  }
+                : m
+            ),
+            isStreaming: false,
+            _abortController: null,
+          }));
+          get().fetchConversations();
+        },
+        onError: (message) => {
+          set((state) => ({
+            messages: state.messages.map((m) =>
+              m.id === assistantId
+                ? { ...m, streaming: false, content: m.content || "Something went wrong. Please try again." }
+                : m
+            ),
+            isStreaming: false,
+            _abortController: null,
+            error: message,
+          }));
+        },
+      });
+    } catch (err) {
+      // AbortError is expected when the user clicks Stop — swallow silently
+      if (err?.name !== "AbortError") {
         set((state) => ({
           messages: state.messages.map((m) =>
             m.id === assistantId
-              ? { ...m, streaming: false, dbId: final.messageId, citations: final.citations, suggestions: final.suggestions, wasAnswered: final.wasAnswered }
+              ? { ...m, streaming: false, content: m.content || "Something went wrong. Please try again." }
               : m
           ),
           isStreaming: false,
+          _abortController: null,
+          error: err?.message,
         }));
-        get().fetchConversations();
-      },
-      onError: (message) => {
-        set((state) => ({
-          messages: state.messages.map((m) =>
-            m.id === assistantId ? { ...m, streaming: false, content: m.content || "Something went wrong. Please try again." } : m
-          ),
-          isStreaming: false,
-          error: message,
-        }));
-      },
-    });
+      }
+    }
   },
 
   regenerate: (userText) => get().sendMessage(userText),

@@ -92,35 +92,40 @@ export default function MessageBubble({ message, onRegenerate, onPickSuggestion 
           )}
 
           {/* Intelligent Campus Map Trigger when locations are discussed */}
-          {!isUser && !message.streaming && message.content && /(cafeteria|canteen|food court|library|amphitheatre|amphi|auditorium|csm lab|campus map|directions|where is|hostel|stadium|ground|admin|atm|health)/i.test(message.content) && (
-            <div className="mt-2 pt-2 border-t border-slate-100 dark:border-slate-800/80">
-              <button
-                type="button"
-                onClick={() => {
-                  let dest = null;
-                  const c = message.content.toLowerCase();
-                  if (c.includes("food court")) dest = "food-court";
-                  else if (c.includes("cafeteria") || c.includes("canteen")) dest = "cafeteria";
-                  else if (c.includes("library")) dest = "central-library";
-                  else if (c.includes("amphi")) dest = "amphitheatre";
-                  else if (c.includes("auditorium")) dest = "auditorium";
-                  else if (c.includes("csm department") || c.includes("aiml department") || c.includes("ai & ml department") || c.includes("ai and ml")) dest = "csm-department";
-                  else if (c.includes("csm")) dest = "csm-labs";
-                  else if (c.includes("girls hostel")) dest = "girls-hostel";
-                  else if (c.includes("boys hostel") || c.includes("hostel")) dest = "boys-hostel";
-                  else if (c.includes("stadium") || c.includes("gym")) dest = "indoor-stadium";
-                  else if (c.includes("ground") || c.includes("cricket")) dest = "sports-ground";
-                  else if (c.includes("admin") || c.includes("principal")) dest = "admin-block";
-                  else if (c.includes("atm") || c.includes("health") || c.includes("doctor")) dest = "atm-health";
-                  openMap(dest);
-                }}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold text-primary-700 dark:text-primary-300 bg-primary-50 dark:bg-primary-950/60 border border-primary-200 dark:border-primary-800/80 hover:bg-primary-100 dark:hover:bg-primary-900/60 transition-all shadow-sm active:scale-95"
-              >
-                <span>🗺️</span>
-                <span>Open GPREC Campus Map & Live GPS</span>
-              </button>
-            </div>
-          )}
+          {!isUser && !message.streaming && message.content && /(cafeteria|canteen|food court|library|amphitheatre|amphi|auditorium|csm lab|csm department|campus map|directions|where is|navigate|location|hostel|stadium|ground|admin|atm|health)/i.test(message.content) && (() => {
+            const c = message.content.toLowerCase();
+            let destId = "csm-labs";
+            let label = "GPREC Campus Map";
+            let icon = "🗺️";
+
+            if (c.includes("food court")) { destId = "food-court"; label = "Food Court"; icon = "🍕"; }
+            else if (c.includes("cafeteria") || c.includes("canteen")) { destId = "cafeteria"; label = "Main Cafeteria"; icon = "🍽️"; }
+            else if (c.includes("library")) { destId = "central-library"; label = "Central Library"; icon = "📚"; }
+            else if (c.includes("amphi")) { destId = "amphitheatre"; label = "Amphitheatre"; icon = "🎪"; }
+            else if (c.includes("auditorium")) { destId = "auditorium"; label = "Central Auditorium"; icon = "🎭"; }
+            else if (c.includes("csm department") || c.includes("aiml department") || c.includes("ai & ml department")) { destId = "csm-department"; label = "CSM Department"; icon = "🏢"; }
+            else if (c.includes("csm") || c.includes("hackathon hub") || c.includes("intel")) { destId = "csm-labs"; label = "CSM Labs (Hackathon Hub)"; icon = "💻"; }
+            else if (c.includes("girls hostel")) { destId = "girls-hostel"; label = "Girls Hostel"; icon = "🏡"; }
+            else if (c.includes("boys hostel") || c.includes("hostel")) { destId = "boys-hostel"; label = "Boys Hostel"; icon = "🏢"; }
+            else if (c.includes("stadium") || c.includes("gym")) { destId = "indoor-stadium"; label = "Indoor Stadium"; icon = "🏸"; }
+            else if (c.includes("ground") || c.includes("cricket")) { destId = "sports-ground"; label = "Sports Ground"; icon = "🏏"; }
+            else if (c.includes("admin") || c.includes("principal")) { destId = "admin-block"; label = "Admin Block"; icon = "🏛️"; }
+            else if (c.includes("atm") || c.includes("health") || c.includes("doctor")) { destId = "atm-health"; label = "ATM & Dispensary"; icon = "🏥"; }
+            else { destId = null; label = "Campus Map & Wayfinding"; icon = "🗺️"; }
+
+            return (
+              <div className="mt-2.5 pt-2.5 border-t border-slate-100 dark:border-slate-800/80 flex flex-wrap items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => openMap(destId)}
+                  className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-primary-600 to-indigo-600 hover:from-primary-700 hover:to-indigo-700 shadow-sm shadow-primary-500/20 active:scale-95 transition-all cursor-pointer"
+                >
+                  <span className="text-sm">{icon}</span>
+                  <span>Open {label} with Live Compass ➔</span>
+                </button>
+              </div>
+            );
+          })()}
 
           {/* Feedback & Actions */}
           {!isUser && !message.streaming && message.content && (

@@ -2,6 +2,10 @@ import { useState, useEffect, useRef, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
+import { useCompass } from "../../hooks/useCompass.js";
+import CompassHUD from "./CompassHUD.jsx";
+import WhereAmIPanel from "./WhereAmIPanel.jsx";
+import TurnByTurnPanel from "./TurnByTurnPanel.jsx";
 
 // Official GPREC Kurnool Campus Location
 export const GPREC_CAMPUS = {
@@ -395,6 +399,12 @@ export default function CampusMapModal({ isOpen, onClose, initialDestinationId }
   const [searchQuery, setSearchQuery] = useState("");
   const [showPlacesDrawer, setShowPlacesDrawer] = useState(false);
   const [selectedFloorTab, setSelectedFloorTab] = useState("2nd Floor"); // Default to 2nd Floor (Hackathon Hub)
+
+  // Smart Campus Navigation States
+  const compass = useCompass();
+  const [showWhereAmI, setShowWhereAmI] = useState(false);
+  const [showTurnByTurn, setShowTurnByTurn] = useState(true);
+  const [showCompass, setShowCompass] = useState(true);
 
   // Active Map Layer: "roadmap" (Google Road) | "satellite" (Google Hybrid) | "terrain" (Google Terrain) | "osm" (OpenStreetMap)
   const [mapLayerType, setMapLayerType] = useState("roadmap");
@@ -1340,6 +1350,47 @@ export default function CampusMapModal({ isOpen, onClose, initialDestinationId }
                 </div>
               </div>
 
+              {/* Smart Campus Tools: Where Am I Radar + Compass HUD + Landmark Cues */}
+              <div className="flex items-center gap-1.5 overflow-x-auto pb-0.5 scrollbar-none">
+                <button
+                  type="button"
+                  onClick={() => setShowWhereAmI(true)}
+                  className="px-2.5 py-1 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-bold text-[11px] flex items-center gap-1 shadow-sm active:scale-95 transition cursor-pointer"
+                  title="Scan closest buildings and venues relative to your current location"
+                >
+                  <span>📍</span>
+                  <span>Where Am I?</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setShowCompass(!showCompass)}
+                  className={`px-2.5 py-1 rounded-xl font-bold text-[11px] flex items-center gap-1 transition-all border cursor-pointer ${
+                    showCompass
+                      ? "bg-slate-900 text-white border-slate-700 shadow-sm"
+                      : "bg-white text-slate-700 border-slate-200 hover:bg-slate-50"
+                  }`}
+                  title="Toggle Direction Compass Pointer HUD"
+                >
+                  <span>🧭</span>
+                  <span>Compass</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setShowTurnByTurn(!showTurnByTurn)}
+                  className={`px-2.5 py-1 rounded-xl font-bold text-[11px] flex items-center gap-1 transition-all border cursor-pointer ${
+                    showTurnByTurn
+                      ? "bg-primary-600 text-white border-primary-700 shadow-sm"
+                      : "bg-white text-slate-700 border-slate-200 hover:bg-slate-50"
+                  }`}
+                  title="Toggle Landmark Turn-by-Turn walking instructions"
+                >
+                  <span>🚶</span>
+                  <span>Landmark Cues</span>
+                </button>
+              </div>
+
               {/* ⚡ INSTANT DESTINATION SWITCHER PILLS (Clicking immediately reflects and changes destination!) */}
               <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none">
                 {CAMPUS_DESTINATIONS.map((dest) => {
@@ -1740,6 +1791,49 @@ export default function CampusMapModal({ isOpen, onClose, initialDestinationId }
                 </motion.div>
               )}
             </AnimatePresence>
+
+            {/* Smart Campus AR Compass HUD */}
+            {showCompass && selectedDest && (
+              <CompassHUD
+                userLat={activeStartPoint.lat}
+                userLng={activeStartPoint.lng}
+                destLat={selectedDest.lat}
+                destLng={selectedDest.lng}
+                destName={selectedDest.shortName || selectedDest.name}
+                destIcon={selectedDest.icon}
+                distanceMeters={liveRemainingMeters}
+                heading={compass.heading}
+                isSupported={compass.isSupported}
+                permissionState={compass.permissionState}
+                onRequestPermission={compass.requestPermission}
+              />
+            )}
+
+            {/* Smart Landmark-Based Turn-by-Turn Panel */}
+            <AnimatePresence>
+              {showTurnByTurn && selectedDest && (
+                <TurnByTurnPanel
+                  destId={selectedDest.id}
+                  destName={selectedDest.name}
+                  onSpeakInstruction={speakInstruction}
+                  onClose={() => setShowTurnByTurn(false)}
+                />
+              )}
+            </AnimatePresence>
+
+            {/* "Where Am I?" Live Proximity Scanner Panel */}
+            <WhereAmIPanel
+              isOpen={showWhereAmI}
+              onClose={() => setShowWhereAmI(false)}
+              userLat={activeStartPoint.lat}
+              userLng={activeStartPoint.lng}
+              isRealGps={userLocation.isReal}
+              destinations={CAMPUS_DESTINATIONS}
+              onSelectDestination={(dest) => {
+                handleSelectDestination(dest);
+                setShowWhereAmI(false);
+              }}
+            />
           </div>
         </motion.div>
       </div>

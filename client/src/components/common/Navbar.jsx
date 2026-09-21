@@ -45,10 +45,10 @@ export default function Navbar() {
               type="button"
               onClick={() => openMap()}
               title="GPREC Campus Map & Live Directions"
-              className="inline-flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-200 bg-slate-100 dark:bg-slate-800/90 hover:bg-slate-200 dark:hover:bg-slate-700/80 border border-slate-200/80 dark:border-slate-700/80 transition-all shadow-sm active:scale-95"
+              className="inline-flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-200 bg-slate-100 dark:bg-slate-800/90 hover:bg-slate-200 dark:hover:bg-slate-700/80 border border-slate-200/80 dark:border-slate-700/80 transition-all shadow-sm active:scale-95 shrink-0"
             >
               <span className="text-sm">🗺️</span>
-              <span className="hidden xs:inline">Campus Map</span>
+              <span className="hidden sm:inline">Campus Map</span>
             </button>
 
             <ThemeToggle />

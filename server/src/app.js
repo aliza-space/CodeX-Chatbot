@@ -14,8 +14,33 @@ import announcementRoutes from "./routes/announcement.routes.js";
 
 const app = express();
 
-app.use(helmet());
-app.use(cors({ origin: env.CLIENT_URL, credentials: true }));
+const isAllowedOrigin = (origin) => {
+  if (!origin) return true;
+  if (origin === env.CLIENT_URL) return true;
+  if (/^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin)) return true;
+  if (/^http:\/\/(192\.168\.\d+\.\d+|10\.\d+\.\d+\.\d+|172\.(1[6-9]|2\d|3[0-1])\.\d+\.\d+)(:\d+)?$/.test(origin)) return true;
+  if (env.NODE_ENV === "development") return true;
+  return false;
+};
+
+app.use(
+  helmet({
+    crossOriginResourcePolicy: { policy: "cross-origin" },
+  })
+);
+
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      if (isAllowedOrigin(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error(`CORS blocked for origin: ${origin}`));
+      }
+    },
+    credentials: true,
+  })
+);
 app.use(express.json({ limit: "2mb" }));
 
 app.get("/health", (req, res) => res.json({ status: "ok", time: new Date().toISOString() }));
