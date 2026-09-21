@@ -396,22 +396,25 @@ export default function CampusMapModal({ isOpen, onClose, initialDestinationId }
   const [showPlacesDrawer, setShowPlacesDrawer] = useState(false);
   const [selectedFloorTab, setSelectedFloorTab] = useState("2nd Floor"); // Default to 2nd Floor (Hackathon Hub)
 
-  // Active Map Layer: "voyager" | "satellite" | "roadmap" | "osm"
-  const [mapLayerType, setMapLayerType] = useState("voyager");
+  // Active Map Layer: "roadmap" (Google Road) | "satellite" (Google Hybrid) | "terrain" (Google Terrain) | "osm" (OpenStreetMap)
+  const [mapLayerType, setMapLayerType] = useState("roadmap");
   const [showLayerMenu, setShowLayerMenu] = useState(false);
 
   // Travel Mode: "drive" | "bike" | "walk"
-  const [travelMode, setTravelMode] = useState("drive");
+  const [travelMode, setTravelMode] = useState("walk");
 
   // User's Real Live Location
   const [userLocation, setUserLocation] = useState({
-    lat: 15.8255,
-    lng: 78.0267,
+    lat: 15.7760,
+    lng: 78.0564,
     isReal: false,
   });
 
-  // Origin: "gps" (User's location in Kurnool) or "gate" (GPREC Main Gate)
-  const [originMode, setOriginMode] = useState("gps");
+  // GPS Status: "idle" | "requesting" | "active" | "denied"
+  const [gpsStatus, setGpsStatus] = useState("idle");
+
+  // Origin: "gps" (User's location) or "gate" (GPREC Main Gate)
+  const [originMode, setOriginMode] = useState("gate");
 
   // Route points & statistics
   const [routeData, setRouteData] = useState({
@@ -458,46 +461,72 @@ export default function CampusMapModal({ isOpen, onClose, initialDestinationId }
     }
   };
 
-  // High-reliability Tile URLs (Accurate GPREC Campus roads & satellite)
+  // 100% Authentic Google Maps & Clean OSM Tile URLs (Zero Watermarks)
   const TILE_URLS = {
-    voyager: "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png",
-    satellite: "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
     roadmap: "https://mt{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}",
+    satellite: "https://mt{s}.google.com/vt/lyrs=y&x={x}&y={y}&z={z}",
+    terrain: "https://mt{s}.google.com/vt/lyrs=p&x={x}&y={y}&z={z}",
     osm: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
   };
 
-  // 1. Immediately request user's LIVE GPS Location on mount
+  // Request & track user's real live GPS location
+  const requestLiveLocation = () => {
+    if (!navigator.geolocation) {
+      setGpsStatus("denied");
+      return;
+    }
+    setGpsStatus("requesting");
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const coords = {
+          lat: pos.coords.latitude,
+          lng: pos.coords.longitude,
+          isReal: true,
+          accuracy: Math.round(pos.coords.accuracy || 10),
+        };
+        setUserLocation(coords);
+        setOriginMode("gps");
+        setGpsStatus("active");
+
+        const dist = calculateDistanceMeters(coords.lat, coords.lng, GPREC_CAMPUS.lat, GPREC_CAMPUS.lng);
+        if (dist < 800) {
+          setTravelMode("walk");
+        } else if (dist < 4000) {
+          setTravelMode("bike");
+        } else {
+          setTravelMode("drive");
+        }
+
+        if (mapInstanceRef.current) {
+          mapInstanceRef.current.flyTo([coords.lat, coords.lng], 17, { duration: 0.8 });
+        }
+        speakInstruction("GPS location detected. Centering on your location.");
+      },
+      (err) => {
+        console.warn("GPS detection error:", err.message);
+        setGpsStatus("denied");
+        setOriginMode("gate");
+      },
+      { enableHighAccuracy: true, timeout: 9000, maximumAge: 0 }
+    );
+  };
+
+  // 1. Request user's LIVE GPS Location on mount & watch movement
   useEffect(() => {
     if (!isOpen) return;
 
+    requestLiveLocation();
+
     if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (pos) => {
-          const coords = {
-            lat: pos.coords.latitude,
-            lng: pos.coords.longitude,
-            isReal: true,
-          };
-          setUserLocation(coords);
-
-          const dist = calculateDistanceMeters(coords.lat, coords.lng, GPREC_CAMPUS.lat, GPREC_CAMPUS.lng);
-          if (dist < 600) {
-            setTravelMode("walk");
-          } else {
-            setTravelMode("drive");
-          }
-        },
-        (err) => console.warn("GPS error:", err.message),
-        { enableHighAccuracy: true, timeout: 8000 }
-      );
-
       watchIdRef.current = navigator.geolocation.watchPosition(
         (pos) => {
           setUserLocation({
             lat: pos.coords.latitude,
             lng: pos.coords.longitude,
             isReal: true,
+            accuracy: Math.round(pos.coords.accuracy || 10),
           });
+          setGpsStatus("active");
         },
         null,
         { enableHighAccuracy: true, maximumAge: 3000 }
@@ -511,17 +540,17 @@ export default function CampusMapModal({ isOpen, onClose, initialDestinationId }
 
   // Active starting coordinate
   const activeStartPoint = useMemo(() => {
-    if (originMode === "gate") {
+    if (originMode === "gate" || !userLocation.isReal) {
       return { lat: GPREC_CAMPUS.gateLat, lng: GPREC_CAMPUS.gateLng, label: "GPREC Main Gate" };
     }
     return {
       lat: userLocation.lat,
       lng: userLocation.lng,
-      label: userLocation.isReal ? "Your Live Location" : "Kurnool (Your Location)",
+      label: "Your Live GPS Location",
     };
   }, [originMode, userLocation]);
 
-  // 2. Fetch Real Road Geometry via OSRM with automatic fallback
+  // 2. Fetch Real Road Geometry via OSRM with realistic speed calculations
   useEffect(() => {
     if (!isOpen) return;
 
@@ -541,13 +570,22 @@ export default function CampusMapModal({ isOpen, onClose, initialDestinationId }
         if (data.code === "Ok" && data.routes?.[0] && isMounted) {
           const route = data.routes[0];
           const latLngs = route.geometry.coordinates.map((c) => [c[1], c[0]]);
-          let duration = route.duration;
-          if (travelMode === "bike") duration = duration * 0.82;
+          const distMeters = Math.round(route.distance);
+
+          // Realistic travel durations
+          let durationSecs;
+          if (travelMode === "walk") {
+            durationSecs = Math.round(distMeters / 1.25); // ~4.5 km/h
+          } else if (travelMode === "bike") {
+            durationSecs = Math.round(distMeters / 9.5); // ~34 km/h
+          } else {
+            durationSecs = Math.round(distMeters / 8.3); // ~30 km/h city driving
+          }
 
           setRouteData({
             points: latLngs,
-            distanceMeters: Math.round(route.distance),
-            durationSeconds: Math.round(duration),
+            distanceMeters: distMeters,
+            durationSeconds: durationSecs,
             loading: false,
           });
         } else {
@@ -556,8 +594,14 @@ export default function CampusMapModal({ isOpen, onClose, initialDestinationId }
       } catch {
         if (!isMounted) return;
         const dist = calculateDistanceMeters(start.lat, start.lng, dest.lat, dest.lng);
-        let duration = Math.round(dist / 11);
-        if (travelMode === "walk") duration = Math.round(dist / 1.3);
+        let durationSecs;
+        if (travelMode === "walk") {
+          durationSecs = Math.round(dist / 1.25);
+        } else if (travelMode === "bike") {
+          durationSecs = Math.round(dist / 9.5);
+        } else {
+          durationSecs = Math.round(dist / 8.3);
+        }
 
         setRouteData({
           points: [
@@ -567,7 +611,7 @@ export default function CampusMapModal({ isOpen, onClose, initialDestinationId }
             [dest.lat, dest.lng],
           ],
           distanceMeters: dist,
-          durationSeconds: duration,
+          durationSeconds: durationSecs,
           loading: false,
         });
       }
@@ -607,31 +651,43 @@ export default function CampusMapModal({ isOpen, onClose, initialDestinationId }
       zoomControl: false,
     });
 
-    // Primary Tile Layer with Voyager fallback on error
-    const createTiles = (url, subdomains) => {
+    // Helper to get correct subdomains for each tile provider
+    const getSubdomainsForLayer = (layerKey) => {
+      if (layerKey === "osm") return ["a", "b", "c"];
+      return ["0", "1", "2", "3"];
+    };
+
+    // Primary Tile Layer with clean OSM fallback on error (Zero watermarks!)
+    const createTiles = (layerKey) => {
+      const url = TILE_URLS[layerKey] || TILE_URLS.roadmap;
+      const subdomains = getSubdomainsForLayer(layerKey);
       const layer = L.tileLayer(url, {
-        attribution: '&copy; CartoDB & OpenStreetMap & Google Maps',
+        attribution: '&copy; Google Maps & OpenStreetMap',
         maxZoom: 20,
-        subdomains: subdomains || ["a", "b", "c", "d"],
+        subdomains,
       });
 
       layer.on("tileerror", () => {
-        if (url !== TILE_URLS.voyager) {
-          console.warn("Tile error, falling back to Voyager tiles");
-          map.removeLayer(layer);
-          L.tileLayer(TILE_URLS.voyager, {
-            attribution: '&copy; CartoDB & OpenStreetMap',
+        if (layerKey !== "osm" && mapInstanceRef.current) {
+          console.warn("Tile error on", layerKey, "falling back to OpenStreetMap");
+          try {
+            map.removeLayer(layer);
+          } catch (e) {
+            // ignore
+          }
+          const osmLayer = L.tileLayer(TILE_URLS.osm, {
+            attribution: '&copy; OpenStreetMap contributors',
             maxZoom: 19,
-            subdomains: ["a", "b", "c", "d"],
+            subdomains: ["a", "b", "c"],
           }).addTo(map);
+          tileLayerRef.current = osmLayer;
         }
       });
 
       return layer;
     };
 
-    const subdomains = mapLayerType === "roadmap" ? ["0", "1", "2", "3"] : ["a", "b", "c", "d"];
-    const tileLayer = createTiles(TILE_URLS[mapLayerType] || TILE_URLS.voyager, subdomains).addTo(map);
+    const tileLayer = createTiles(mapLayerType).addTo(map);
     tileLayerRef.current = tileLayer;
 
     // Add all Campus Spots as Google Pins
@@ -738,30 +794,36 @@ export default function CampusMapModal({ isOpen, onClose, initialDestinationId }
       }
     }
 
-    if (mapInstanceRef.current) {
-      mapInstanceRef.current.flyTo([dest.lat, dest.lng], 18, { duration: 0.7 });
-    }
-
+    // Immediately fit the route so the user sees their location + the new destination
+    fitRouteOnScreen(dest);
     speakInstruction(`Selected ${dest.name}.`);
   };
 
-  // Fit route smoothly on screen
-  const fitRouteOnScreen = () => {
-    if (!mapInstanceRef.current || !routeData.points || routeData.points.length < 2) {
-      if (mapInstanceRef.current) {
-        mapInstanceRef.current.setView([selectedDest.lat, selectedDest.lng], 17);
-      }
-      return;
-    }
+  // Fit route smoothly on screen so user, destination pin, and road line are in full view
+  const fitRouteOnScreen = (overrideDest = null) => {
+    if (!mapInstanceRef.current) return;
+    const dest = overrideDest || selectedDest;
+    const points =
+      routeData.points && routeData.points.length >= 2
+        ? routeData.points
+        : [
+            [activeStartPoint.lat, activeStartPoint.lng],
+            [dest.lat, dest.lng],
+          ];
+
     try {
-      const bounds = L.latLngBounds(routeData.points);
-      mapInstanceRef.current.fitBounds(bounds, { padding: [65, 65], maxZoom: 18 });
+      const bounds = L.latLngBounds(points);
+      mapInstanceRef.current.fitBounds(bounds, {
+        paddingTopLeft: [70, 70],
+        paddingBottomRight: [70, 260],
+        maxZoom: 18,
+      });
     } catch {
-      mapInstanceRef.current.setView([selectedDest.lat, selectedDest.lng], 17);
+      mapInstanceRef.current.setView([dest.lat, dest.lng], 17);
     }
   };
 
-  // 4. Update Polylines, User Dot, and Markers dynamically
+  // 4. Update Polylines, User Dot, Markers dynamically & re-fit bounds on route change
   useEffect(() => {
     if (!mapInstanceRef.current) return;
 
@@ -782,6 +844,10 @@ export default function CampusMapModal({ isOpen, onClose, initialDestinationId }
         marker.setZIndexOffset(isSelected ? 800 : 100);
       }
     });
+
+    if (!isNavigating && routeData.points && routeData.points.length >= 2) {
+      fitRouteOnScreen();
+    }
   }, [activeStartPoint, selectedDest, routeData.points]);
 
   // Google Maps Red Pin Icon Creator
@@ -818,15 +884,19 @@ export default function CampusMapModal({ isOpen, onClose, initialDestinationId }
     });
   }
 
-  // Switch Layer (Roadmap, Satellite, Voyager, OSM)
+  // Switch Layer (Roadmap, Satellite, Terrain, OSM)
   const handleLayerChange = (type) => {
     setMapLayerType(type);
     setShowLayerMenu(false);
     if (tileLayerRef.current && mapInstanceRef.current) {
-      mapInstanceRef.current.removeLayer(tileLayerRef.current);
-      const subdomains = type === "roadmap" ? ["0", "1", "2", "3"] : ["a", "b", "c", "d"];
-      const newLayer = L.tileLayer(TILE_URLS[type], {
-        attribution: '&copy; CartoDB & OpenStreetMap & Google Maps',
+      try {
+        mapInstanceRef.current.removeLayer(tileLayerRef.current);
+      } catch (e) {
+        // ignore
+      }
+      const subdomains = type === "osm" ? ["a", "b", "c"] : ["0", "1", "2", "3"];
+      const newLayer = L.tileLayer(TILE_URLS[type] || TILE_URLS.roadmap, {
+        attribution: '&copy; Google Maps & OpenStreetMap',
         maxZoom: 20,
         subdomains,
       }).addTo(mapInstanceRef.current);
@@ -876,7 +946,13 @@ export default function CampusMapModal({ isOpen, onClose, initialDestinationId }
 
   const focusOnUser = () => {
     if (!mapInstanceRef.current) return;
-    mapInstanceRef.current.setView([activeStartPoint.lat, activeStartPoint.lng], 17);
+    if (!userLocation.isReal) {
+      speakInstruction("Detecting your live GPS location...");
+      requestLiveLocation();
+      return;
+    }
+    mapInstanceRef.current.flyTo([userLocation.lat, userLocation.lng], 17, { duration: 0.8 });
+    speakInstruction("Centered on your current location.");
   };
 
   const focusOnSelected = () => {
@@ -1058,7 +1134,7 @@ export default function CampusMapModal({ isOpen, onClose, initialDestinationId }
               </div>
 
               {/* Travel Mode Pills & Origin Switcher */}
-              <div className="bg-white/95 backdrop-blur-md rounded-2xl shadow-sm border border-slate-200 p-1.5 flex items-center justify-between gap-1 text-xs">
+              <div className="bg-white/95 backdrop-blur-md rounded-2xl shadow-sm border border-slate-200 p-1.5 flex flex-wrap items-center justify-between gap-1.5 text-xs">
                 <div className="flex items-center gap-1">
                   <button
                     type="button"
@@ -1098,14 +1174,36 @@ export default function CampusMapModal({ isOpen, onClose, initialDestinationId }
                   </button>
                 </div>
 
-                <button
-                  type="button"
-                  onClick={() => setOriginMode(originMode === "gps" ? "gate" : "gps")}
-                  className="px-2.5 py-1 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-[11px] flex items-center gap-1 transition-colors"
-                  title="Toggle Route Origin"
-                >
-                  <span>{originMode === "gps" ? "📍 From My GPS" : "🚪 From Main Gate"}</span>
-                </button>
+                <div className="flex items-center gap-1.5">
+                  {userLocation.isReal ? (
+                    <button
+                      type="button"
+                      onClick={() => setOriginMode(originMode === "gps" ? "gate" : "gps")}
+                      className={`px-2.5 py-1 rounded-xl font-bold text-[11px] flex items-center gap-1.5 transition-all shadow-xs cursor-pointer ${
+                        originMode === "gps"
+                          ? "bg-emerald-600 hover:bg-emerald-700 text-white"
+                          : "bg-slate-100 hover:bg-slate-200 text-slate-700"
+                      }`}
+                      title="Click to toggle route origin between your live GPS location and GPREC Main Gate"
+                    >
+                      <span className="w-2 h-2 rounded-full bg-white animate-pulse"></span>
+                      <span>{originMode === "gps" ? "📍 Live GPS Active" : "🚪 From Main Gate"}</span>
+                      {originMode === "gps" && (
+                        <span className="text-[10px] opacity-90">±{userLocation.accuracy}m</span>
+                      )}
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={requestLiveLocation}
+                      className="px-2.5 py-1 rounded-xl bg-blue-50 hover:bg-blue-100 text-[#1a73e8] border border-blue-200 font-bold text-[11px] flex items-center gap-1 transition-all cursor-pointer shadow-xs"
+                      title="Click to detect your live location"
+                    >
+                      <span>📍</span>
+                      <span>{gpsStatus === "requesting" ? "Locating you..." : "Turn On Live GPS"}</span>
+                    </button>
+                  )}
+                </div>
               </div>
 
               {/* ⚡ INSTANT DESTINATION SWITCHER PILLS (Clicking immediately reflects and changes destination!) */}
@@ -1140,12 +1238,12 @@ export default function CampusMapModal({ isOpen, onClose, initialDestinationId }
               >
                 <span>
                   {mapLayerType === "satellite"
-                    ? "🛰️ Satellite Aerial"
-                    : mapLayerType === "roadmap"
-                    ? "🚗 Google Road"
+                    ? "🛰️ Satellite Hybrid"
+                    : mapLayerType === "terrain"
+                    ? "⛰️ Google Terrain"
                     : mapLayerType === "osm"
                     ? "🧭 OpenStreetMap"
-                    : "🗺️ Google / Voyager"}
+                    : "🗺️ Google Roadmap"}
                 </span>
                 <svg className="w-3.5 h-3.5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
@@ -1153,15 +1251,15 @@ export default function CampusMapModal({ isOpen, onClose, initialDestinationId }
               </button>
 
               {showLayerMenu && (
-                <div className="bg-white rounded-xl shadow-xl border border-slate-200 p-1.5 flex flex-col gap-1 w-40 text-xs z-30">
+                <div className="bg-white rounded-xl shadow-xl border border-slate-200 p-1.5 flex flex-col gap-1 w-44 text-xs z-30">
                   <button
-                    onClick={() => handleLayerChange("voyager")}
+                    onClick={() => handleLayerChange("roadmap")}
                     className={`p-2 rounded-lg text-left font-medium flex items-center gap-2 cursor-pointer ${
-                      mapLayerType === "voyager" ? "bg-blue-50 text-blue-700 font-bold" : "hover:bg-slate-50"
+                      mapLayerType === "roadmap" ? "bg-blue-50 text-blue-700 font-bold" : "hover:bg-slate-50"
                     }`}
                   >
                     <span>🗺️</span>
-                    <span>Voyager (Vector)</span>
+                    <span>Google Roadmap</span>
                   </button>
                   <button
                     onClick={() => handleLayerChange("satellite")}
@@ -1170,16 +1268,16 @@ export default function CampusMapModal({ isOpen, onClose, initialDestinationId }
                     }`}
                   >
                     <span>🛰️</span>
-                    <span>Satellite Aerial</span>
+                    <span>Satellite Hybrid</span>
                   </button>
                   <button
-                    onClick={() => handleLayerChange("roadmap")}
+                    onClick={() => handleLayerChange("terrain")}
                     className={`p-2 rounded-lg text-left font-medium flex items-center gap-2 cursor-pointer ${
-                      mapLayerType === "roadmap" ? "bg-blue-50 text-blue-700 font-bold" : "hover:bg-slate-50"
+                      mapLayerType === "terrain" ? "bg-blue-50 text-blue-700 font-bold" : "hover:bg-slate-50"
                     }`}
                   >
-                    <span>🚗</span>
-                    <span>Google Road</span>
+                    <span>⛰️</span>
+                    <span>Google Terrain</span>
                   </button>
                   <button
                     onClick={() => handleLayerChange("osm")}
@@ -1279,6 +1377,19 @@ export default function CampusMapModal({ isOpen, onClose, initialDestinationId }
                       {routeData.loading ? "Calculating..." : `${formattedDistance} • ${travelMode}`}
                     </div>
                   </div>
+                </div>
+
+                {/* Route Origin & Path Status */}
+                <div className="flex items-center justify-between text-[11px] bg-slate-50 border border-slate-200/80 rounded-lg px-2.5 py-1 mb-2">
+                  <div className="flex items-center gap-1.5 min-w-0">
+                    <span className="text-slate-400 font-semibold">From:</span>
+                    <span className="font-bold text-slate-700 truncate">
+                      {activeStartPoint.label}
+                    </span>
+                  </div>
+                  <span className="text-emerald-700 font-semibold shrink-0">
+                    Fastest Route
+                  </span>
                 </div>
 
                 <p className="text-xs text-slate-600 mb-2.5 leading-relaxed">
