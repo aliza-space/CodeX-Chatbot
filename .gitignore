@@ -1,0 +1,54 @@
+# Dependencies
+node_modules/
+*/node_modules/
+client/node_modules/
+server/node_modules/
+
+# Environment Variables, Secrets & API Keys
+.env
+.env.*
+!.env.example
+*.env
+*.env.local
+*.env.*.local
+client/.env
+server/.env
+
+# Production Builds
+dist/
+client/dist/
+build/
+server/build/
+
+# Python, Virtual Environments & Cache
+venv/
+.venv/
+env/
+__pycache__/
+*/__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Temporary, Scratch & Archive Files
+scratch/
+*.zip
+*.tar.gz
+*.bak
+*.tmp
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# System & Editor Generated Files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace

@@ -1,0 +1,176 @@
+@import "leaflet/dist/leaflet.css";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light dark;
+}
+
+html, body, #root {
+  height: 100%;
+}
+
+body {
+  @apply bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 antialiased selection:bg-primary-500/20 selection:text-primary-700 dark:selection:text-primary-300;
+  font-family: "Plus Jakarta Sans", Inter, system-ui, sans-serif;
+}
+
+/* Custom modern scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  @apply bg-slate-300 dark:bg-slate-700/60 rounded-full hover:bg-slate-400 dark:hover:bg-slate-600 transition-colors;
+}
+
+/* Markdown typography */
+.markdown-body pre {
+  @apply rounded-xl overflow-x-auto text-sm my-3 border border-slate-200 dark:border-slate-800;
+}
+.markdown-body code {
+  font-family: "JetBrains Mono", "Fira Code", monospace;
+}
+.markdown-body p {
+  @apply mb-2.5 leading-relaxed;
+}
+.markdown-body p:last-child {
+  @apply mb-0;
+}
+.markdown-body ul {
+  @apply pl-5 mb-2.5 list-disc space-y-1;
+}
+.markdown-body ol {
+  @apply pl-5 mb-2.5 list-decimal space-y-1;
+}
+.markdown-body li {
+  @apply leading-relaxed;
+}
+.markdown-body strong {
+  @apply font-semibold text-slate-900 dark:text-white;
+}
+.markdown-body a {
+  @apply text-primary-600 dark:text-primary-400 font-medium hover:underline;
+}
+
+/* Utility classes */
+.glass-panel {
+  @apply bg-white/80 dark:bg-slate-900/85 backdrop-blur-md border border-slate-200/80 dark:border-slate-800/80;
+}
+
+.gradient-border {
+  position: relative;
+}
+.gradient-border::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.4), rgba(249, 115, 22, 0.4));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* Leaflet Custom Map Styles */
+.leaflet-div-icon {
+  background: transparent !important;
+  border: none !important;
+}
+
+.custom-map-tooltip {
+  background: rgba(15, 23, 42, 0.92) !important;
+  color: #f8fafc !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  border-radius: 8px !important;
+  padding: 4px 9px !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+}
+.custom-map-tooltip::before {
+  border-top-color: rgba(15, 23, 42, 0.92) !important;
+}
+
+.custom-pulse-ring {
+  box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.7);
+  animation: pulse-ring 1.8s cubic-bezier(0.24, 0, 0.38, 1) infinite;
+}
+
+@keyframes pulse-ring {
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.7);
+  }
+  70% {
+    transform: scale(1.3);
+    box-shadow: 0 0 0 10px rgba(37, 99, 235, 0);
+  }
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(37, 99, 235, 0);
+  }
+}
+
+/* Authentic Google Maps Styles */
+.google-user-dot-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform: translate(-50%, -50%);
+}
+.google-user-halo {
+  position: absolute;
+  width: 44px;
+  height: 44px;
+  background-color: rgba(66, 133, 244, 0.22);
+  border-radius: 50%;
+  animation: google-pulse 2s infinite ease-out;
+  pointer-events: none;
+}
+.google-user-dot {
+  width: 18px;
+  height: 18px;
+  background-color: #1a73e8;
+  border: 3px solid #ffffff;
+  border-radius: 50%;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+  position: relative;
+  z-index: 2;
+}
+.google-heading-cone {
+  position: absolute;
+  top: -12px;
+  width: 0;
+  height: 0;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-bottom: 12px solid rgba(26, 115, 232, 0.4);
+  z-index: 1;
+}
+
+@keyframes google-pulse {
+  0% { transform: scale(0.6); opacity: 1; }
+  100% { transform: scale(1.6); opacity: 0; }
+}
+
+.google-map-btn {
+  background: #ffffff;
+  color: #3c4043;
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+  transition: all 0.15s ease-in-out;
+}
+.google-map-btn:hover {
+  background: #f8f9fa;
+  color: #202124;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+}
