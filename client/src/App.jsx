@@ -19,6 +19,8 @@ export default function App() {
           }
         />
         <Route path="/login" element={<Login />} />
+        <Route path="/auth/callback" element={<Login />} />
+        <Route path="/oauth/callback" element={<Login />} />
         <Route
           path="/admin"
           element={

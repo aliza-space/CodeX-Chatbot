@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { z } from "zod";
-import { register, login, me, changePassword, googleLogin } from "../controllers/auth.controller.js";
+import { register, login, me, changePassword, googleLogin, googleOAuthCallback } from "../controllers/auth.controller.js";
 import { validate } from "../middleware/validate.js";
 import { verifyToken, requireAuth } from "../middleware/auth.js";
 import { authRateLimiter } from "../middleware/rateLimiter.js";
@@ -31,6 +31,11 @@ const changePasswordSchema = z.object({
 router.post("/register", authRateLimiter, validate(registerSchema), register);
 router.post("/login", authRateLimiter, validate(loginSchema), login);
 router.post("/google", authRateLimiter, validate(googleSchema), googleLogin);
+
+// Google OAuth 2.0 callback endpoints (handles GET code redirect & POST credential redirect)
+router.get("/google/callback", googleOAuthCallback);
+router.post("/google/callback", googleOAuthCallback);
+
 router.get("/me", verifyToken, requireAuth, me);
 router.post("/change-password", verifyToken, requireAuth, validate(changePasswordSchema), changePassword);
 

@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth.js";
+import { useAuthStore } from "../store/authStore.js";
+import api from "../api/axios.js";
 import ThemeToggle from "../components/common/ThemeToggle.jsx";
 
 // Helper to safely parse Google ID token JWT
@@ -27,7 +29,43 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const { login, register, googleLogin, isAuthenticated } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const googleBtnRef = useRef(null);
+
+  // Handle incoming OAuth callback query parameters (e.g. from backend redirect ?token=... or ?error=...)
+  useEffect(() => {
+    const params = new URLSearchParams(location.search || window.location.search);
+    const urlToken = params.get("token");
+    const urlError = params.get("error");
+
+    if (urlError) {
+      setError(decodeURIComponent(urlError));
+    } else if (urlToken) {
+      setLoading(true);
+      api
+        .get("/api/auth/me", {
+          headers: { Authorization: `Bearer ${urlToken}` },
+        })
+        .then((res) => {
+          useAuthStore.getState().login(urlToken, res.data.user);
+          navigate("/", { replace: true });
+        })
+        .catch(() => {
+          const payload = parseJwt(urlToken);
+          if (payload) {
+            useAuthStore.getState().login(urlToken, {
+              id: payload.id,
+              name: payload.name,
+              role: payload.role || "member",
+            });
+            navigate("/", { replace: true });
+          } else {
+            setError("Failed to verify login token. Please try again.");
+          }
+        })
+        .finally(() => setLoading(false));
+    }
+  }, [location.search, navigate]);
 
   // If already logged in, redirect straight to the website
   useEffect(() => {
