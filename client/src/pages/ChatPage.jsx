@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import Navbar from "../components/common/Navbar.jsx";
 import ChatWindow from "../components/chat/ChatWindow.jsx";
-import CampusMapModal from "../components/navigation/CampusMapModal.jsx";
+import CampusGuideModal from "../components/navigation/CampusGuideModal.jsx";
 import { useChatStore } from "../store/chatStore.js";
 import { useChatStream } from "../hooks/useChatStream.js";
 import api from "../api/axios.js";
@@ -11,9 +11,7 @@ import {
   IconTrophy,
   IconPin,
   IconUsers,
-  IconCpu,
-  IconGuide,
-  IconMap
+  IconCpu
 } from "../components/common/Icons.jsx";
 
 export default function ChatPage() {
@@ -135,7 +133,7 @@ export default function ChatPage() {
                 <button
                   key={idx}
                   onClick={() => sendMessage(item.query)}
-                  className="w-full text-left p-2.5 rounded-2xl text-xs text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-100 dark:hover:bg-slate-800/70 border border-slate-200/60 dark:border-slate-800/60 transition flex items-center justify-between group"
+                  className="w-full text-left p-2.5 rounded-2xl text-xs text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-100 dark:hover:bg-slate-800/70 border border-slate-200/60 dark:border-slate-800/60 transition flex items-center justify-between group cursor-pointer"
                 >
                   <span className="truncate">{item.label}</span>
                   <span className="text-slate-400 group-hover:text-blue-500 group-hover:translate-x-0.5 transition font-semibold">→</span>
@@ -144,21 +142,24 @@ export default function ChatPage() {
             </div>
           </div>
 
-          {/* Campus Map Quick Launcher */}
+          {/* GPREC Campus Guide Quick Launcher */}
           <button
             onClick={() => openMap()}
-            className="rounded-3xl p-4 border border-blue-200/80 dark:border-blue-900/60 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-slate-900 shadow-sm text-left hover:scale-[1.01] active:scale-[0.99] transition flex items-center justify-between group"
+            className="rounded-3xl p-4 border border-blue-200/80 dark:border-blue-900/60 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-slate-900 shadow-sm text-left hover:scale-[1.01] active:scale-[0.99] transition flex items-center justify-between group cursor-pointer"
           >
             <div className="flex items-center gap-3">
-              <div className="p-2.5 rounded-2xl bg-blue-600 text-white shadow-sm shadow-blue-500/30">
-                <IconMap className="w-5 h-5" />
+              <div className="p-2.5 rounded-2xl bg-blue-600 text-white shadow-sm shadow-blue-500/30 text-lg">
+                📍
               </div>
               <div>
-                <h4 className="font-display font-bold text-xs text-slate-900 dark:text-white">
-                  Campus Walking Map
+                <h4 className="font-display font-bold text-xs text-slate-900 dark:text-white flex items-center gap-1.5">
+                  <span>Explore GPREC</span>
+                  <span className="text-[9px] font-semibold px-1.5 py-0.2 rounded-full bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300">
+                    2 Areas
+                  </span>
                 </h4>
                 <p className="text-[11px] text-slate-500 dark:text-slate-400">
-                  Live GPS & venue wayfinding
+                  Academic & Common Facilities
                 </p>
               </div>
             </div>
@@ -174,8 +175,8 @@ export default function ChatPage() {
         </main>
       </div>
 
-      {/* Live Campus Map & GPS Navigation Modal */}
-      <CampusMapModal
+      {/* GPREC Campus Guide Mini Visualization Modal */}
+      <CampusGuideModal
         isOpen={isMapOpen}
         onClose={closeMap}
         initialDestinationId={mapDestinationId}

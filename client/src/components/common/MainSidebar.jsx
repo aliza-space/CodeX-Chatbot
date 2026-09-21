@@ -6,7 +6,6 @@ import { useChatStream } from "../../hooks/useChatStream.js";
 import { useChatStore } from "../../store/chatStore.js";
 import {
   IconChat,
-  IconMap,
   IconTrophy,
   IconUsers,
   IconPin,
@@ -50,7 +49,7 @@ export default function MainSidebar({ open, onClose, onOpenProfile }) {
     onClose();
   };
 
-  const handleLaunchMap = (destId = null) => {
+  const handleLaunchCampusGuide = (destId = null) => {
     openMap(destId);
     onClose();
   };
@@ -76,7 +75,7 @@ export default function MainSidebar({ open, onClose, onOpenProfile }) {
               setShowSignOutConfirm(false);
               onClose();
             }}
-            className="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-40"
+            className="fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-40"
           />
 
           {/* Drawer Panel */}
@@ -121,24 +120,24 @@ export default function MainSidebar({ open, onClose, onOpenProfile }) {
                 <div className="space-y-5 animate-fade-in">
                   {/* Primary Navigation Actions */}
                   <div className="space-y-1.5">
-                    {/* Campus Walking Map */}
+                    {/* GPREC Campus Guide Launcher */}
                     <button
-                      onClick={() => handleLaunchMap()}
-                      className="w-full p-3 rounded-2xl bg-blue-50/80 dark:bg-blue-950/40 hover:bg-blue-100/80 dark:hover:bg-blue-900/40 border border-blue-200/70 dark:border-blue-800/60 text-left transition flex items-center justify-between group cursor-pointer"
+                      onClick={() => handleLaunchCampusGuide()}
+                      className="w-full p-3 rounded-2xl bg-blue-50/80 dark:bg-blue-950/40 hover:bg-blue-100/80 dark:hover:bg-blue-900/40 border border-blue-200/70 dark:border-blue-800/60 text-left transition flex items-center justify-between group cursor-pointer shadow-xs"
                     >
                       <div className="flex items-center gap-3 min-w-0">
-                        <div className="p-2 rounded-xl bg-blue-600 text-white shadow-xs">
-                          <IconMap className="w-4 h-4" />
+                        <div className="p-2 rounded-xl bg-blue-600 text-white shadow-xs text-sm">
+                          📍
                         </div>
                         <div className="min-w-0">
                           <div className="text-xs font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
-                            <span>Campus Map</span>
+                            <span>Explore GPREC</span>
                             <span className="text-[9px] font-semibold px-1.5 py-0.2 rounded-full bg-blue-600 text-white">
-                              Live GPS
+                              2 Areas
                             </span>
                           </div>
                           <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate">
-                            Interactive wayfinding & directions
+                            Academic & Student Common Facilities
                           </p>
                         </div>
                       </div>

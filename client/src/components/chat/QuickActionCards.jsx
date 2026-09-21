@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { IconTrophy, IconGuide, IconCpu, IconMap } from "../common/Icons.jsx";
+import { IconTrophy, IconGuide, IconCpu } from "../common/Icons.jsx";
 
 const TILES = [
   {
@@ -30,13 +30,13 @@ const TILES = [
     query: "What is the detailed schedule and venue for CodeX 4.0?",
   },
   {
-    icon: IconMap,
-    title: "Campus & Food",
-    desc: "Food Court, Cafeteria, Library, Amphi & CSM Labs",
-    badge: "Wayfinding",
+    icon: () => <span className="text-sm">📍</span>,
+    title: "Campus Guide & Areas",
+    desc: "Academic Area (CSM/CSE Labs) & Common Facilities (Library, Canteen, Amphi)",
+    badge: "2 Areas",
     badgeColor: "bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800/60",
     iconColor: "bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800/60",
-    query: "Where is the campus food court, cafeteria, library, and amphi at GPREC?",
+    query: "What facilities and areas are there in GPREC campus?",
   },
 ];
 
@@ -54,7 +54,7 @@ export default function QuickActionCards({ onPick }) {
             transition={{ delay: i * 0.05, duration: 0.2 }}
             whileHover={{ y: -2, scale: 1.01 }}
             whileTap={{ scale: 0.98 }}
-            className="group relative text-left p-4 rounded-2xl border border-slate-200/80 dark:border-slate-800/80 bg-slate-50/80 dark:bg-slate-800/50 hover:bg-white dark:hover:bg-slate-800 hover:shadow-md hover:border-blue-500/40 dark:hover:border-blue-500/40 transition-all flex flex-col justify-between"
+            className="group relative text-left p-4 rounded-2xl border border-slate-200/80 dark:border-slate-800/80 bg-slate-50/80 dark:bg-slate-800/50 hover:bg-white dark:hover:bg-slate-800 hover:shadow-md hover:border-blue-500/40 dark:hover:border-blue-500/40 transition-all flex flex-col justify-between cursor-pointer"
           >
             <div>
               <div className="flex items-center justify-between mb-2.5">

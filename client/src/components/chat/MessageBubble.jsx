@@ -7,12 +7,21 @@ import FeedbackButtons from "./FeedbackButtons.jsx";
 import TypingIndicator from "./TypingIndicator.jsx";
 import SuggestionChips from "./SuggestionChips.jsx";
 import { useChatStore } from "../../store/chatStore.js";
-import { IconMap, IconUser } from "../common/Icons.jsx";
+import { findFacilityAndZone } from "../../data/campusGuideData.js";
+import { IconUser } from "../common/Icons.jsx";
 
 export default function MessageBubble({ message, onRegenerate, onPickSuggestion }) {
   const isUser = message.role === "user";
   const openMap = useChatStore((s) => s.openMap);
   const time = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+
+  // Detect campus facilities or areas in assistant response
+  const detectedLocation = (() => {
+    if (isUser || message.streaming || !message.content) return null;
+    const content = message.content;
+    const match = findFacilityAndZone(content);
+    return match;
+  })();
 
   return (
     <motion.div
@@ -94,41 +103,27 @@ export default function MessageBubble({ message, onRegenerate, onPickSuggestion 
             </div>
           )}
 
-          {/* Interactive Campus Map Trigger when campus locations are discussed */}
-          {!isUser && !message.streaming && message.content && /(cafeteria|canteen|food court|library|amphitheatre|amphi|auditorium|csm lab|csm department|campus map|directions|where is|navigate|location|hostel|stadium|ground|admin|atm|health)/i.test(message.content) && (() => {
-            const c = message.content.toLowerCase();
-            let destId = "csm-labs";
-            let label = "GPREC Campus Map";
-
-            if (c.includes("food court")) { destId = "food-court"; label = "Food Court"; }
-            else if (c.includes("cafeteria") || c.includes("canteen")) { destId = "cafeteria"; label = "Main Cafeteria"; }
-            else if (c.includes("library")) { destId = "central-library"; label = "Central Library"; }
-            else if (c.includes("amphi")) { destId = "amphitheatre"; label = "Amphitheatre"; }
-            else if (c.includes("auditorium")) { destId = "auditorium"; label = "Central Auditorium"; }
-            else if (c.includes("csm department") || c.includes("aiml department") || c.includes("ai & ml department")) { destId = "csm-department"; label = "CSM Department"; }
-            else if (c.includes("csm") || c.includes("hackathon hub") || c.includes("intel")) { destId = "csm-labs"; label = "CSM Labs (Hackathon Hub)"; }
-            else if (c.includes("girls hostel")) { destId = "girls-hostel"; label = "Girls Hostel"; }
-            else if (c.includes("boys hostel") || c.includes("hostel")) { destId = "boys-hostel"; label = "Boys Hostel"; }
-            else if (c.includes("stadium") || c.includes("gym")) { destId = "indoor-stadium"; label = "Indoor Stadium"; }
-            else if (c.includes("ground") || c.includes("cricket")) { destId = "sports-ground"; label = "Sports Ground"; }
-            else if (c.includes("admin") || c.includes("principal")) { destId = "admin-block"; label = "Admin Block"; }
-            else if (c.includes("atm") || c.includes("health") || c.includes("doctor")) { destId = "atm-health"; label = "ATM & Dispensary"; }
-            else { destId = null; label = "Campus Map & Wayfinding"; }
-
-            return (
-              <div className="mt-3 pt-2.5 border-t border-slate-200 dark:border-slate-700/80 flex flex-wrap items-center gap-2">
-                <button
-                  type="button"
-                  onClick={() => openMap(destId)}
-                  className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-semibold text-white bg-blue-600 hover:bg-blue-500 shadow-sm shadow-blue-500/20 active:scale-95 transition-all cursor-pointer"
-                >
-                  <IconMap className="w-3.5 h-3.5" />
-                  <span>Open on Campus Map ({label})</span>
-                  <span>→</span>
-                </button>
+          {/* GPREC Campus Guide Trigger Button */}
+          {detectedLocation && (
+            <div className="mt-3 pt-2.5 border-t border-slate-200/80 dark:border-slate-700/80 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <div className="flex items-center gap-1.5 text-[11px] text-slate-500 dark:text-slate-400">
+                <span>📍</span>
+                <span>Campus Area:</span>
+                <strong className="text-slate-800 dark:text-slate-200 font-semibold">
+                  {detectedLocation.zone.shortName}
+                </strong>
               </div>
-            );
-          })()}
+
+              <button
+                type="button"
+                onClick={() => openMap(detectedLocation.facility?.id || detectedLocation.zone.id)}
+                className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold text-white bg-blue-600 hover:bg-blue-500 active:bg-blue-700 shadow-xs active:scale-95 transition-all cursor-pointer"
+              >
+                <span>📍 View on GPREC Campus</span>
+                <span>→</span>
+              </button>
+            </div>
+          )}
 
           {/* Feedback & Actions */}
           {!isUser && !message.streaming && message.content && (
