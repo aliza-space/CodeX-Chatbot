@@ -3,33 +3,24 @@ import MessageBubble from "./MessageBubble.jsx";
 import VoiceInput from "./VoiceInput.jsx";
 import SlashCommandMenu from "./SlashCommandMenu.jsx";
 import QuickActionCards from "./QuickActionCards.jsx";
-import HistoryPanel from "./HistoryPanel.jsx";
 import { useChatStream } from "../../hooks/useChatStream.js";
 import { useChatStore } from "../../store/chatStore.js";
 
-export default function ChatWindow({ variant = "widget", onOpenEventGuide }) {
-  const openMap = useChatStore((s) => s.openMap);
+export default function ChatWindow({ variant = "widget" }) {
   const stopStreaming = useChatStore((s) => s.stopStreaming);
   const {
     messages,
     isStreaming,
     sendMessage,
     regenerate,
-    newChat,
-    conversations,
-    historyLoading,
     fetchConversations,
-    openConversation,
-    deleteConversation,
-    conversationId,
   } = useChatStream();
 
   const [input, setInput] = useState("");
-  const [historyOpen, setHistoryOpen] = useState(false);
   const scrollRef = useRef(null);
   const inputRef = useRef(null);
 
-  // Load participant conversation history on mount
+  // Sync conversation history in background
   useEffect(() => {
     fetchConversations();
   }, [fetchConversations]);
@@ -52,11 +43,6 @@ export default function ChatWindow({ variant = "widget", onOpenEventGuide }) {
     }
   };
 
-  const toggleHistory = () => {
-    if (!historyOpen) fetchConversations();
-    setHistoryOpen((o) => !o);
-  };
-
   const showSlashMenu = input.startsWith("/") && input.length > 0;
 
   return (
@@ -67,110 +53,14 @@ export default function ChatWindow({ variant = "widget", onOpenEventGuide }) {
           : "h-full w-full rounded-none sm:rounded-3xl border-0 sm:border border-slate-200/90 dark:border-slate-800/90 shadow-none sm:shadow-xl"
       }`}
     >
-      {/* Slide-out History Drawer for ALL participants */}
-      <HistoryPanel
-        open={historyOpen}
-        onClose={() => setHistoryOpen(false)}
-        conversations={conversations}
-        loading={historyLoading}
-        activeId={conversationId}
-        onSelect={(id) => {
-          openConversation(id);
-          setHistoryOpen(false);
-        }}
-        onDelete={deleteConversation}
-      />
-
-      {/* Top Bar / Header */}
-      <div className="relative flex items-center justify-between px-3 sm:px-5 py-2.5 sm:py-3.5 border-b border-slate-200/80 dark:border-slate-800/80 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md z-10 shrink-0">
-        <div className="flex items-center gap-2 sm:gap-3 min-w-0">
-          {/* History Drawer Trigger */}
-          <button
-            onClick={toggleHistory}
-            aria-label="View chat history"
-            title="Chat history"
-            className="p-1.5 sm:p-2 rounded-xl text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors relative shrink-0"
-          >
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h7" />
-            </svg>
-            {conversations.length > 0 && (
-              <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-primary-500" />
-            )}
-          </button>
-
-          {/* Official Coders' Club Logo near CodeBuddy */}
-          <div className="relative shrink-0">
-            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl overflow-hidden ring-2 ring-primary-500/40 bg-white shadow-sm flex items-center justify-center">
-              <img src="/logo.jpg" alt="Coders' Club Logo" className="w-full h-full object-cover" />
-            </div>
-            <span
-              className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 sm:w-3 sm:h-3 bg-emerald-500 rounded-full ring-2 ring-white dark:ring-slate-900"
-              title="System Online"
-            />
-          </div>
-
-          <div className="min-w-0">
-            <div className="flex items-center gap-1.5 sm:gap-2">
-              <h2 className="font-display font-bold text-sm sm:text-base tracking-tight text-slate-900 dark:text-white truncate">
-                CodeBuddy
-              </h2>
-              <span className="inline-flex items-center px-1.5 sm:px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/60 shrink-0">
-                Active
-              </span>
-            </div>
-            <p className="text-[10px] sm:text-[11px] text-slate-500 dark:text-slate-400 truncate">
-              Coders' Club GPREC • CodeX 4.0
-            </p>
-          </div>
-        </div>
-
-        {/* Header Actions */}
-        <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
-          {/* Mobile Event Guide Button */}
-          {onOpenEventGuide && (
-            <button
-              onClick={onOpenEventGuide}
-              className="lg:hidden inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
-              title="Open event guide"
-            >
-              <span>📌</span>
-              <span className="text-[11px]">Guide</span>
-            </button>
-          )}
-
-          {/* Campus Map Button (Visible on desktop; mobile accesses map from top Navbar) */}
-          <button
-            onClick={() => openMap()}
-            className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-200 bg-slate-100 dark:bg-slate-800/90 hover:bg-slate-200 dark:hover:bg-slate-700/80 border border-slate-200/80 dark:border-slate-700/80 transition-all shadow-sm active:scale-95"
-            title="Open GPREC Campus Map & Live Directions"
-          >
-            <span>🗺️</span>
-            <span>Campus Map</span>
-          </button>
-
-          <button
-            onClick={newChat}
-            className="inline-flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-semibold text-slate-600 dark:text-slate-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-950/50 border border-slate-200 dark:border-slate-800 transition-all"
-            title="Start new conversation"
-          >
-            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-            </svg>
-            <span className="hidden sm:inline">New Chat</span>
-            <span className="sm:hidden">New</span>
-          </button>
-        </div>
-      </div>
-
-      {/* Messages Scroll View */}
+      {/* Messages Scroll View (Clean, without duplicate subheaders) */}
       <div
         ref={scrollRef}
         className="relative flex-1 overflow-y-auto p-3 sm:p-5 bg-slate-50/50 dark:bg-slate-950/40 min-h-0"
         aria-live="polite"
       >
         {messages.length === 0 && (
-          <div className="flex flex-col items-center justify-center min-h-[320px] sm:min-h-[380px] text-center px-2 py-3 sm:py-6">
+          <div className="flex flex-col items-center justify-center min-h-[320px] sm:min-h-[380px] text-center px-2 py-4 sm:py-6">
             {/* Coders' Club Logo in Welcome Hero */}
             <div className="relative mb-2 sm:mb-3">
               <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-2xl ring-2 ring-primary-500/40 p-0.5 bg-white shadow-lg shadow-primary-500/20 animate-float overflow-hidden">
