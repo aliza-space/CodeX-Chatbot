@@ -12,52 +12,30 @@ html, body, #root {
 }
 
 body {
-  @apply bg-slate-50 dark:bg-[#060913] text-slate-800 dark:text-slate-100 antialiased selection:bg-cyan-500/25 selection:text-cyan-900 dark:selection:text-cyan-200;
+  @apply bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 antialiased selection:bg-primary-500/20 selection:text-primary-700 dark:selection:text-primary-300;
   font-family: "Plus Jakarta Sans", Inter, system-ui, sans-serif;
 }
 
-/* Futuristic Cyber Grid Background */
-.cyber-grid-bg {
+/* Subtle modern background texture */
+.subtle-grid-bg {
   background-image: 
-    radial-gradient(circle at 50% 0%, rgba(56, 189, 248, 0.08) 0%, transparent 65%),
-    linear-gradient(to right, rgba(148, 163, 184, 0.05) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(148, 163, 184, 0.05) 1px, transparent 1px);
+    radial-gradient(circle at 50% 0%, rgba(37, 99, 235, 0.05) 0%, transparent 60%),
+    linear-gradient(to right, rgba(148, 163, 184, 0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(148, 163, 184, 0.04) 1px, transparent 1px);
   background-size: 100% 100%, 32px 32px, 32px 32px;
 }
 
-.dark .cyber-grid-bg {
+.dark .subtle-grid-bg {
   background-image: 
-    radial-gradient(circle at 50% 0%, rgba(6, 182, 212, 0.12) 0%, transparent 70%),
-    radial-gradient(circle at 85% 90%, rgba(139, 92, 246, 0.08) 0%, transparent 50%),
-    linear-gradient(to right, rgba(30, 41, 59, 0.4) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(30, 41, 59, 0.4) 1px, transparent 1px);
-  background-size: 100% 100%, 100% 100%, 28px 28px, 28px 28px;
+    radial-gradient(circle at 50% 0%, rgba(37, 99, 235, 0.08) 0%, transparent 60%),
+    linear-gradient(to right, rgba(30, 41, 59, 0.3) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(30, 41, 59, 0.3) 1px, transparent 1px);
+  background-size: 100% 100%, 32px 32px, 32px 32px;
 }
 
-/* Glass HUD Panels */
-.glass-hud {
-  @apply bg-white/75 dark:bg-[#0b1120]/80 backdrop-blur-xl border border-slate-200/80 dark:border-cyan-500/20 shadow-lg dark:shadow-[0_8px_32px_rgba(0,0,0,0.5)];
-}
-
-.glass-hud-interactive {
-  @apply glass-hud hover:border-cyan-400/50 dark:hover:border-cyan-400/40 hover:shadow-cyan-500/10 transition-all duration-200;
-}
-
-.glow-border {
-  position: relative;
-}
-.glow-border::after {
-  content: "";
-  position: absolute;
-  inset: -1px;
-  border-radius: inherit;
-  background: linear-gradient(135deg, rgba(56, 189, 248, 0.5), rgba(139, 92, 246, 0.5));
-  z-index: -1;
-  opacity: 0.5;
-  transition: opacity 0.3s ease;
-}
-.glow-border:hover::after {
-  opacity: 1;
+/* Glass Panels */
+.glass-panel {
+  @apply bg-white/80 dark:bg-slate-900/85 backdrop-blur-md border border-slate-200/80 dark:border-slate-800/80;
 }
 
 /* Custom modern scrollbar */
@@ -69,7 +47,7 @@ body {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  @apply bg-slate-300 dark:bg-slate-700/80 rounded-full hover:bg-slate-400 dark:hover:bg-cyan-500/50 transition-colors;
+  @apply bg-slate-300 dark:bg-slate-700/70 rounded-full hover:bg-slate-400 dark:hover:bg-slate-600 transition-colors;
 }
 
 /* Markdown typography */
@@ -95,10 +73,10 @@ body {
   @apply leading-relaxed;
 }
 .markdown-body strong {
-  @apply font-semibold text-slate-900 dark:text-cyan-200;
+  @apply font-semibold text-slate-900 dark:text-white;
 }
 .markdown-body a {
-  @apply text-cyan-600 dark:text-cyan-400 font-medium hover:underline;
+  @apply text-primary-600 dark:text-primary-400 font-medium hover:underline;
 }
 
 /* Leaflet Custom Map Styles */
@@ -108,52 +86,51 @@ body {
 }
 
 .custom-map-tooltip {
-  background: rgba(11, 17, 32, 0.95) !important;
-  color: #38bdf8 !important;
-  border: 1px solid rgba(56, 189, 248, 0.3) !important;
+  background: rgba(15, 23, 42, 0.95) !important;
+  color: #f8fafc !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
   border-radius: 8px !important;
-  padding: 4px 10px !important;
+  padding: 4px 9px !important;
   font-size: 11px !important;
-  font-weight: 700 !important;
-  font-family: "Space Grotesk", sans-serif !important;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6) !important;
+  font-weight: 600 !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
 }
 .custom-map-tooltip::before {
-  border-top-color: rgba(11, 17, 32, 0.95) !important;
+  border-top-color: rgba(15, 23, 42, 0.95) !important;
 }
 
-/* Custom Live GPS Dot and Ping */
-.cyber-user-dot {
+/* User Live GPS Dot */
+.user-live-dot {
   position: relative;
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
   border-radius: 50%;
-  background: #06b6d4;
+  background: #2563eb;
   border: 3px solid #ffffff;
-  box-shadow: 0 0 15px #06b6d4;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.5);
 }
-.cyber-user-halo {
+.user-live-halo {
   position: absolute;
-  inset: -12px;
+  inset: -10px;
   border-radius: 50%;
-  background: rgba(6, 182, 212, 0.35);
-  animation: cyber-pulse 2s cubic-bezier(0.24, 0, 0.38, 1) infinite;
+  background: rgba(37, 99, 235, 0.25);
+  animation: user-pulse 2s cubic-bezier(0.24, 0, 0.38, 1) infinite;
   pointer-events: none;
 }
-@keyframes cyber-pulse {
+@keyframes user-pulse {
   0% { transform: scale(0.6); opacity: 0.9; }
-  100% { transform: scale(1.8); opacity: 0; }
+  100% { transform: scale(1.6); opacity: 0; }
 }
 
-/* Hologram Venue Pin */
-.holo-pin-container {
+/* Venue Pin Styling */
+.venue-pin-container {
   display: flex;
   flex-direction: column;
   align-items: center;
   transform: translate(-50%, -100%);
   cursor: pointer;
-  transition: transform 0.2s ease;
+  transition: transform 0.15s ease-out;
 }
-.holo-pin-container:hover {
-  transform: translate(-50%, -110%) scale(1.1);
+.venue-pin-container:hover {
+  transform: translate(-50%, -108%) scale(1.06);
 }

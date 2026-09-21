@@ -11,14 +11,9 @@ import {
 import {
   IconMap,
   IconPin,
-  IconCompass,
   IconNavigation,
   IconSearch,
-  IconCross,
-  IconCpu,
-  IconUtensils,
-  IconTrophy,
-  IconGuide
+  IconCross
 } from "../common/Icons.jsx";
 
 // Official GPREC Kurnool Campus Coordinates
@@ -31,7 +26,7 @@ export const GPREC_CAMPUS = {
   gateLng: 78.0564,
 };
 
-// Curated GPREC Campus Destinations with Exact Entrance Coordinates & Cyber Categorization
+// Curated GPREC Campus Destinations
 export const CAMPUS_DESTINATIONS = [
   {
     id: "csm-labs",
@@ -39,7 +34,7 @@ export const CAMPUS_DESTINATIONS = [
     shortName: "CSM Labs (Intel Hub)",
     floor: "2nd Floor (Intel Lab 6) & Ground Fl",
     category: "Hackathon Hub",
-    color: "#06b6d4",
+    color: "#2563eb",
     lat: 15.7744,
     lng: 78.0572,
     walkHint: "Pass Admin block, enter CSM front portico, take central stairs to 2nd Floor.",
@@ -204,7 +199,7 @@ export const CAMPUS_DESTINATIONS = [
     shortName: "ATM & Dispensary",
     floor: "Ground Floor (Near Gate)",
     category: "Amenities",
-    color: "#06b6d4",
+    color: "#0284c7",
     lat: 15.7758,
     lng: 78.0560,
     walkHint: "Immediately inside the Main Gate on the right side.",
@@ -215,7 +210,7 @@ export const CAMPUS_DESTINATIONS = [
     shortName: "Main Gate",
     floor: "Entrance Arch",
     category: "Entrance",
-    color: "#06b6d4",
+    color: "#0284c7",
     lat: 15.7760,
     lng: 78.0564,
     walkHint: "Main campus security gate on Nandyal Road.",
@@ -266,7 +261,6 @@ export default function CampusMapModal({ isOpen, onClose, initialDestinationId }
   const mapContainerRef = useRef(null);
   const mapInstanceRef = useRef(null);
   const userMarkerRef = useRef(null);
-  const destMarkerRef = useRef(null);
   const venueMarkersRef = useRef([]);
   const routeLineRef = useRef(null);
   const watchIdRef = useRef(null);
@@ -321,7 +315,7 @@ export default function CampusMapModal({ isOpen, onClose, initialDestinationId }
     };
   }, [isOpen]);
 
-  // Active start coordinates (live GPS if active, otherwise Main Gate)
+  // Active start coordinates
   const activeStartPoint = useMemo(() => {
     if (gpsActive && userLocation.isReal) {
       return { lat: userLocation.lat, lng: userLocation.lng };
@@ -369,20 +363,20 @@ export default function CampusMapModal({ isOpen, onClose, initialDestinationId }
     };
   }, [isOpen, selectedDest, activeStartPoint]);
 
-  // Helper to create holographic custom venue marker HTML
+  // Helper to create clean venue marker HTML
   const createVenuePinHtml = (venue, isTarget = false) => {
     const isSpecial = venue.id === "csm-labs";
-    const pinColor = isSpecial ? "#06b6d4" : venue.color || "#3b82f6";
-    const bgGlow = isTarget ? "ring-4 ring-cyan-400/80 scale-110 shadow-cyan-500/50" : "shadow-md";
+    const pinColor = isSpecial ? "#2563eb" : venue.color || "#475569";
+    const bgGlow = isTarget ? "ring-4 ring-primary-400 scale-110 shadow-lg" : "shadow-md";
 
     return `
-      <div class="holo-pin-container ${isTarget ? "scale-110" : ""}">
-        <div class="px-2 py-0.5 rounded-lg bg-[#070d1a]/90 text-white text-[10px] font-mono font-bold whitespace-nowrap mb-1 border border-cyan-500/40 shadow-lg backdrop-blur-md">
+      <div class="venue-pin-container ${isTarget ? "scale-110" : ""}">
+        <div class="px-2 py-0.5 rounded-lg bg-slate-900 text-white text-[10px] font-bold whitespace-nowrap mb-1 border border-slate-700 shadow-md">
           ${venue.shortName || venue.name}
         </div>
-        <div class="relative w-8 h-8 rounded-full flex items-center justify-center text-white ${bgGlow} transition-all" style="background: ${pinColor};">
-          ${isSpecial ? '<span class="absolute -inset-1 rounded-full animate-ping opacity-75 bg-cyan-400"></span>' : ''}
-          <div class="w-3 h-3 rounded-full bg-white shadow-xs"></div>
+        <div class="relative w-7 h-7 rounded-full flex items-center justify-center text-white ${bgGlow} transition-all" style="background: ${pinColor};">
+          ${isSpecial ? '<span class="absolute -inset-1 rounded-full animate-ping opacity-75 bg-primary-400"></span>' : ''}
+          <div class="w-2.5 h-2.5 rounded-full bg-white shadow-xs"></div>
         </div>
       </div>
     `;
@@ -408,7 +402,7 @@ export default function CampusMapModal({ isOpen, onClose, initialDestinationId }
       minZoom: 15,
     });
 
-    // Dark/Clean Google Roadmap tiles
+    // Clean Google Roadmap tiles
     L.tileLayer("https://mt{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}", {
       subdomains: ["0", "1", "2", "3"],
       maxZoom: 20,
@@ -417,13 +411,13 @@ export default function CampusMapModal({ isOpen, onClose, initialDestinationId }
     // Zoom controls on right
     L.control.zoom({ position: "bottomright" }).addTo(map);
 
-    // Cyber Live GPS User Dot
+    // User GPS Dot
     const userIcon = L.divIcon({
-      className: "cyber-user-dot-container",
+      className: "user-live-dot-container",
       html: `
         <div class="relative flex items-center justify-center w-8 h-8">
-          <span class="cyber-user-halo"></span>
-          <span class="cyber-user-dot"></span>
+          <span class="user-live-halo"></span>
+          <span class="user-live-dot"></span>
         </div>
       `,
       iconSize: [32, 32],
@@ -435,7 +429,7 @@ export default function CampusMapModal({ isOpen, onClose, initialDestinationId }
       zIndexOffset: 1000,
     }).addTo(map);
 
-    // Add all Venue Pins with Click Handlers
+    // Add all Venue Pins
     venueMarkersRef.current = [];
     CAMPUS_DESTINATIONS.forEach((dest) => {
       const isTarget = dest.id === selectedDest.id;
@@ -458,11 +452,11 @@ export default function CampusMapModal({ isOpen, onClose, initialDestinationId }
       venueMarkersRef.current.push({ id: dest.id, marker });
     });
 
-    // Clean Cyber Walking Polyline
+    // Clean Walking Polyline
     routeLineRef.current = L.polyline([], {
-      color: "#06b6d4",
+      color: "#2563eb",
       weight: 5,
-      opacity: 0.9,
+      opacity: 0.95,
       lineCap: "round",
       dashArray: "6, 8",
     }).addTo(map);
@@ -485,7 +479,7 @@ export default function CampusMapModal({ isOpen, onClose, initialDestinationId }
     };
   }, [isOpen]);
 
-  // Update venue markers, user position, and polyline when state changes
+  // Update venue markers and polyline
   useEffect(() => {
     if (!mapInstanceRef.current) return;
 
@@ -569,50 +563,55 @@ export default function CampusMapModal({ isOpen, onClose, initialDestinationId }
   });
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-md p-0 sm:p-4">
-      {/* Dark backdrop */}
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 backdrop-blur-xs p-0 sm:p-4">
+      {/* Backdrop */}
       <div className="absolute inset-0" onClick={onClose} />
 
-      {/* Main Futuristic Navigation Window */}
-      <div className="relative w-full max-w-4xl h-[100dvh] sm:h-[90vh] sm:rounded-3xl bg-[#070d1a] overflow-hidden flex flex-col z-10 shadow-2xl border-0 sm:border border-cyan-500/30">
+      {/* Main Clean Walking Navigation Window */}
+      <div className="relative w-full max-w-4xl h-[100dvh] sm:h-[90vh] sm:rounded-3xl bg-white dark:bg-slate-900 overflow-hidden flex flex-col z-10 shadow-2xl border-0 sm:border border-slate-200 dark:border-slate-800">
         {/* ========================================================= */}
-        {/* 1. FUTURISTIC TOP BAR: Search Dropdown, Filters, GPS Pill  */}
+        {/* 1. MINIMAL TOP BAR: Dropdown Picker, Search, GPS Pill     */}
         {/* ========================================================= */}
-        <header className="relative z-30 bg-[#070d1a]/95 backdrop-blur-xl px-3 sm:px-5 py-3 border-b border-cyan-500/20 flex flex-col gap-2 shrink-0 shadow-lg text-white">
+        <header className="relative z-30 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md px-3 sm:px-5 py-3 border-b border-slate-200 dark:border-slate-800 flex flex-col gap-2 shrink-0 shadow-xs">
           <div className="flex items-center justify-between gap-2.5">
             {/* Back / Close Button */}
             <button
               type="button"
               onClick={onClose}
-              className="w-9 h-9 rounded-xl bg-slate-800/80 text-cyan-400 hover:text-white hover:bg-cyan-950/60 border border-cyan-500/20 flex items-center justify-center transition shrink-0 cursor-pointer"
+              className="w-9 h-9 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white flex items-center justify-center transition shrink-0 cursor-pointer"
               aria-label="Close Map"
             >
               <IconCross className="w-4 h-4" />
             </button>
 
-            {/* Futuristic Venue Selector Dropdown */}
+            {/* Clean Venue Selector Dropdown */}
             <div className="relative flex-1 max-w-md">
               <button
                 type="button"
                 onClick={() => setDropdownOpen(!dropdownOpen)}
-                className="w-full flex items-center justify-between gap-2 px-3.5 py-2 rounded-xl bg-[#0d1627] border border-cyan-500/30 hover:border-cyan-400 text-left transition shadow-xs cursor-pointer"
+                className="w-full flex items-center justify-between gap-2 px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700 hover:border-primary-500 text-left transition shadow-xs cursor-pointer"
               >
                 <div className="flex items-center gap-2.5 min-w-0">
-                  <div className="w-6 h-6 rounded-lg bg-cyan-500/20 text-cyan-400 flex items-center justify-center shrink-0 border border-cyan-500/40">
+                  <div className="w-6 h-6 rounded-lg bg-primary-50 dark:bg-primary-950/60 text-primary-600 dark:text-primary-400 flex items-center justify-center shrink-0 border border-primary-200 dark:border-primary-800">
                     <IconPin className="w-3.5 h-3.5" />
                   </div>
                   <div className="min-w-0">
-                    <div className="text-xs sm:text-sm font-display font-bold text-white truncate">
+                    <div className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white truncate">
                       {selectedDest.name}
                     </div>
-                    <div className="text-[10px] font-mono text-cyan-400 truncate">
+                    <div className="text-[10px] font-medium text-primary-600 dark:text-primary-400 truncate">
                       {selectedDest.floor}
                     </div>
                   </div>
                 </div>
-                <span className={`text-slate-400 transition-transform font-mono text-xs ${dropdownOpen ? "rotate-180" : ""}`}>
-                  ▼
-                </span>
+                <svg
+                  className={`w-4 h-4 text-slate-400 transition-transform ${dropdownOpen ? "rotate-180" : ""}`}
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
               </button>
 
               {/* Dropdown Options Drawer with Category Filters */}
@@ -623,7 +622,7 @@ export default function CampusMapModal({ isOpen, onClose, initialDestinationId }
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: 6, scale: 0.98 }}
                     transition={{ duration: 0.15 }}
-                    className="absolute top-full left-0 right-0 mt-2 bg-[#0b1222] rounded-2xl shadow-2xl border border-cyan-500/30 z-50 max-h-80 overflow-y-auto p-2.5 scrollbar-thin text-slate-100"
+                    className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 z-50 max-h-80 overflow-y-auto p-2.5 scrollbar-thin text-slate-800 dark:text-slate-100"
                   >
                     {/* Search Field */}
                     <div className="mb-2 px-1 relative">
@@ -632,7 +631,7 @@ export default function CampusMapModal({ isOpen, onClose, initialDestinationId }
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                         placeholder="Search venue, lab, food court..."
-                        className="w-full pl-8 pr-3 py-1.5 text-xs rounded-xl border border-cyan-500/30 bg-[#070d1a] text-white placeholder-slate-400 focus:outline-none focus:border-cyan-400 font-sans"
+                        className="w-full pl-8 pr-3 py-1.5 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:border-primary-500 font-sans"
                       />
                       <IconSearch className="w-3.5 h-3.5 text-slate-400 absolute left-3.5 top-2.5" />
                     </div>
@@ -644,10 +643,10 @@ export default function CampusMapModal({ isOpen, onClose, initialDestinationId }
                           key={cat}
                           type="button"
                           onClick={() => setSelectedCategory(cat)}
-                          className={`px-2.5 py-1 rounded-lg text-[10px] font-mono font-semibold whitespace-nowrap transition ${
+                          className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold whitespace-nowrap transition ${
                             selectedCategory === cat
-                              ? "bg-cyan-500 text-white"
-                              : "bg-slate-800/80 text-slate-300 hover:bg-slate-700"
+                              ? "bg-primary-600 text-white"
+                              : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700"
                           }`}
                         >
                           {cat}
@@ -670,22 +669,22 @@ export default function CampusMapModal({ isOpen, onClose, initialDestinationId }
                             }}
                             className={`w-full text-left p-2.5 rounded-xl flex items-center justify-between gap-2 transition cursor-pointer ${
                               isSelected
-                                ? "bg-cyan-950/80 border border-cyan-500/50 text-cyan-300"
-                                : "hover:bg-slate-800/60 text-slate-200"
+                                ? "bg-primary-50 dark:bg-primary-950/60 border border-primary-200 dark:border-primary-800"
+                                : "hover:bg-slate-50 dark:hover:bg-slate-800/60"
                             }`}
                           >
                             <div className="flex items-center gap-2.5 min-w-0">
-                              <div className="w-5 h-5 rounded-md bg-slate-800 flex items-center justify-center text-cyan-400 shrink-0">
+                              <div className="w-5 h-5 rounded-md bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-primary-600 dark:text-primary-400 shrink-0">
                                 <IconPin className="w-3 h-3" />
                               </div>
                               <div className="min-w-0">
-                                <div className={`text-xs font-bold truncate ${isSelected ? "text-cyan-300" : "text-white"}`}>
+                                <div className={`text-xs font-bold truncate ${isSelected ? "text-primary-600 dark:text-primary-400" : "text-slate-800 dark:text-slate-100"}`}>
                                   {place.name}
                                 </div>
-                                <div className="text-[10px] font-mono text-slate-400 truncate">{place.floor}</div>
+                                <div className="text-[10px] text-slate-400 truncate">{place.floor}</div>
                               </div>
                             </div>
-                            <span className="text-[9px] font-mono text-slate-400 shrink-0 uppercase px-1.5 py-0.5 rounded bg-slate-800">
+                            <span className="text-[9px] font-medium text-slate-400 shrink-0 uppercase px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800">
                               {place.category}
                             </span>
                           </button>
@@ -700,21 +699,21 @@ export default function CampusMapModal({ isOpen, onClose, initialDestinationId }
             {/* GPS Status Indicator & Recenter Action */}
             <div className="flex items-center gap-1.5 shrink-0">
               <div
-                className={`px-2.5 py-1.5 rounded-xl text-[10px] font-mono font-bold flex items-center gap-1.5 border ${
+                className={`px-2.5 py-1.5 rounded-xl text-[10px] font-bold flex items-center gap-1.5 border ${
                   gpsActive
-                    ? "bg-emerald-950/60 text-emerald-400 border-emerald-500/40"
-                    : "bg-slate-800 text-slate-400 border-slate-700"
+                    ? "bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800"
+                    : "bg-slate-100 dark:bg-slate-800 text-slate-500 border-slate-200 dark:border-slate-700"
                 }`}
-                title={gpsActive ? `Live GPS Radar (±${userLocation.accuracy}m)` : "Using Main Gate starting anchor"}
+                title={gpsActive ? `Live GPS Active (±${userLocation.accuracy}m)` : "Using Main Gate starting anchor"}
               >
-                <span className={`w-2 h-2 rounded-full ${gpsActive ? "bg-emerald-400 animate-ping" : "bg-slate-500"}`} />
-                <span className="hidden sm:inline">{gpsActive ? "GPS LIVE" : "GATE ANCHOR"}</span>
+                <span className={`w-2 h-2 rounded-full ${gpsActive ? "bg-emerald-500 animate-pulse" : "bg-slate-400"}`} />
+                <span className="hidden sm:inline">{gpsActive ? "GPS Active" : "Gate Mode"}</span>
               </div>
 
               <button
                 type="button"
                 onClick={handleRecenterUser}
-                className="w-9 h-9 rounded-xl bg-slate-800/80 text-cyan-400 hover:text-white hover:bg-cyan-950/60 border border-cyan-500/20 flex items-center justify-center transition cursor-pointer"
+                className="w-9 h-9 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:text-primary-600 flex items-center justify-center transition cursor-pointer"
                 title="Recenter on current coordinates"
               >
                 <IconNavigation className="w-4 h-4" />
@@ -724,48 +723,48 @@ export default function CampusMapModal({ isOpen, onClose, initialDestinationId }
         </header>
 
         {/* ========================================================= */}
-        {/* 2. FULL-SCREEN INTERACTIVE CAMPUS RADAR CANVAS            */}
+        {/* 2. FULL-SCREEN CLEAN WALKING MAP CANVAS                   */}
         {/* ========================================================= */}
-        <div className="relative flex-1 w-full h-full bg-[#0a0f1d]">
-          <div ref={mapContainerRef} className="w-full h-full z-0" />
+        <div className="relative flex-1 w-full h-full bg-[#f2efe9]">
+          <div ref={mapContainerRef} className="w-full h-full z-0 bg-[#f2efe9]" />
         </div>
 
         {/* ========================================================= */}
-        {/* 3. UNIFIED CYBER WALKING RADAR HUD (Bottom Card)          */}
+        {/* 3. UNIFIED WALKING RADAR HUD (Bottom Card)                */}
         {/* ========================================================= */}
-        <footer className="relative z-30 bg-[#070d1a]/95 backdrop-blur-xl border-t border-cyan-500/20 p-3.5 sm:p-4.5 flex flex-col gap-2.5 shrink-0 shadow-2xl text-white">
+        <footer className="relative z-30 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-slate-200 dark:border-slate-800 p-3.5 sm:p-4 flex flex-col gap-2 shrink-0 shadow-xl">
           <div className="flex items-center justify-between gap-3">
-            {/* Target Destination Badge */}
+            {/* Target Destination Info */}
             <div className="flex items-center gap-3 min-w-0">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-600 to-primary-600 flex items-center justify-center text-white shadow-md shadow-cyan-500/20 ring-1 ring-cyan-400/40 shrink-0">
+              <div className="w-10 h-10 rounded-xl bg-primary-50 dark:bg-primary-950/60 text-primary-600 dark:text-primary-400 border border-primary-200 dark:border-primary-800 flex items-center justify-center shrink-0">
                 <IconPin className="w-5 h-5" />
               </div>
               <div className="min-w-0">
-                <h3 className="font-display font-bold text-sm sm:text-base text-white tracking-tight truncate">
+                <h3 className="font-display font-bold text-sm sm:text-base text-slate-900 dark:text-white tracking-tight truncate">
                   {selectedDest.name}
                 </h3>
-                <p className="text-[11px] font-mono text-cyan-400 font-semibold truncate">
-                  {selectedDest.floor}
+                <p className="text-[11px] text-primary-600 dark:text-primary-400 font-semibold truncate">
+                  📍 {selectedDest.floor}
                 </p>
               </div>
             </div>
 
             {/* Live Compass Heading + Distance / ETA */}
-            <div className="flex items-center gap-2.5 bg-[#0b1222] px-3.5 py-2 rounded-2xl border border-cyan-500/30 shrink-0 shadow-inner">
+            <div className="flex items-center gap-2.5 bg-slate-50 dark:bg-slate-800/90 px-3.5 py-1.5 rounded-2xl border border-slate-200 dark:border-slate-700 shrink-0 shadow-xs">
               {/* Rotating Compass Arrow */}
               <div
-                className="w-6 h-6 flex items-center justify-center transition-transform duration-200 ease-out"
+                className="w-5 h-5 flex items-center justify-center transition-transform duration-200 ease-out"
                 style={{ transform: `rotate(${relativeAngle}deg)` }}
                 title={`Target Bearing: ${Math.round(targetBearing)}°`}
               >
-                <div className="w-0 h-0 border-l-[5px] border-l-transparent border-r-[5px] border-r-transparent border-b-[14px] border-b-cyan-400" />
+                <div className="w-0 h-0 border-l-[4px] border-l-transparent border-r-[4px] border-r-transparent border-b-[12px] border-b-emerald-500" />
               </div>
 
               <div className="text-right font-mono">
-                <div className="text-xs sm:text-sm font-bold text-white leading-none">
+                <div className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white leading-none">
                   {formattedDistance}
                 </div>
-                <div className="text-[9px] text-cyan-400 font-semibold mt-0.5">
+                <div className="text-[9px] text-emerald-600 dark:text-emerald-400 font-semibold mt-0.5">
                   ~{walkMinutes} min walk
                 </div>
               </div>
@@ -774,10 +773,10 @@ export default function CampusMapModal({ isOpen, onClose, initialDestinationId }
 
           {/* Concise Walking Guidance Step */}
           {selectedDest.walkHint && (
-            <div className="flex items-center gap-2 bg-[#0c1426] p-2.5 rounded-xl text-xs text-slate-300 border border-cyan-500/20">
-              <span className="text-cyan-400 font-mono font-bold shrink-0">PATH:</span>
-              <span className="truncate flex-1 text-slate-200">{selectedDest.walkHint}</span>
-              <span className="text-[10px] font-mono font-bold text-emerald-400 shrink-0 bg-emerald-950/80 px-2 py-0.5 rounded border border-emerald-500/30">
+            <div className="flex items-center gap-2 bg-slate-50 dark:bg-slate-800/40 p-2 rounded-xl text-xs text-slate-700 dark:text-slate-300 border border-slate-100 dark:border-slate-800">
+              <span className="text-primary-600 font-bold shrink-0">🚶 Walk:</span>
+              <span className="truncate flex-1 text-slate-600 dark:text-slate-300">{selectedDest.walkHint}</span>
+              <span className="text-[10px] font-semibold text-emerald-600 dark:text-emerald-400 shrink-0 bg-emerald-50 dark:bg-emerald-950/60 px-2 py-0.5 rounded">
                 {walkingCue}
               </span>
             </div>
