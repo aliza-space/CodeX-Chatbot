@@ -7,36 +7,42 @@ import { env } from "../../config/env.js";
 // optional metadata pre-filter (category/tags/status) for keyword-ish narrowing —
 // e.g. a /events command or a detected "CodeX 4.0" entity can filter to category:"event".
 export async function retrieveChunks(query, { topK = env.RAG_TOP_K, filter = {} } = {}) {
-  const queryVector = await embedText(query);
+  try {
+    const queryVector = await embedText(query);
 
-  const pipeline = [
-    {
-      $vectorSearch: {
-        index: env.VECTOR_INDEX_NAME,
-        path: "embedding",
-        queryVector,
-        numCandidates: Math.max(topK * 20, 100),
-        limit: topK * 3, // over-fetch; reranker + threshold will trim down
-        ...(buildAtlasFilter(filter) ? { filter: buildAtlasFilter(filter) } : {}),
+    const pipeline = [
+      {
+        $vectorSearch: {
+          index: env.VECTOR_INDEX_NAME,
+          path: "embedding",
+          queryVector,
+          numCandidates: Math.max(topK * 20, 100),
+          limit: topK * 3, // over-fetch; reranker + threshold will trim down
+          ...(buildAtlasFilter(filter) ? { filter: buildAtlasFilter(filter) } : {}),
+        },
       },
-    },
 
-    {
-      $project: {
-        text: 1,
-        sourceTitle: 1,
-        category: 1,
-        tags: 1,
-        eventDate: 1,
-        status: 1,
-        document: 1,
-        score: { $meta: "vectorSearchScore" },
+      {
+        $project: {
+          text: 1,
+          sourceTitle: 1,
+          category: 1,
+          tags: 1,
+          eventDate: 1,
+          status: 1,
+          document: 1,
+          score: { $meta: "vectorSearchScore" },
+        },
       },
-    },
-  ];
+    ];
 
-  const results = await Chunk.aggregate(pipeline);
-  return results;
+    const results = await Chunk.aggregate(pipeline);
+    if (results && results.length > 0) return results;
+    return retrieveChunksFallback(query, { topK });
+  } catch (err) {
+    console.warn("Atlas vectorSearch unavailable or index not found, using fallback:", err.message);
+    return retrieveChunksFallback(query, { topK });
+  }
 }
 
 function buildAtlasFilter({ category, tags, status } = {}) {

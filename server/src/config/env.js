@@ -16,13 +16,13 @@ const schema = z.object({
   GOOGLE_CLIENT_SECRET: z.string().optional(),
 
   LLM_PROVIDER: z.enum(["gemini", "openai", "anthropic"]).default("gemini"),
-  LLM_MODEL: z.string().default("gemini-1.5-flash"),
+  LLM_MODEL: z.string().default("gemini-3.1-flash-lite"),
   GEMINI_API_KEY: z.string().optional(),
   OPENAI_API_KEY: z.string().optional(),
   ANTHROPIC_API_KEY: z.string().optional(),
 
   EMBEDDING_PROVIDER: z.enum(["gemini", "openai"]).default("gemini"),
-  EMBEDDING_MODEL: z.string().default("text-embedding-004"),
+  EMBEDDING_MODEL: z.string().default("gemini-embedding-001"),
   EMBEDDING_DIMENSIONS: z.string().default("768"),
 
   RAG_TOP_K: z.string().default("5"),
