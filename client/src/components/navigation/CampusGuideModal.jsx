@@ -25,7 +25,7 @@ const findFacilityById = (id) => {
 export default function CampusGuideModal({ isOpen, onClose, initialDestinationId }) {
   // Destination state is centered around CSM Department or Auditorium
   const [selectedFacilityId, setSelectedFacilityId] = useState("csm-labs");
-  const [expandedAmenityId, setExpandedAmenityId] = useState(null);
+  const [selectedOtherLocationId, setSelectedOtherLocationId] = useState("");
   const [mobileTab, setMobileTab] = useState("map"); // 'map' | 'guide'
   const { sendMessage } = useChatStream();
 
@@ -46,6 +46,12 @@ export default function CampusGuideModal({ isOpen, onClose, initialDestinationId
     return list;
   }, []);
 
+  // Selected Other Location Object
+  const activeOtherFacility = useMemo(() => {
+    if (!selectedOtherLocationId) return null;
+    return secondaryAmenities.find((a) => a.id === selectedOtherLocationId) || null;
+  }, [selectedOtherLocationId, secondaryAmenities]);
+
   // Dynamic Page Title
   useEffect(() => {
     if (isOpen) {
@@ -62,8 +68,11 @@ export default function CampusGuideModal({ isOpen, onClose, initialDestinationId
     if (isOpen && initialDestinationId) {
       if (initialDestinationId === "auditorium" || initialDestinationId.includes("audi")) {
         setSelectedFacilityId("auditorium");
-      } else {
+      } else if (initialDestinationId === "csm-labs" || initialDestinationId.includes("csm")) {
         setSelectedFacilityId("csm-labs");
+      } else {
+        setSelectedFacilityId(initialDestinationId);
+        setSelectedOtherLocationId(initialDestinationId);
       }
     } else if (isOpen) {
       setSelectedFacilityId("csm-labs");
@@ -72,6 +81,9 @@ export default function CampusGuideModal({ isOpen, onClose, initialDestinationId
 
   const handleSelectFacility = (zoneId, facilityId) => {
     setSelectedFacilityId(facilityId);
+    if (facilityId !== "csm-labs" && facilityId !== "auditorium") {
+      setSelectedOtherLocationId(facilityId);
+    }
   };
 
   const handleAskAboutFacility = (facility) => {
@@ -403,97 +415,138 @@ export default function CampusGuideModal({ isOpen, onClose, initialDestinationId
               </div>
             </div>
 
-            {/* Secondary Campus Venues & Amenities (Clean Compact List) */}
-            <div className="pt-2">
-              <div className="flex items-center justify-between mb-2 px-1">
+            {/* ========================================================= */}
+            {/* 3. OTHER CAMPUS LOCATIONS (CLEAN DROPDOWN SELECTOR & CARD) */}
+            {/* ========================================================= */}
+            <div className="pt-2 space-y-2.5">
+              <div className="flex items-center justify-between px-1">
                 <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
                   <span>🏛️</span>
                   <span>Other Campus Locations</span>
                 </span>
                 <span className="text-[10px] text-slate-400">
-                  {secondaryAmenities.length} landmarks
+                  {secondaryAmenities.length} locations available
                 </span>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                {secondaryAmenities.map((amenity) => {
-                  const distRoute = calculateCampusRoute("node_main_gate", amenity.id);
-                  const isExpanded = expandedAmenityId === amenity.id;
+              {/* Clean Location Dropdown Picker */}
+              <div className="flex items-center gap-2 p-2 rounded-2xl bg-slate-800/80 border border-slate-700 shadow-sm">
+                <span className="text-base pl-1">📍</span>
+                <select
+                  value={selectedOtherLocationId}
+                  onChange={(e) => {
+                    setSelectedOtherLocationId(e.target.value);
+                    if (e.target.value) {
+                      setSelectedFacilityId(e.target.value);
+                    }
+                  }}
+                  className="bg-transparent text-slate-100 text-xs sm:text-sm font-semibold outline-none cursor-pointer flex-1 py-1"
+                >
+                  <option value="" className="bg-slate-900 text-slate-400">
+                    -- Select a location (CIE Hub, Library, Food Court, Canteen...) --
+                  </option>
+                  {secondaryAmenities.map((amenity) => (
+                    <option key={amenity.id} value={amenity.id} className="bg-slate-900 text-slate-100">
+                      {amenity.icon} {amenity.name} ({amenity.area})
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Selected Location Details Card (Rendered on selection) */}
+              <AnimatePresence mode="wait">
+                {activeOtherFacility && (() => {
+                  const distRoute = calculateCampusRoute("node_main_gate", activeOtherFacility.id);
 
                   return (
-                    <div
-                      key={amenity.id}
-                      className="p-3 rounded-xl bg-slate-800/60 border border-slate-800 hover:border-slate-700 transition space-y-2 text-left"
+                    <motion.div
+                      key={activeOtherFacility.id}
+                      initial={{ opacity: 0, y: 6 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -6 }}
+                      transition={{ duration: 0.15 }}
+                      className="p-4 rounded-2xl bg-slate-800/90 border border-slate-700 shadow-md space-y-3 text-left"
                     >
-                      <div className="flex items-start justify-between gap-2">
-                        <div className="flex items-center gap-2 min-w-0">
-                          <span className="text-lg p-1.5 rounded-lg bg-slate-700 shrink-0">
-                            {amenity.icon}
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="flex items-start gap-3 min-w-0">
+                          <span className="text-2xl p-2 rounded-xl bg-slate-700/80 shrink-0">
+                            {activeOtherFacility.icon}
                           </span>
                           <div className="min-w-0">
-                            <h4 className="text-xs font-bold text-white truncate">
-                              {amenity.name}
+                            <h4 className="text-sm font-bold text-white truncate">
+                              {activeOtherFacility.name}
                             </h4>
-                            <p className="text-[10px] text-slate-400 truncate">
-                              {amenity.area}
-                            </p>
+                            <div className="flex items-center gap-2 mt-0.5 flex-wrap">
+                              <p className="text-xs text-blue-400 font-medium truncate">
+                                {activeOtherFacility.area}
+                              </p>
+                              {distRoute?.success && (
+                                <span className="text-[10px] font-semibold text-slate-300 bg-slate-900 px-2 py-0.5 rounded-md border border-slate-700">
+                                  📍 {distRoute.totalDistanceMeters}m • ~{distRoute.estimatedMinutes}m from Main Gate
+                                </span>
+                              )}
+                            </div>
                           </div>
                         </div>
-                        {distRoute?.success && (
-                          <span className="text-[9px] font-semibold text-slate-300 bg-slate-900 px-1.5 py-0.5 rounded border border-slate-700 shrink-0">
-                            {distRoute.totalDistanceMeters}m
+
+                        {activeOtherFacility.facilityTag && (
+                          <span className="text-[10px] font-semibold px-2.5 py-1 rounded-full bg-slate-900 text-slate-300 border border-slate-700 shrink-0">
+                            {activeOtherFacility.facilityTag}
                           </span>
                         )}
                       </div>
 
-                      <p className="text-[10.5px] text-slate-300 line-clamp-2 leading-relaxed">
-                        {amenity.summary || amenity.whatYouShouldKnow}
-                      </p>
+                      {/* What You Should Know */}
+                      {activeOtherFacility.whatYouShouldKnow && (
+                        <div className="p-2.5 rounded-xl bg-slate-900/90 border border-slate-800 text-xs text-slate-200 leading-relaxed">
+                          <span className="font-bold text-amber-300 flex items-center gap-1.5 mb-0.5 text-[11px]">
+                            <span>💡</span>
+                            <span>What You Should Know</span>
+                          </span>
+                          {activeOtherFacility.whatYouShouldKnow}
+                        </div>
+                      )}
 
-                      <div className="flex items-center justify-between pt-1 border-t border-slate-700/60 text-[10px]">
+                      {/* Highlights */}
+                      {activeOtherFacility.highlights && (
+                        <div className="space-y-1.5 bg-slate-900/70 p-2.5 rounded-xl border border-slate-800/80">
+                          {activeOtherFacility.highlights.map((h, i) => (
+                            <div key={i} className="flex items-start gap-2 text-xs text-slate-200">
+                              <span className="text-xs shrink-0">{h.icon || "•"}</span>
+                              <span className="leading-relaxed">{h.text || h}</span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+
+                      {/* Action Buttons */}
+                      <div className="flex items-center justify-between pt-1 border-t border-slate-700/80">
                         <button
                           type="button"
-                          onClick={() => setExpandedAmenityId(isExpanded ? null : amenity.id)}
-                          className="text-blue-400 hover:underline font-semibold cursor-pointer"
+                          onClick={() => setSelectedFacilityId(activeOtherFacility.id)}
+                          className="text-xs font-semibold text-blue-400 hover:text-blue-300 underline cursor-pointer"
                         >
-                          {isExpanded ? "Hide Details ▲" : "View Details ▼"}
+                          🗺️ View on Map
                         </button>
                         <button
                           type="button"
-                          onClick={() => handleAskAboutFacility(amenity)}
-                          className="text-slate-400 hover:text-white cursor-pointer"
+                          onClick={() => handleAskAboutFacility(activeOtherFacility)}
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold text-white bg-blue-600 hover:bg-blue-500 shadow-xs active:scale-95 transition cursor-pointer"
                         >
-                          Ask Buddy →
+                          <IconSparkles className="w-3.5 h-3.5" />
+                          <span>Ask CodeX Buddy</span>
                         </button>
                       </div>
-
-                      <AnimatePresence>
-                        {isExpanded && (
-                          <motion.div
-                            initial={{ opacity: 0, height: 0 }}
-                            animate={{ opacity: 1, height: "auto" }}
-                            exit={{ opacity: 0, height: 0 }}
-                            className="pt-2 border-t border-slate-700 text-[10.5px] text-slate-300 space-y-1.5"
-                          >
-                            <div>{amenity.whatYouShouldKnow}</div>
-                            {amenity.facilityTag && (
-                              <div className="text-blue-300 font-semibold">
-                                Tag: {amenity.facilityTag}
-                              </div>
-                            )}
-                          </motion.div>
-                        )}
-                      </AnimatePresence>
-                    </div>
+                    </motion.div>
                   );
-                })}
-              </div>
+                })()}
+              </AnimatePresence>
             </div>
           </div>
         </div>
 
         {/* ========================================================= */}
-        {/* 3. MODAL FOOTER                                           */}
+        {/* 4. MODAL FOOTER                                           */}
         {/* ========================================================= */}
         <footer className="px-4 py-2.5 sm:px-6 sm:py-3 border-t border-slate-800 bg-slate-900/95 backdrop-blur-md flex items-center justify-between text-xs text-slate-400 shrink-0">
           <div className="flex items-center gap-2 truncate">
