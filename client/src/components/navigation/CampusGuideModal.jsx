@@ -6,6 +6,7 @@ import {
   GPREC_INFO
 } from "../../data/campusGuideData.js";
 import { useChatStream } from "../../hooks/useChatStream.js";
+import { useModalBackHandler } from "../../hooks/useModalBackHandler.js";
 import CampusInteractiveMap from "./CampusInteractiveMap.jsx";
 import {
   IconCross,
@@ -23,6 +24,8 @@ const findFacilityById = (id) => {
 };
 
 export default function CampusGuideModal({ isOpen, onClose, initialDestinationId }) {
+  useModalBackHandler(isOpen, onClose);
+
   // Destination state is centered around CSM Department or Auditorium
   const [selectedFacilityId, setSelectedFacilityId] = useState("csm-labs");
   const [selectedOtherLocationId, setSelectedOtherLocationId] = useState("");
@@ -120,8 +123,18 @@ export default function CampusGuideModal({ isOpen, onClose, initialDestinationId
         {/* ========================================================= */}
         {/* 1. TOP HEADER                                             */}
         {/* ========================================================= */}
-        <header className="px-3.5 py-2.5 sm:px-6 sm:py-3.5 border-b border-slate-800 bg-slate-900/95 backdrop-blur-md shrink-0 flex items-center justify-between gap-2.5">
-          <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+        <header className="px-3 py-2.5 sm:px-6 sm:py-3.5 border-b border-slate-800 bg-slate-900/95 backdrop-blur-md shrink-0 flex items-center justify-between gap-2.5">
+          <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+            <button
+              type="button"
+              onClick={onClose}
+              className="px-2.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold flex items-center gap-1 transition cursor-pointer shrink-0 border border-slate-700/80 active:scale-95"
+              title="Go back to chat"
+            >
+              <span>←</span>
+              <span>Back</span>
+            </button>
+
             <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-700 text-white flex items-center justify-center shadow-md shadow-blue-500/20 text-base sm:text-lg shrink-0">
               🧭
             </div>

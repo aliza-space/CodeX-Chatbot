@@ -5,6 +5,7 @@ import ChatWindow from "../components/chat/ChatWindow.jsx";
 import UserProfileModal from "../components/common/UserProfileModal.jsx";
 import { useChatStore } from "../store/chatStore.js";
 import { useChatStream } from "../hooks/useChatStream.js";
+import { useModalBackHandler } from "../hooks/useModalBackHandler.js";
 import api from "../api/axios.js";
 import { IconSparkles, IconExternal } from "../components/common/Icons.jsx";
 
@@ -15,6 +16,10 @@ export default function ChatPage() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const [profileModalOpen, setProfileModalOpen] = useState(false);
+
+  useModalBackHandler(profileModalOpen, () => setProfileModalOpen(false));
+  useModalBackHandler(mobileSidebarOpen, () => setMobileSidebarOpen(false));
+
   const [announcement, setAnnouncement] = useState(
     "CodeX 4.0 registrations close on 23 September 2026 — register before slots fill up!"
   );

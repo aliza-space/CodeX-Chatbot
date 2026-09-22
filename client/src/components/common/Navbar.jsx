@@ -15,12 +15,23 @@ export default function Navbar() {
     <>
       <header className="sticky top-0 z-40 w-full border-b border-slate-200/80 dark:border-slate-800/80 bg-white/85 dark:bg-slate-950/85 backdrop-blur-xl shrink-0 transition-colors">
         <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-14 sm:h-16 flex items-center justify-between gap-3">
-          {/* Left: Hamburger Navigation Trigger & Brand Lockup */}
-          <div className="flex items-center gap-2.5 sm:gap-3.5 min-w-0">
-            {/* Hamburger Button for Full Navigation Drawer */}
+          {/* Left: Back Button & Hamburger Navigation Trigger */}
+          <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+            {/* Explicit Back to Chat Button */}
+            <Link
+              to="/"
+              className="px-2.5 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer active:scale-95 shadow-xs"
+              title="Return to main chat"
+            >
+              <span>←</span>
+              <span className="hidden xs:inline">Back to Chat</span>
+              <span className="xs:hidden">Back</span>
+            </Link>
+
+            {/* Hamburger Button for Navigation Drawer */}
             <button
               onClick={() => setSidebarOpen(true)}
-              className="p-2 sm:p-2.5 rounded-2xl text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-100 dark:hover:bg-slate-800/80 border border-slate-200/80 dark:border-slate-800 transition-all active:scale-95 shrink-0 cursor-pointer shadow-xs"
+              className="p-1.5 sm:p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-100 dark:hover:bg-slate-800/80 border border-slate-200/80 dark:border-slate-800 transition-all active:scale-95 shrink-0 cursor-pointer shadow-xs"
               aria-label="Open menu"
               title="Open Navigation Menu"
             >

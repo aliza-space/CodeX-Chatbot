@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "../../hooks/useAuth.js";
 import { useChatStream } from "../../hooks/useChatStream.js";
 import { useChatStore } from "../../store/chatStore.js";
+import { useModalBackHandler } from "../../hooks/useModalBackHandler.js";
 import ThemeToggle from "./ThemeToggle.jsx";
 import {
   IconChat,
@@ -23,6 +24,9 @@ export default function MainSidebar({
   isMobile = false,
 }) {
   const [showSignOutConfirm, setShowSignOutConfirm] = useState(false);
+
+  useModalBackHandler(isMobile && open, onClose);
+  useModalBackHandler(showSignOutConfirm, () => setShowSignOutConfirm(false));
   const { isAuthenticated, user, logout } = useAuth();
   const {
     conversations,

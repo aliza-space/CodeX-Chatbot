@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "../../hooks/useAuth.js";
+import { useModalBackHandler } from "../../hooks/useModalBackHandler.js";
 import ChangePasswordModal from "./ChangePasswordModal.jsx";
 import {
   IconUser,
@@ -13,6 +14,8 @@ import {
 export default function UserProfileModal({ open, onClose }) {
   const { user } = useAuth();
   const [passwordModalOpen, setPasswordModalOpen] = useState(false);
+
+  useModalBackHandler(open, onClose);
 
   if (!open) return null;
 
@@ -41,16 +44,26 @@ export default function UserProfileModal({ open, onClose }) {
             className="relative w-full max-w-md bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800/80 shadow-2xl z-50 overflow-hidden text-slate-900 dark:text-slate-100"
           >
             {/* Header Banner */}
-            <div className="relative h-24 bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 px-5 pt-4 flex items-start justify-between">
+            <div className="relative h-24 bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 px-4 pt-3.5 flex items-start justify-between">
+              <button
+                type="button"
+                onClick={onClose}
+                className="px-2.5 py-1 rounded-xl bg-black/20 hover:bg-black/30 text-white text-xs font-semibold flex items-center gap-1 transition cursor-pointer backdrop-blur-sm"
+              >
+                <span>←</span>
+                <span>Back</span>
+              </button>
+
               <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-white/20 text-white backdrop-blur-sm">
                 Participant Profile
               </span>
+
               <button
                 onClick={onClose}
-                className="w-8 h-8 rounded-full bg-black/20 hover:bg-black/40 text-white flex items-center justify-center transition cursor-pointer"
+                className="w-7 h-7 rounded-full bg-black/20 hover:bg-black/40 text-white flex items-center justify-center transition cursor-pointer"
                 aria-label="Close profile modal"
               >
-                <IconCross className="w-4 h-4" />
+                <IconCross className="w-3.5 h-3.5" />
               </button>
             </div>
 
