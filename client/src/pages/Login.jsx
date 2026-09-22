@@ -189,17 +189,23 @@ export default function Login() {
           </div>
 
           {/* Google Sign-In Button (First / Top Option) */}
-          <div className="flex justify-center w-full min-h-[44px] overflow-hidden rounded-full bg-transparent [&_iframe]:!bg-transparent">
-            <GoogleLogin
-              onSuccess={handleGoogleSuccess}
-              onError={handleGoogleError}
-              useOneTap={false}
-              theme={isDark ? "filled_black" : "outline"}
-              shape="pill"
-              size="large"
-              text="continue_with"
-              width="100%"
-            />
+          <div className="flex flex-col items-center justify-center w-full min-h-[44px] overflow-hidden rounded-full bg-transparent">
+            {loading ? (
+              <div className="flex items-center gap-2 py-2.5 text-xs font-bold text-blue-600 dark:text-blue-400">
+                <span className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                <span>Signing in to CodeX Buddy…</span>
+              </div>
+            ) : (
+              <GoogleLogin
+                onSuccess={handleGoogleSuccess}
+                onError={handleGoogleError}
+                useOneTap={false}
+                theme={isDark ? "filled_black" : "outline"}
+                shape="pill"
+                size="large"
+                text="continue_with"
+              />
+            )}
           </div>
 
           {/* Modern Divider */}
