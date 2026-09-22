@@ -103,7 +103,7 @@ export default function Login() {
             </div>
 
             <h1 className="font-display font-extrabold text-2xl sm:text-3xl text-slate-900 dark:text-white tracking-tight">
-              CodeX Buddy <span className="text-blue-600 dark:text-blue-400">Account</span>
+              CodeX <span className="text-blue-600 dark:text-blue-400">Buddy</span>
             </h1>
             
             <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1.5 max-w-xs leading-relaxed">
@@ -251,24 +251,12 @@ export default function Login() {
                   <span>Processing...</span>
                 </span>
               ) : mode === "login" ? (
-                "Sign In to CodeX Buddy"
+                "Sign In"
               ) : (
                 "Create Account"
               )}
             </button>
           </form>
-
-          {/* 24/7 AI Feature Highlights Strip */}
-          <div className="mt-6 pt-4 border-t border-slate-100 dark:border-slate-800/80">
-            <div className="rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200/60 dark:border-slate-800 p-3 text-center">
-              <p className="text-[11px] font-semibold text-slate-700 dark:text-slate-300">
-                🤖 24/7 Live AI Assistance
-              </p>
-              <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5 leading-relaxed">
-                Ask about problem tracks, venue directions, Dijkstra routes, schedules, rules & mentor support anytime.
-              </p>
-            </div>
-          </div>
 
         </div>
       </main>
