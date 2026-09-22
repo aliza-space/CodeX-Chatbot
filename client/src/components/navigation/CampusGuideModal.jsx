@@ -549,26 +549,6 @@ export default function CampusGuideModal({ isOpen, onClose, initialDestinationId
             </div>
           </div>
         </div>
-
-        {/* ========================================================= */}
-        {/* 4. MODAL FOOTER                                           */}
-        {/* ========================================================= */}
-        <footer className="px-4 py-2.5 sm:px-6 sm:py-3 border-t border-slate-800 bg-slate-900/95 backdrop-blur-md flex items-center justify-between text-xs text-slate-400 shrink-0">
-          <div className="flex items-center gap-2 truncate">
-            <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" />
-            <span className="truncate">GPREC Interactive Navigation • Fixed Official Routes</span>
-          </div>
-
-          <a
-            href={GPREC_INFO.website}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-1 text-blue-400 hover:underline font-semibold shrink-0 ml-2"
-          >
-            <span>gprec.ac.in</span>
-            <IconExternal className="w-3 h-3" />
-          </a>
-        </footer>
       </motion.div>
     </div>
   );
