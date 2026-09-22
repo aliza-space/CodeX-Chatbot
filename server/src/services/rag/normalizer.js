@@ -22,20 +22,19 @@ const TYPO_MAP = [
   [/\b3rd\s*yr\b|\b3rdyr\b|\bthird\s*yr\b|\bthird\s*year\b/gi, "3rd year"],
   [/\b4th\s*yr\b|\b4thyr\b|\bfourth\s*yr\b|\bfinal\s*yr\b|\bfinal\s*year\b/gi, "4th year"],
 
-  // Event and club typos
-  [/\bcodex4\b|\bcdx4\b|\bcdx\s*4\b|\bcodex\s*4\b/gi, "codex 4.0"],
-  [/\bcodex2\b|\bcdx2\b/gi, "codex 2.0"],
-  [/\bcodex3\b|\bcdx3\b/gi, "codex 3.0"],
-  [/\bgg\b|\bgalactic\b/gi, "galactic gamble"],
+  // Event and club typos (ensure we don't turn 4.0 into 4.0.0)
+  [/\bcodex\s*4(?!\.0)\b|\bcodex4\b|\bcdx4\b|\bcdx\s*4\b/gi, "codex 4.0"],
+  [/\bcodex\s*2(?!\.0)\b|\bcodex2\b|\bcdx2\b|\bcdx\s*2\b/gi, "codex 2.0"],
+  [/\bcodex\s*3(?!\.0)\b|\bcodex3\b|\bcdx3\b|\bcdx\s*3\b/gi, "codex 3.0"],
+  [/\bgg\b/gi, "galactic gamble"],
   [/\beligiblity\b|\belgibility\b|\belegibility\b|\belegible\b|\beligble\b/gi, "eligibility"],
-  [/\bsponser\b|\bsponsers\b|\bsponsers\b/gi, "sponsors"],
+  [/\bsponser\b|\bsponsers\b/gi, "sponsors"],
   [/\bregistrtion\b|\breg\b|\bregistr\b/gi, "registration"],
   [/\bparticpate\b|\bpartcipate\b|\bparicipate\b/gi, "participate"],
-  [/\bwiners\b|\bwho\s*won\b|\bwinnerz\b/gi, "winners"],
+  [/\bwiners\b|\bwinnerz\b/gi, "winners"],
   [/\bcoord\b|\bcoordinater\b|\bcoordinators\b/gi, "coordinator"],
   [/\bcafetaria\b|\bcanten\b|\bcantin\b/gi, "cafeteria"],
-  [/\blocation\b|\bvenue\b|\baddress\b|\bwhere\s*is\b/gi, "venue location"],
-  [/\bprize\s*pool\b|\bprizes\b|\bcash\s*prize\b|\brewards\b/gi, "prizes"],
+  [/\bprize\s*pool\b|\bcash\s*prize\b|\brewards\b/gi, "prizes"],
 ];
 
 export function normalizeQuery(raw) {
