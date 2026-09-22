@@ -43,9 +43,9 @@ export default function ChatWindow({ onToggleSidebar, sidebarOpen }) {
     fetchConversations();
   }, [fetchConversations]);
 
-  // Smooth auto-scroll
+  // Smooth auto-scroll (only when there are messages, not on welcome screen)
   useEffect(() => {
-    if (scrollRef.current) {
+    if (scrollRef.current && messages.length > 0) {
       scrollRef.current.scrollTo({
         top: scrollRef.current.scrollHeight,
         behavior: "smooth",
