@@ -133,11 +133,19 @@ function defaultSuggestions() {
   return ["What events are coming up?", "How do I join Coders' Club?", "Show me learning resources"];
 }
 
+const STOPWORDS = new Set([
+  "what", "are", "the", "and", "for", "who", "is", "how", "in", "of", "to", "a", "an",
+  "on", "at", "by", "with", "from", "about", "me", "tell", "give", "show", "can", "you",
+  "does", "do", "i", "my", "our", "we", "this", "that", "these", "those", "which", "where",
+  "when", "why", "be", "been", "being", "have", "has", "had", "would", "should", "could",
+  "please", "some", "any", "all"
+]);
+
 function extractExactAnswerFromChunks(query, chunks) {
   if (!chunks || chunks.length === 0) return null;
 
   const q = normalizeQuery(query).toLowerCase();
-  const qWords = q.split(/\s+/).filter((w) => w.length > 2);
+  const qWords = q.split(/\s+/).filter((w) => w.length > 2 && !STOPWORDS.has(w));
   if (qWords.length === 0) return null;
 
   // 1. Match exact FAQ Q: / A: in chunks
@@ -151,7 +159,7 @@ function extractExactAnswerFromChunks(query, chunks) {
       for (let i = 0; i < lines.length; i++) {
         if (lines[i].startsWith("Q:")) {
           const qLine = lines[i].slice(2).trim().toLowerCase();
-          const qLineWords = qLine.split(/\s+/).filter((w) => w.length > 2);
+          const qLineWords = qLine.split(/\s+/).filter((w) => w.length > 2 && !STOPWORDS.has(w));
           const matchCount = qWords.filter((w) => qLine.includes(w)).length;
           const score = matchCount / Math.max(qWords.length, qLineWords.length, 1);
 
@@ -168,7 +176,7 @@ function extractExactAnswerFromChunks(query, chunks) {
         }
       }
 
-      if (bestFaq && bestFaqScore >= 0.4) {
+      if (bestFaq && bestFaqScore >= 0.5) {
         return bestFaq;
       }
     }
@@ -185,17 +193,17 @@ function extractExactAnswerFromChunks(query, chunks) {
       if (!sec.startsWith("## ")) continue;
       const lines = sec.split("\n");
       const titleLine = lines[0].replace(/^##\s*/, "").toLowerCase();
-      const titleWords = titleLine.split(/\s+/).filter((w) => w.length > 2);
+      const titleWords = titleLine.split(/\s+/).filter((w) => w.length > 2 && !STOPWORDS.has(w));
       const matchCount = qWords.filter((w) => titleLine.includes(w)).length;
-      const score = matchCount / Math.max(titleWords.length, 1);
+      const score = matchCount / Math.max(titleWords.length, qWords.length, 1);
 
-      if (score > bestSecScore && matchCount >= 1) {
+      if (score > bestSecScore && (matchCount >= 2 || (qWords.length === 1 && titleWords.length === 1 && titleLine.includes(qWords[0])))) {
         bestSecScore = score;
         bestSection = sec;
       }
     }
 
-    if (bestSection && bestSecScore >= 0.35) {
+    if (bestSection && bestSecScore >= 0.5) {
       return bestSection
         .replace(/^\[.*?\]\s*/gm, "")
         .replace(/^\*\*Category:\*\*.*$/gm, "")
@@ -210,6 +218,73 @@ function extractExactAnswerFromChunks(query, chunks) {
 
 function synthesizeConciseAnswer(query, chunks) {
   const q = normalizeQuery(query || "").toLowerCase();
+
+  // 0. What is CodeX / CodeX 4.0 / Event Overview
+  if (
+    q === "what is codex" ||
+    q === "what is codex 4.0" ||
+    q === "about codex" ||
+    q === "about codex 4.0" ||
+    q === "tell me about codex" ||
+    q === "codex" ||
+    q === "codex 4.0" ||
+    q.includes("what is codex") ||
+    q.includes("about codex") ||
+    (q.includes("codex") && (q.includes("intro") || q.includes("overview") || q.includes("details")))
+  ) {
+    return `### 🚀 What is CodeX 4.0?
+**CodeX 4.0** is the flagship collegiate coding competition hosted by **Coders' Club** at **G. Pulla Reddy Engineering College (GPREC), Kurnool**.
+
+- **Date & Timings:** 24 September 2026 (9:00 AM – 5:00 PM IST; Reporting at 8:30 AM IST).
+- **Venue:** CSM Computer Labs, GPREC Campus, Kurnool.
+- **Competition Structure:** Two coding rounds (Preliminary Round and Grand Finale) testing problem-solving, logic, and competitive programming.
+- **Participation:** Teams of **2 to 3 members** (open to II, III, and IV year undergraduate engineering students).
+- **Prize Pool:** Up to **₹50,000** total cash prizes, awards, and exclusive internship opportunities with Technical Sponsor **WeDevit**!
+- **Registration:** ₹300 flat team fee on [https://codex4-0-registration-portal.codersclubgprec.in](https://codex4-0-registration-portal.codersclubgprec.in) (Deadline: 23 September 2026).`;
+  }
+
+  // 0.1 What is Coders' Club / About Club
+  if (
+    q.includes("what is coders club") ||
+    q.includes("about coders club") ||
+    q.includes("about the club") ||
+    q.includes("what is the club") ||
+    q.includes("tell me about coders club") ||
+    q === "coders club"
+  ) {
+    return `### 💡 About Coders' Club GPREC
+**Coders' Club** is the official student technical club of **G. Pulla Reddy Engineering College (GPREC), Kurnool**, focused on Data Structures and Algorithms (DSA), competitive programming, coding interviews, and hackathons.
+
+- **Faculty Convener:** Dr. A. Vishnuvardhan Reddy (Associate Professor, ECS/CSE).
+- **Core Activities:** Weekly problem-solving classes, peer review sessions, competitive coding contests on HackerRank, and technical interview preparation.
+- **Flagship Events:** CodeX series (CodeX 2023, CodeX 2.0, CodeX 3.0, CodeX 4.0), Galactic Gamble, IdeaSprint, and OUTSYSLAYER Hackathons.
+- **Official Website:** [https://www.codersclubgprec.in](https://www.codersclubgprec.in)
+- **Instagram:** [@coders_club_gprec](https://instagram.com/coders_club_gprec)`;
+  }
+
+  // 0.2 How to Join / Recruitment / Membership
+  if (
+    q.includes("how to join") ||
+    q.includes("how do i join") ||
+    q.includes("recruitment") ||
+    q.includes("become member") ||
+    q.includes("membership")
+  ) {
+    return `### 🌟 How to Join Coders' Club GPREC
+- **Annual Recruitment:** Coders' Club conducts an annual student recruitment process comprising a technical recruitment exam, coding round, technical interview, and group discussion.
+- **Wildcard Entry:** Direct coding rounds and challenge-based admissions are also conducted periodically.
+- **Announcements:** Future recruitment schedules, eligibility criteria, and application forms are announced on the official Instagram page: [@coders_club_gprec](https://instagram.com/coders_club_gprec).
+- **Open Activities:** All students can attend open guest lectures, webinars, and public coding contests hosted by the club throughout the year!`;
+  }
+
+  // 0.3 What is GPREC
+  if (q.includes("what is gprec") || q.includes("about gprec")) {
+    return `### 🏫 About G. Pulla Reddy Engineering College (GPREC)
+- **Institution:** G. Pulla Reddy Engineering College (Autonomous), established in 1984 by the philanthropist Sri G. Pulla Reddy.
+- **Affiliation & Accreditation:** Affiliated with JNTUA, Anantapuramu, approved by AICTE, and accredited by NAAC (A+ Grade) & NBA.
+- **Campus Location:** G. Pulla Reddy Nagar, Nandyal Road, Kurnool, Andhra Pradesh - 518007 (\`15.8073° N, 78.0375° E\`).
+- **Official Website:** [https://www.gprec.ac.in](https://www.gprec.ac.in)`;
+  }
 
   // 1. First-Year (1st Year) Eligibility Check
   if (

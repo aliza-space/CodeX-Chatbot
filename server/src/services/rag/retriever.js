@@ -145,6 +145,21 @@ export async function retrieveChunksFallback(query, { topK = env.RAG_TOP_K } = {
         if (text.includes("winners") || text.includes("1st prize")) score += 40;
       }
 
+      // CodeX overview targeting
+      if (cleanQuery.includes("what is codex") || cleanQuery === "codex" || cleanQuery === "codex 4.0" || cleanQuery.includes("about codex") || cleanQuery.includes("overview")) {
+        if (title.includes("overview") || title.includes("about codex")) score += 95;
+      }
+
+      // Coders' club overview targeting
+      if (cleanQuery.includes("coders club") || cleanQuery.includes("about club") || cleanQuery.includes("join") || cleanQuery.includes("membership") || cleanQuery.includes("recruitment")) {
+        if (title.includes("about coders' club") || title.includes("learning activities") || title.includes("coders-club")) score += 95;
+      }
+
+      // GPREC college overview targeting
+      if (cleanQuery.includes("gprec") && (cleanQuery.includes("about") || cleanQuery.includes("what is") || cleanQuery.includes("college"))) {
+        if (title.includes("about g. pulla reddy") || title.includes("gprec")) score += 95;
+      }
+
       // CodeX 4.0 edition relevance
       if (isCodeX4Query) {
         if (title.includes("codex 4.0") || tags.includes("codex 4.0")) {

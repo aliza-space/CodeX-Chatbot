@@ -36,6 +36,7 @@ async function runApiTests() {
   console.log(`Test API Server running on port ${port}\n`);
 
   const queries = [
+    "what is codex",
     "What are the eligibility rules and team format for CodeX 4.0?",
     "What are the prizes and perks for CodeX 4.0?",
     "iam 1st yr can ijoin?",
