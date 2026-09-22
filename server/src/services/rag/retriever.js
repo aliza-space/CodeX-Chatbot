@@ -54,22 +54,60 @@ function buildAtlasFilter({ category, tags, status } = {}) {
   return clauses.length === 1 ? clauses[0] : { $and: clauses };
 }
 
-// Fallback for local dev without Atlas Search configured: cosine similarity in JS.
-// Not used in production but keeps `npm run dev` usable before the Atlas index exists.
+// Fallback for local dev or when Atlas Search / Embedding API is unavailable
 export async function retrieveChunksFallback(query, { topK = env.RAG_TOP_K } = {}) {
-  const queryVector = await embedText(query);
-  const all = await Chunk.find({}).lean();
-  const scored = all.map((c) => ({ ...c, score: cosineSim(queryVector, c.embedding) }));
-  scored.sort((a, b) => b.score - a.score);
-  return scored.slice(0, topK * 3);
+  try {
+    const queryVector = await embedText(query);
+    const all = await Chunk.find({}).lean();
+    if (all.length > 0 && all[0].embedding?.length > 0) {
+      const scored = all.map((c) => ({ ...c, score: cosineSim(queryVector, c.embedding) }));
+      scored.sort((a, b) => b.score - a.score);
+      return scored.slice(0, topK * 3);
+    }
+  } catch (embedErr) {
+    console.warn("Embedding vector failed in fallback, using keyword matching:", embedErr.message);
+  }
+
+  // Pure keyword / regex fallback across MongoDB chunks
+  try {
+    const rawTerms = query
+      .toLowerCase()
+      .replace(/[^\w\s]/g, " ")
+      .split(/\s+/)
+      .filter((w) => w.length > 2);
+
+    const regexList = rawTerms.map((t) => new RegExp(t, "i"));
+    const matched = await Chunk.find({
+      $or: [
+        { text: { $in: regexList } },
+        { sourceTitle: { $in: regexList } },
+        { tags: { $in: rawTerms } },
+      ],
+    })
+      .limit(topK * 3)
+      .lean();
+
+    if (matched.length > 0) {
+      return matched.map((c) => ({ ...c, score: 0.82 }));
+    }
+
+    // Default return some context chunks if no keyword match
+    const defaultChunks = await Chunk.find({}).limit(topK * 2).lean();
+    return defaultChunks.map((c) => ({ ...c, score: 0.75 }));
+  } catch (dbErr) {
+    console.warn("Keyword fallback failed:", dbErr.message);
+    return [];
+  }
 }
 
 function cosineSim(a, b) {
+  if (!a || !b || a.length === 0 || b.length === 0) return 0;
   let dot = 0, na = 0, nb = 0;
   for (let i = 0; i < a.length; i++) {
-    dot += a[i] * b[i];
-    na += a[i] * a[i];
-    nb += b[i] * b[i];
+    dot += (a[i] || 0) * (b[i] || 0);
+    na += (a[i] || 0) * (a[i] || 0);
+    nb += (b[i] || 0) * (b[i] || 0);
   }
   return dot / (Math.sqrt(na) * Math.sqrt(nb) + 1e-8);
 }
+

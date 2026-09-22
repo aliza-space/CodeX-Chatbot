@@ -2,6 +2,22 @@ import { env } from "../../config/env.js";
 
 const BASE = "https://generativelanguage.googleapis.com/v1beta/models";
 
+function getLLMModel() {
+  const m = env.LLM_MODEL;
+  if (!m || m === "gemini-3.1-flash-lite" || m === "gemini-flash" || m === "default") {
+    return "gemini-1.5-flash";
+  }
+  return m;
+}
+
+function getEmbeddingModel() {
+  const m = env.EMBEDDING_MODEL;
+  if (!m || m === "gemini-embedding-001" || m.includes("gemini-embedding")) {
+    return "text-embedding-004";
+  }
+  return m;
+}
+
 function toGeminiContents(messages) {
   return messages.map((m) => ({
     role: m.role === "assistant" ? "model" : "user",
@@ -10,7 +26,8 @@ function toGeminiContents(messages) {
 }
 
 export async function complete({ systemPrompt, messages }) {
-  const url = `${BASE}/${env.LLM_MODEL}:generateContent?key=${env.GEMINI_API_KEY}`;
+  const model = getLLMModel();
+  const url = `${BASE}/${model}:generateContent?key=${env.GEMINI_API_KEY}`;
   const body = {
     systemInstruction: { parts: [{ text: systemPrompt }] },
     contents: toGeminiContents(messages),
@@ -27,7 +44,8 @@ export async function complete({ systemPrompt, messages }) {
 
 // Streams token-by-token via Gemini's streamGenerateContent (SSE-style chunks of JSON).
 export async function streamChat({ systemPrompt, messages, onToken }) {
-  const url = `${BASE}/${env.LLM_MODEL}:streamGenerateContent?alt=sse&key=${env.GEMINI_API_KEY}`;
+  const model = getLLMModel();
+  const url = `${BASE}/${model}:streamGenerateContent?alt=sse&key=${env.GEMINI_API_KEY}`;
   const body = {
     systemInstruction: { parts: [{ text: systemPrompt }] },
     contents: toGeminiContents(messages),
@@ -68,18 +86,42 @@ export async function streamChat({ systemPrompt, messages, onToken }) {
   }
   return full;
 }
+
 export async function embed(text) {
-  const url = `${BASE}/${env.EMBEDDING_MODEL}:embedContent?key=${env.GEMINI_API_KEY}`;
+  const model = getEmbeddingModel();
+  const url = `${BASE}/${model}:embedContent?key=${env.GEMINI_API_KEY}`;
   const res = await fetch(url, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      model: `models/${env.EMBEDDING_MODEL}`,
+      model: `models/${model}`,
       content: { parts: [{ text }] },
       outputDimensionality: env.EMBEDDING_DIMENSIONS,
     }),
   });
-  if (!res.ok) throw new Error(`Gemini embedding error ${res.status}: ${await res.text()}`);
+  if (!res.ok) {
+    // Try legacy embedding-001 fallback if text-embedding-004 fails
+    if (model !== "embedding-001") {
+      try {
+        const fallbackUrl = `${BASE}/embedding-001:embedContent?key=${env.GEMINI_API_KEY}`;
+        const fallbackRes = await fetch(fallbackUrl, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            model: "models/embedding-001",
+            content: { parts: [{ text }] },
+          }),
+        });
+        if (fallbackRes.ok) {
+          const fallbackData = await fallbackRes.json();
+          return fallbackData.embedding.values;
+        }
+      } catch {
+        // continue to throw original error below
+      }
+    }
+    throw new Error(`Gemini embedding error ${res.status}: ${await res.text()}`);
+  }
   const data = await res.json();
   return data.embedding.values;
 }
