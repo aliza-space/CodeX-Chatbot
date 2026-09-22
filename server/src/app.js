@@ -24,6 +24,9 @@ const isAllowedOrigin = (origin) => {
   if (/^https?:\/\/.*\.vercel\.app$/.test(origin)) return true;
   if (/^https?:\/\/.*\.onrender\.com$/.test(origin)) return true;
   if (/^https?:\/\/.*\.netlify\.app$/.test(origin)) return true;
+  if (/^https?:\/\/.*\.ngrok-free\.app$/.test(origin)) return true;
+  if (/^https?:\/\/.*\.ngrok\.app$/.test(origin)) return true;
+  if (/^https?:\/\/.*\.ngrok\.io$/.test(origin)) return true;
   if (/^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin)) return true;
   if (/^http:\/\/(192\.168\.\d+\.\d+|10\.\d+\.\d+\.\d+|172\.(1[6-9]|2\d|3[0-1])\.\d+\.\d+)(:\d+)?$/.test(origin)) return true;
   if (env.NODE_ENV === "development") return true;

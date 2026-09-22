@@ -9,7 +9,8 @@
     "dev": "nodemon src/server.js",
     "start": "node src/server.js",
     "seed": "node src/seed/seed.js",
-    "ingest": "node src/seed/ingestKnowledgeBase.js"
+    "ingest": "node src/seed/ingestKnowledgeBase.js",
+    "tunnel": "npx ngrok http 5000"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
