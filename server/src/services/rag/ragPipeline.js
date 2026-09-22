@@ -61,6 +61,25 @@ export async function runRagPipeline({ userMessage, history = [], conversationId
   const effectiveQuestion = slash?.expandedQuery ?? userMessage;
   const rewritten = await rewriteQuery({ history, latestQuestion: effectiveQuestion });
 
+  // ⚡ Fast-Path Direct Synthesizer Check (Instant <50ms response for known FAQs)
+  const fastDirectAnswer = synthesizeConciseAnswer(rewritten, []);
+  if (fastDirectAnswer) {
+    if (onToken) {
+      const words = fastDirectAnswer.split(" ");
+      for (const w of words) {
+        onToken(w + " ");
+        await new Promise((r) => setTimeout(r, 8));
+      }
+    }
+    return {
+      answer: fastDirectAnswer,
+      citations: [],
+      suggestions: buildSuggestions([], slash, rewritten),
+      wasAnswered: true,
+      rewrittenQuery: rewritten,
+    };
+  }
+
   const rawChunks = await retrieveChunks(rewritten, { filter: slash?.filter ?? {} });
   const { chunks, bestScoreOverall, isConfident } = rerank(rawChunks);
 
@@ -473,6 +492,25 @@ function synthesizeConciseAnswer(query, chunks) {
 - **Session:** Interactive keynote offering practical tech learning perspectives and career inspiration. *(Open to all registered CodeX 4.0 participants).*`;
   }
 
+  // 8. Prizes & Perks / Rewards / Cash / Pool for CodeX 4.0
+  if (
+    q.includes("prize") ||
+    q.includes("prizes") ||
+    q.includes("perk") ||
+    q.includes("perks") ||
+    q.includes("reward") ||
+    q.includes("rewards") ||
+    q.includes("cash") ||
+    q.includes("50,000") ||
+    q.includes("50000")
+  ) {
+    return `### 🏆 CodeX 4.0 Prizes, Perks & Career Opportunities
+- **Prize Pool:** Up to **₹50,000** total cash prizes & awards!
+- **Internship Opportunities:** Top-winning teams secure direct **internship opportunities with Technical Sponsor WeDevit** and **Microcare Academy**.
+- **Participant Perks:** Every participant receives goodies, refreshments, and an official hard-copy Certificate of Participation.
+- **Sponsors & Partners:** **WeDevit** (*Technical Sponsor*), **Havmor** (*Ice Cream Partner*), **Microcare Academy** (*Training & Placement Partner*), **Fiarro Pizza**, and **RC Cola**.`;
+  }
+
   // 8.1 Sponsors & Partners
   if (q.includes("sponsor") || q.includes("sponsors") || q.includes("partner")) {
     return `### 🤝 CodeX 4.0 Official Sponsors & Partners
@@ -482,24 +520,85 @@ function synthesizeConciseAnswer(query, chunks) {
 - **Food & Beverage Partners:** **Fiarro Pizza** and **RC Cola**`;
   }
 
-  // 17. Team & Contact details
+  // 9. Eligibility & Team Rules / Team Format / Team Size
   if (
-    q.includes("team") ||
+    q.includes("eligib") ||
+    q.includes("team format") ||
+    q.includes("team size") ||
+    q.includes("who can") ||
+    q.includes("format") ||
+    q.includes("rule") ||
+    q.includes("rules") ||
+    q.includes("4th year") ||
+    q.includes("final year") ||
+    q.includes("branch") ||
+    q.includes("combination") ||
+    (q.includes("team") && (q.includes("size") || q.includes("format") || q.includes("rule") || q.includes("member") || q.includes("limit") || q.includes("allow") || q.includes("form") || q.includes("eligib")))
+  ) {
+    return `### 👥 CodeX 4.0 Eligibility & Team Rules
+- **Eligibility:** Open to undergraduate engineering students in their **II, III, or IV Year** from GPREC and all other recognized engineering colleges (*1st-year students are not eligible to compete*).
+- **Team Size:** Exactly **2 or 3 members** per team. (Solo participation is strictly not permitted).
+- **Final-Year Rule:** Maximum **one 4th-year student** per team (0 or 1). Teams with two or more 4th-year students are not permitted.
+- **College Representation:** All members of a team must belong to the **same college**. Cross-branch and inter-year combinations within the same college are allowed and encouraged.
+- **Registration Constraint:** Each student's roll number can be registered with only one team.`;
+  }
+
+  // 10. Date / Timing / Venue / Schedule / Rounds
+  if (
+    q.includes("when is") ||
+    q.includes("timing") ||
+    q.includes("schedule") ||
+    q.includes("venue") ||
+    q.includes("where is codex") ||
+    (q.includes("date") && !q.includes("last"))
+  ) {
+    return `### 📅 CodeX 4.0 Date, Venue & Schedule
+- **Date:** 24 September 2026
+- **Reporting Time:** 8:30 AM to 9:00 AM IST (bring physical College ID, Team ID/confirmation email, and CodeX 4.0 Pass).
+- **Event Window:** 9:00 AM to 5:00 PM IST (includes Round 1, Round 2, guest speaker session, and valedictory ceremony).
+- **Venue:** CSM Computer Labs, GPREC Campus, Nandyal Road, Kurnool.
+- **Structure:** Exactly **two competition rounds** (Round 1 Preliminary and Round 2 Grand Finale).`;
+  }
+
+  // 11. Registration & Fee
+  if (
+    q.includes("register") ||
+    q.includes("registration") ||
+    q.includes("fee") ||
+    q.includes("cost") ||
+    q.includes("pay") ||
+    q.includes("price") ||
+    q.includes("portal") ||
+    q.includes("300")
+  ) {
+    return `### 📝 CodeX 4.0 Registration & Fees
+- **Registration Fee:** **₹300 per team** (flat fee for the whole team, covering 2 to 3 members).
+- **Registration Deadline:** **23 September 2026**.
+- **Registration Portal:** [https://codex4-0-registration-portal.codersclubgprec.in](https://codex4-0-registration-portal.codersclubgprec.in)
+- **Payment Method:** Processed securely through Cashfree Payments (UPI, debit card, credit card, net banking).
+- **Pass & Verification:** Generates a unique Team ID (e.g., \`CDX4-0001\`). Download the CodeX 4.0 Pass to bring on the event day.`;
+  }
+
+  // 12. Team & Contact details
+  if (
     q.includes("contact") ||
     q.includes("coordinator") ||
     q.includes("phone") ||
     q.includes("email") ||
     q.includes("number") ||
-    q.includes("/team")
+    q.includes("call") ||
+    q.includes("reach") ||
+    q.includes("/team") ||
+    (q.includes("team") && (q.includes("lead") || q.includes("organizer") || q.includes("contact") || q.includes("who is") || q.includes("who are") || q.includes("coordinators")))
   ) {
     return `### 📞 Coders' Club & CodeX 4.0 Contacts
 - **Faculty Convener:** Dr. A. Vishnuvardhan Reddy (Associate Professor, ECS, GPREC)
 - **Faculty Coordinators:** Sri P. Rama Rao (CSE), Sri V. Mallesi (CSE), Dr. R. Sudheer Babu (ECE), Dr. S. Anil Kumar (EEE)
 - **Student Contacts for CodeX 4.0:**
-  - **Tabraiz (SMD Tabraiz, CSD):** +91 9391491123
-  - **Kashif (Mohammed Kashif, CSD):** +91 9492068097
-  - **Karthik Sai (Vinjamarla Karthik Sai, ECE):** +91 9032174306
-- **Email:** \`codersclub@gprec.ac.in\`
+  1. **Tabraiz (SMD Tabraiz, CSD):** [+91 9391491123](tel:+919391491123)
+  2. **Kashif (Mohammed Kashif, CSD):** [+91 9492068097](tel:+919492068097)
+  3. **Karthik Sai (Vinjamarla Karthik Sai, ECE):** [+91 9032174306](tel:+919032174306)
+- **Email:** [codersclub@gprec.ac.in](mailto:codersclub@gprec.ac.in)
 - **Instagram:** [@coders_club_gprec](https://instagram.com/coders_club_gprec)
 - **Support Hours:** Mon–Sat, 9:00 AM – 7:00 PM IST (Typical response time: 12–24 hours).`;
   }
