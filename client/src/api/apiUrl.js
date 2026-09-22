@@ -11,12 +11,16 @@ export function getApiBaseUrl() {
     const { hostname, protocol } = window.location;
     const isNetworkHost = hostname !== "localhost" && hostname !== "127.0.0.1";
 
-    // If we're on a LAN IP and the configured URL points to localhost (or is not set),
-    // route API calls to the same LAN IP on port 5000
-    if (isNetworkHost && (!envUrl || envUrl.includes("localhost") || envUrl.includes("127.0.0.1"))) {
+    // If on a LAN IP (e.g. 192.168.x.x for local phone testing)
+    if (isNetworkHost && !hostname.includes("vercel.app") && (!envUrl || envUrl.includes("localhost") || envUrl.includes("127.0.0.1"))) {
       return `${protocol}//${hostname}:5000`;
+    }
+
+    // If deployed on Vercel or live production domain
+    if (hostname.includes("vercel.app") && (!envUrl || envUrl.includes("localhost"))) {
+      return "https://codex-chatbot-rcxe.onrender.com";
     }
   }
 
-  return envUrl || "http://localhost:5000";
+  return envUrl || "https://codex-chatbot-rcxe.onrender.com";
 }
