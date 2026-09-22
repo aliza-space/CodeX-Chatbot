@@ -7,7 +7,7 @@
 ## Sponsors of earlier CodeX editions
 - CodeX 2.0 (24 August 2024): Microcare Academy was the Diamond Sponsor. The report also records Codetantra, Taj Convention Hall and Frozen Bites as supporters.
 - CodeX 3.0 (25 September 2025): K Fortune is recorded as a sponsor, and a Gold Sponsor was felicitated on the day (the name of the Gold Sponsor is not stated in the report).
-- CodeX 4.0 (24 September 2026): WeDevit (Technical Sponsor), HaveMore (Havmor), Microcare, Fiarro Pizza and RC Cola. See events/codex-4-0-sponsors.md.
+- CodeX 4.0 (24 September 2026): WeDevit (Technical Sponsor), Havmor, Microcare, Fiarro Pizza and RC Cola. See events/codex-4-0-sponsors.md.
 
 ## Sponsors and collaborators of other events
 - Code Symposium 2K24 (4 May 2024): sponsored by Dumont Creamery.

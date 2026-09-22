@@ -76,7 +76,7 @@ Q: Who is the guest speaker of CodeX 4.0?
 A: The guest speaker is Dodagatta Nihar, a Tech Educator, Web Developer, ML Engineer, Entrepreneur and 3x TEDx Speaker with 500K+ Instagram followers.
 
 Q: Who are the sponsors of CodeX 4.0?
-A: The sponsors are WeDevit (Technical Sponsor), HaveMore (Havmor ice creams), Microcare, Fiarro Pizza and RC Cola.
+A: The sponsors are WeDevit (Technical Sponsor), Havmor (Havmor ice creams), Microcare, Fiarro Pizza and RC Cola.
 
 ## About Coders' Club
 

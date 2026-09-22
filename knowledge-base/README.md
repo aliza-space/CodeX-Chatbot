@@ -23,5 +23,5 @@ If the retrieved context does not contain the answer, the chatbot should say tha
 ## Important consistency notes
 - CodeX 4.0 is open to II, III and IV year students. The round durations of CodeX 4.0 are not published, so the chatbot must not quote durations from CodeX 3.0 as CodeX 4.0 facts.
 - The CodeX 4.0 registration deadline is 23 September 2026.
-- HaveMore and Havmor are the same sponsor, an ice-cream brand.
+- Havmor is an ice-cream brand sponsor.
 - Financial details of past events (budgets, sponsorship amounts) are deliberately not included.

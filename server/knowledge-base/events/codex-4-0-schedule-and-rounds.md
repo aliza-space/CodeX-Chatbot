@@ -10,6 +10,11 @@ CodeX 4.0 consists of exactly two competition rounds: the Preliminary Round (Rou
 ## Round 1 of CodeX 4.0 — Preliminary Round
 Round 1 of CodeX 4.0 is the Preliminary Round. All registered teams participate in Round 1. Teams are evaluated on their performance and scores in Round 1, and the Round 1 performance decides which teams advance to Round 2.
 
+## Round 1 Question Difficulty and Problem Topics
+- **Difficulty Level:** Round 1 (Preliminary Round) features **Easy to Medium** difficulty competitive coding problems designed to test core programming fundamentals, logical reasoning, and algorithmic problem-solving speed.
+- **Problem Topics:** Questions cover Data Structures & Algorithms (arrays, strings, sorting, searching, hash maps, basic recursion, math, and logic optimization).
+- **Evaluation:** Submissions are evaluated on correctness, test case passes, execution time, and memory limits. Scores determine which top teams qualify for Round 2.
+
 ## Round 2 of CodeX 4.0 — Grand Finale
 Round 2 of CodeX 4.0 is the Grand Finale. Only the top-performing teams from Round 1 advance to the Grand Finale. Selection for the Grand Finale is based on Round 1 performance and score.
 

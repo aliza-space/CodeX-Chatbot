@@ -32,7 +32,7 @@ const KNOWN_ENTITIES = [
   "guest speaker",
   "wedevit",
   "microcare",
-  "havemore",
+  "havmor",
   "csm labs",
   "food court",
   "cafeteria",

@@ -2,16 +2,16 @@
 
 **Category:** event
 **Date:** 2026-09-24
-**Tags:** sponsors, WeDevit, HaveMore, Havmor, Microcare, Fiarro Pizza, RC Cola, technical sponsor, internships
+**Tags:** sponsors, WeDevit, Havmor, Havmor, Microcare, Fiarro Pizza, RC Cola, technical sponsor, internships
 
 ## Sponsors of CodeX 4.0
-CodeX 4.0 is supported by five sponsors: WeDevit (Technical Sponsor), HaveMore, Microcare, Fiarro Pizza and RC Cola. Coders' Club thanks all sponsors for supporting CodeX 4.0 and the student community.
+CodeX 4.0 is supported by five sponsors: WeDevit (Technical Sponsor), Havmor, Microcare, Fiarro Pizza and RC Cola. Coders' Club thanks all sponsors for supporting CodeX 4.0 and the student community.
 
 ## WeDevit — Technical Sponsor
 WeDevit is the Technical Sponsor of CodeX 4.0. Top-winning teams of CodeX 4.0 have the opportunity to secure internships with WeDevit and other leading tech companies.
 
-## HaveMore — Sponsor
-HaveMore, also written Havmor, is a popular Indian ice-cream brand offering ice creams, cones, cups, tubs, sundaes, kulfi and ice-cream cakes in different flavours. Havmor products are available through stores and ice-cream outlets in and around Kurnool. Havmor is a sponsor of CodeX 4.0.
+## Havmor — Sponsor
+Havmor, also written Havmor, is a popular Indian ice-cream brand offering ice creams, cones, cups, tubs, sundaes, kulfi and ice-cream cakes in different flavours. Havmor products are available through stores and ice-cream outlets in and around Kurnool. Havmor is a sponsor of CodeX 4.0.
 
 ## Microcare — Sponsor
 Microcare is a sponsor of CodeX 4.0. Microcare Academy was also the Diamond Sponsor of the earlier edition CodeX 2.0 (24 August 2024). Microcare Academy is a software training institute in Kurnool located on Stadium Road, offering job-oriented courses in Data Analytics, AI/ML, Java Full Stack and .NET Full Stack with internship and placement support.
