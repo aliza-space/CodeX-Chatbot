@@ -78,7 +78,7 @@ export default function ChatWindow({ variant = "widget" }) {
               How can I help you today?
             </h3>
             <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 max-w-md mb-2 leading-relaxed px-2">
-              Available 24/7 for CodeX 4.0 hackathon guidance, Dijkstra campus navigation, problem tracks & schedules.
+              Available 24/7 for CodeX 4.0 coding event guidance, Dijkstra campus navigation, problem tracks & schedules.
             </p>
 
             <QuickActionCards onPick={handleSend} />

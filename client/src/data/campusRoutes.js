@@ -1,12 +1,12 @@
 /**
  * Curated In-Campus Walking Directions & Landmark Waypoints for GPREC Kurnool
- * Specially designed for CodeX 4.0 hackathon participants navigating the campus.
+ * Specially designed for CodeX 4.0 coding event participants navigating the campus.
  */
 
 export const CAMPUS_LANDMARKS = {
   "csm-labs": {
-    name: "CSM Labs & Hackathon Arena",
-    building: "CSM Block (Ground & 2nd Floor)",
+    name: "CSM Labs & Coding Arena",
+    building: "CSM Block (Intel AI/ML Hub)",
     walkingSteps: [
       {
         step: 1,
@@ -32,7 +32,7 @@ export const CAMPUS_LANDMARKS = {
       {
         step: 4,
         title: "Arrive at CSM Block",
-        instruction: "Enter the CSM building. Labs 1–2 on Ground Floor; take the central staircase to 2nd Floor for Intel Unnati AI/ML Lab & CodeX 4.0 Arena.",
+        instruction: "Enter the CSM building for Intel Unnati AI/ML Lab & CodeX 4.0 Arena.",
         landmark: "CSM Main Portico & Stairwell",
         icon: "💻",
       },
@@ -44,23 +44,23 @@ export const CAMPUS_LANDMARKS = {
     walkingSteps: [
       {
         step: 1,
-        title: "From Main Gate or Central Quad",
-        instruction: "Walk along the eastern pathway past the central seminar halls.",
-        landmark: "Eastern Shaded Walkway",
-        icon: "🚶",
+        title: "Start from Central Roundabout",
+        instruction: "Face north toward the CSE/CSM block. Take the pathway turning right (east).",
+        landmark: "East Walkway Signpost",
+        icon: "🧭",
       },
       {
         step: 2,
-        title: "Look for the Canopy Area",
-        instruction: "The food court is located adjacent to the student activity centre with open seating and juice counters.",
-        landmark: "Student Activity Plaza",
-        icon: "🥤",
+        title: "Walk past Innovation Hub",
+        instruction: "Pass the CIE Innovation Hub on your left.",
+        landmark: "CIE Building",
+        icon: "💡",
       },
       {
         step: 3,
-        title: "Counters & Seating",
-        instruction: "Hot meals, snacks, tea/coffee, and beverages available. Fast queues set up for CodeX participants.",
-        landmark: "Food Court Order Counter",
+        title: "Arrive at Food Court",
+        instruction: "The open canopy dining area and cafeteria are straight ahead.",
+        landmark: "Food Court Entrance",
         icon: "🍱",
       },
     ],
@@ -146,7 +146,7 @@ export const CAMPUS_LANDMARKS = {
       {
         step: 2,
         title: "Tiered Seating Gallery",
-        instruction: "Large open-air amphitheatre with stage for cultural shows, hackathon announcements, and networking.",
+        instruction: "Large open-air amphitheatre with stage for cultural shows, coding event announcements, and networking.",
         landmark: "Open Stage & Grass Slopes",
         icon: "🎪",
       },

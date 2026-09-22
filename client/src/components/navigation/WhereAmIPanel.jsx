@@ -43,7 +43,7 @@ export default function WhereAmIPanel({
 
   const nearestSpot = rankedDestinations[0];
 
-  const categories = ["All", "Hackathon Hub", "Dining", "Academic", "Hostel", "Recreation"];
+  const categories = ["All", "Coding Hub", "Dining", "Academic", "Hostel", "Recreation"];
 
   const filtered = useMemo(() => {
     if (selectedCategory === "All") return rankedDestinations;

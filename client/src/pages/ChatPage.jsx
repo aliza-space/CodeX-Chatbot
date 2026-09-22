@@ -85,10 +85,10 @@ export default function ChatPage() {
             </div>
 
             <h2 className="font-display font-bold text-lg text-slate-900 dark:text-white tracking-tight">
-              CodeX 4.0 Hackathon
+              CodeX 4.0 Coding Event
             </h2>
             <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
-              Full-day collegiate team hackathon hosted by Coders' Club at GPREC, Kurnool.
+              Full-day collegiate coding event hosted by Coders' Club at GPREC, Kurnool.
             </p>
 
             <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800 text-xs space-y-2.5">

@@ -196,11 +196,11 @@ export default function MainSidebar({ open, onClose, onOpenProfile }) {
                     )}
                   </div>
 
-                  {/* Clean Hackathon Summary Strip */}
+                  {/* Clean Coding Event Summary Strip */}
                   <div className="p-3.5 rounded-2xl bg-slate-50/80 dark:bg-slate-900/50 border border-slate-200/60 dark:border-slate-800/60 space-y-2">
                     <div className="flex items-center justify-between">
                       <span className="text-[10px] font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400">
-                        CodeX 4.0 Hackathon
+                        CodeX 4.0 Coding Event
                       </span>
                       <span className="text-[10px] font-medium text-slate-400">
                         24 Sept 2026

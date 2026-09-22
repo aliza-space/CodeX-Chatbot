@@ -3,11 +3,15 @@
 export const GPREC_INFO = {
   name: "G. Pulla Reddy Engineering College (Autonomous)",
   shortName: "GPREC Kurnool",
-  established: "Est. 1984 • Autonomous • NAAC 'A+' & NBA Accredited",
-  location: "G. Pulla Reddy Nagar, Nandyal Road, Kurnool, AP - 518007",
-  gps: { lat: 15.8073, lng: 78.0375 },
+  city: "Kurnool, Andhra Pradesh",
+  established: 1984,
+  campusArea: "30+ Acres",
+  accreditation: "NAAC 'A+' Grade • NBA Accredited • Autonomous",
+  affiliations: "Affiliated to JNTUA, Ananthapuramu • Approved by AICTE, New Delhi",
   website: "https://www.gprec.ac.in",
-  tagline: "Premier autonomous engineering campus & home of CodeX Hackathons and CIE Innovation Hub",
+  tagline: "Premier autonomous engineering campus & home of CodeX Coding Events and CIE Innovation Hub",
+  zonesCount: 2,
+  facilitiesCount: 13,
   visitorHighlight: "Spanning 30+ lush green acres with cutting-edge Intel AI labs, CIE startup incubator, modern food courts, and a vibrant tech community."
 };
 
@@ -343,29 +347,29 @@ export const CAMPUS_ZONES = [
     icon: "🏛️",
     badge: "Zone 1",
     themeColor: "blue",
-    overview: "Where cutting-edge engineering, AI research, and hackathon coding happen at GPREC.",
+    overview: "Where cutting-edge engineering, AI research, and competitive coding happen at GPREC.",
     facilities: [
       {
         id: "csm-labs",
         name: "CSM Computer Labs & Intel AI/ML Center",
-        shortName: "CSM Labs (Hackathon Arena)",
+        shortName: "CSM Labs (Coding Arena)",
         icon: "💻",
         area: "East Academic Quadrangle • Ground to 2nd Floor",
-        badge: "CodeX 4.0 Hackathon Hub",
+        badge: "CodeX 4.0 Coding Hub",
         category: "hackathon",
         nodeId: "node_csm_entry",
         mapCoords: { x: 710, y: 370 },
         isHackathonHub: true,
         facilityTag: "CSM Block • 8 Labs",
-        whatYouShouldKnow: "Primary arena for CodeX and hackathon rounds. High-speed Lenovo ThinkCentre Neo 50S (i5 12th Gen, 16GB RAM) workstations, ultra-low latency 1 Gbps fiber internet, dual-port power per bench, and round-the-clock technical mentor desk.",
+        whatYouShouldKnow: "Primary arena for CodeX and coding event rounds. High-speed Lenovo ThinkCentre Neo 50S (i5 12th Gen, 16GB RAM) workstations, ultra-low latency 1 Gbps fiber internet, dual-port power per bench, and round-the-clock technical mentor desk.",
         summary: "State-of-the-art Intel Unnati AI/ML Center (CSM Lab 6), Drone & Robotics Lab, Python, and high-performance computing suites.",
         highlights: [
           { icon: "💻", text: "Ground Floor: Core Programming Labs 1 & 2 (Lenovo ThinkCentre Neo 50S) and Drone & Robotics Research Lab" },
           { icon: "🖥️", text: "1st Floor: Advanced Software, DBMS & Web Labs 3–5 plus multimedia tutorial seminar halls" },
-          { icon: "⚡", text: "2nd Floor: Intel Unnati AI/ML Center (CSM Lab 6) with high-end workstations — primary arena for CodeX 4.0 Hackathon" },
+          { icon: "⚡", text: "2nd Floor: Intel Unnati AI/ML Center (CSM Lab 6) with high-end workstations — primary arena for CodeX 4.0 Coding Event" },
           { icon: "🔋", text: "Equipped with 1 Gbps redundant campus fiber-optic internet and 100% online UPS power backup" }
         ],
-        keywords: ["csm", "intel", "ai", "ml", "hackathon", "workstation", "pc", "computer", "lab", "lab 6", "wifi", "internet", "power", "charging", "mentor", "code", "programming", "python", "gpu"],
+        keywords: ["csm", "intel", "ai", "ml", "coding", "workstation", "pc", "computer", "lab", "lab 6", "wifi", "internet", "power", "charging", "mentor", "code", "programming", "python", "gpu"],
         queryPrompt: "Tell me about CSM Computer Labs and the Intel AI/ML Lab at GPREC"
       },
       {
@@ -514,12 +518,12 @@ export const CAMPUS_ZONES = [
         nodeId: "node_amphi_entry",
         mapCoords: { x: 540, y: 310 },
         facilityTag: "800+ Open Air Arena",
-        whatYouShouldKnow: "GPREC's favorite outdoor social hangout. Tiered semi-circular stone steps under shady trees, perfect for evening guitar jams, team mixers, pitch dry-runs, and hackathon fresh-air breaks.",
+        whatYouShouldKnow: "GPREC's favorite outdoor social hangout. Tiered semi-circular stone steps under shady trees, perfect for evening guitar jams, team mixers, pitch dry-runs, and event fresh-air breaks.",
         amenityTags: ["800+ Tiered Seating", "Open-Air Lawn", "Acoustic Courtyard", "Evening Lighting", "Tree Shaded"],
         summary: "Tiered semi-circular stone terrace arena accommodating 800+ students for cultural fests, club meetups, and open-air ceremonies.",
         highlights: [
           { icon: "🌳", text: "Premier social gathering arena surrounded by lush green lawns and shade trees" },
-          { icon: "🎸", text: "Popular spot for hackathon break sessions, project showcases, and team networking" }
+          { icon: "🎸", text: "Popular spot for event break sessions, project showcases, and team networking" }
         ],
         keywords: ["amphi", "amphitheatre", "open air", "lawn", "stage", "cultural", "fest", "mixer", "social", "evening", "seating", "steps", "jam"],
         queryPrompt: "Tell me about the Open Air Amphitheatre at GPREC"
