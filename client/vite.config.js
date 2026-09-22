@@ -7,4 +7,18 @@ export default defineConfig({
     host: true,
     port: 5173,
   },
+  build: {
+    chunkSizeWarningLimit: 600,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          "vendor-react": ["react", "react-dom", "react-router-dom"],
+          "vendor-ui": ["framer-motion", "react-markdown", "remark-gfm", "react-syntax-highlighter"],
+          "vendor-map": ["leaflet"],
+          "vendor-google": ["@react-oauth/google"],
+          "vendor-utils": ["axios", "zustand"],
+        },
+      },
+    },
+  },
 });
