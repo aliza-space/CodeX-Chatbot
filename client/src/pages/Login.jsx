@@ -319,8 +319,13 @@ export default function Login() {
       </main>
 
       {/* Bottom Footer */}
-      <footer className="text-center text-[11px] text-slate-400 py-3">
-        Coders' Club • G. Pulla Reddy Engineering College (Autonomous), Kurnool • CodeX 4.0
+      <footer className="text-center py-3 space-y-1.5">
+        <p className="text-[11px] text-slate-400">
+          Coders' Club • G. Pulla Reddy Engineering College (Autonomous), Kurnool • CodeX 4.0
+        </p>
+        <p className="text-xs text-slate-500 dark:text-slate-400">
+          Developed By <span className="font-bold text-blue-600 dark:text-blue-400">Aliza Juhaina</span> <span className="font-medium text-slate-400 dark:text-slate-500">(Full Stack Developer)</span>
+        </p>
       </footer>
     </div>
   );

@@ -251,6 +251,15 @@ export default function MainSidebar({
         )}
       </div>
 
+      {/* Developer Credit */}
+      <div className="px-3 py-2.5 text-center border-t border-slate-200/60 dark:border-slate-800/60 shrink-0 bg-slate-100/30 dark:bg-slate-950/30">
+        <p className="text-[11px] text-slate-500 dark:text-slate-400 select-none leading-relaxed">
+          Developed By <span className="font-bold text-blue-600 dark:text-blue-400">Aliza Juhaina</span>
+          <br />
+          <span className="text-[10px] font-medium text-slate-400 dark:text-slate-500">(Full Stack Developer)</span>
+        </p>
+      </div>
+
       {/* Sign Out Confirmation Modal */}
       {showSignOutConfirm && (
         <div className="absolute inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
