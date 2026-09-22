@@ -148,14 +148,26 @@ export default function MessageBubble({ message, onRegenerate, onPickSuggestion 
               </div>
             )}
 
-            {/* Action Bar (Copy, Feedback, Regenerate) */}
+            {/* Action Bar (Copy, Feedback, Regenerate) + Response Time */}
             {!isUser && !message.streaming && message.content && (
-              <div className="mt-2.5 flex items-center justify-between">
+              <div className="mt-2.5 flex items-center justify-between flex-wrap gap-y-1">
                 <FeedbackButtons
                   messageId={message.dbId}
                   content={message.content}
                   onRegenerate={onRegenerate}
                 />
+                {/* Response Time Badge */}
+                {message.responseTimeMs != null && (
+                  <span className="inline-flex items-center gap-1 text-[10px] font-mono text-slate-400 dark:text-slate-500 select-none">
+                    <svg className="w-3 h-3 text-emerald-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5}>
+                      <circle cx="12" cy="12" r="10" />
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6l4 2" />
+                    </svg>
+                    {message.responseTimeMs < 1000
+                      ? `${message.responseTimeMs}ms`
+                      : `${(message.responseTimeMs / 1000).toFixed(1)}s`}
+                  </span>
+                )}
               </div>
             )}
 

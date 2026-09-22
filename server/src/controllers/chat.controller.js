@@ -51,6 +51,7 @@ export const streamChat = asyncHandler(async (req, res) => {
       citations: result.citations,
       suggestions: result.suggestions,
       wasAnswered: result.wasAnswered,
+      latencyMs: Date.now() - startedAt,
     });
     endSSE(res);
   } catch (err) {

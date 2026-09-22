@@ -333,6 +333,68 @@ function extractExactAnswerFromChunks(query, chunks) {
 function synthesizeConciseAnswer(query, chunks) {
   const q = normalizeQuery(query || "").toLowerCase();
 
+  // ⏰ Real-time: Current Time & Date
+  const isTimeQuery =
+    q === "what is the time" ||
+    q === "what time is it" ||
+    q === "what's the time" ||
+    q === "whats the time" ||
+    q === "current time" ||
+    q === "time now" ||
+    q === "tell me the time" ||
+    q.includes("what is the time") ||
+    q.includes("what time is it") ||
+    q.includes("current time") ||
+    q.includes("what's the time") ||
+    q.includes("tell me the time") ||
+    (q.includes("time") && q.length < 20);
+
+  const isDateQuery =
+    q === "what is today" ||
+    q === "what is today's date" ||
+    q === "today's date" ||
+    q === "todays date" ||
+    q === "what date is it" ||
+    q === "current date" ||
+    q === "what day is it" ||
+    q === "what day is today" ||
+    q.includes("today's date") ||
+    q.includes("what is today") ||
+    q.includes("current date") ||
+    q.includes("what date is it") ||
+    q.includes("what day is it") ||
+    (q.includes("date") && q.length < 20 && !q.includes("event") && !q.includes("codex") && !q.includes("registration"));
+
+  if (isTimeQuery || isDateQuery) {
+    // Use IST (UTC+5:30) — the time zone of GPREC campus
+    const now = new Date();
+    const istOptions = { timeZone: "Asia/Kolkata" };
+
+    const timeStr = now.toLocaleTimeString("en-IN", {
+      ...istOptions,
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hour12: true,
+    });
+    const dateStr = now.toLocaleDateString("en-IN", {
+      ...istOptions,
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+
+    if (isTimeQuery && !isDateQuery) {
+      return `🕐 The current time is **${timeStr} IST** (Indian Standard Time).`;
+    }
+    if (isDateQuery && !isTimeQuery) {
+      return `📅 Today is **${dateStr}** (IST).`;
+    }
+    // Both time + date asked
+    return `🕐 The current time is **${timeStr} IST** and today's date is **${dateStr}**.`;
+  }
+
   // 0. What is CodeX / CodeX 4.0 / Event Overview
   if (
     q === "what is codex" ||

@@ -95,7 +95,7 @@ export const useChatStore = create((set, get) => ({
   sendMessage: async (text) => {
     if (!text.trim() || get().isStreaming) return;
 
-    // Create a fresh AbortController for this request
+    const sentAt = Date.now();
     const abortController = new AbortController();
 
     const userMsg = { id: `u-${Date.now()}`, role: "user", content: text };
@@ -139,6 +139,8 @@ export const useChatStore = create((set, get) => ({
                     citations: final.citations,
                     suggestions: final.suggestions,
                     wasAnswered: final.wasAnswered,
+                    // Use server-reported latency; fall back to client-measured elapsed time
+                    responseTimeMs: final.latencyMs ?? (Date.now() - sentAt),
                   }
                 : m
             ),
