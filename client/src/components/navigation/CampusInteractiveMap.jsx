@@ -24,10 +24,10 @@ const PRIMARY_DESTINATIONS = [
   {
     id: "auditorium",
     name: "Auditorium",
-    subtitle: "Silver Jubilee Hall • Keynotes",
+    subtitle: "Keynotes & Opening Ceremony",
     icon: "🎭",
     nodeId: "node_auditorium_entry",
-    badge: "1,000+ AC Hall"
+    badge: "AC Event Hall"
   }
 ];
 
@@ -216,11 +216,11 @@ export default function CampusInteractiveMap({
   const destCoords = routeData?.points?.[routeData.points.length - 1] || null;
 
   return (
-    <div className="flex flex-col w-full h-full bg-slate-950 text-slate-100 rounded-3xl border border-slate-800 overflow-hidden shadow-2xl">
+    <div className="flex flex-col w-full h-full min-h-0 bg-slate-950 text-slate-100 rounded-3xl border border-slate-800 overflow-hidden shadow-2xl">
       {/* ========================================================= */}
       {/* 1. TOP BAR: CLEAN PRIMARY DESTINATION SELECTOR & START    */}
       {/* ========================================================= */}
-      <div className="p-3 bg-slate-900/95 border-b border-slate-800 backdrop-blur-md flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 z-20">
+      <div className="p-2.5 sm:p-3 bg-slate-900/95 border-b border-slate-800 backdrop-blur-md flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2 shrink-0 z-20">
         {/* Primary Destination Switcher (CSM Department vs Auditorium) */}
         <div className="flex items-center gap-1.5 p-1 rounded-2xl bg-slate-950/80 border border-slate-800">
           {PRIMARY_DESTINATIONS.map((dest) => {
@@ -292,7 +292,7 @@ export default function CampusInteractiveMap({
             initial={{ opacity: 0, y: -8 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
-            className={`mx-3 mt-2 px-3 py-2 rounded-2xl border backdrop-blur-md flex items-center justify-between gap-2.5 text-xs shadow-lg z-20 ${
+            className={`mx-3 mt-2 px-3 py-2 rounded-2xl border backdrop-blur-md flex items-center justify-between gap-2.5 text-xs shadow-lg z-20 shrink-0 ${
               gpsToast.type === "success"
                 ? "bg-emerald-950/80 border-emerald-500/40 text-emerald-200 shadow-emerald-950/40"
                 : "bg-slate-900/90 border-blue-500/40 text-blue-200 shadow-slate-950/60"
@@ -321,7 +321,7 @@ export default function CampusInteractiveMap({
       {/* 2. INTERACTIVE VECTOR MAP CANVAS                          */}
       {/* ========================================================= */}
       <div
-        className="relative flex-1 w-full min-h-[320px] sm:min-h-[380px] bg-[#070d18] overflow-hidden select-none cursor-grab active:cursor-grabbing"
+        className="relative flex-1 min-h-[220px] sm:min-h-[260px] w-full bg-[#070d18] overflow-hidden select-none cursor-grab active:cursor-grabbing"
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
@@ -682,7 +682,7 @@ export default function CampusInteractiveMap({
       {/* 3. LIVE ROUTE STATS & STEP-BY-STEP DRAWER                 */}
       {/* ========================================================= */}
       {activeDestination && (
-        <div className="p-3 sm:p-3.5 bg-slate-900/95 border-t border-slate-800 backdrop-blur-md flex flex-col gap-2 z-20">
+        <div className="p-2.5 sm:p-3 bg-slate-900/95 border-t border-slate-800 backdrop-blur-md flex flex-col gap-2 shrink-0 z-20">
           <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-2.5 min-w-0">
               <span className="text-lg p-2 rounded-xl bg-slate-800 shrink-0">
@@ -731,7 +731,7 @@ export default function CampusInteractiveMap({
               <button
                 type="button"
                 onClick={() => onAskBuddy(activeDestination)}
-                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-semibold text-white bg-blue-600 hover:bg-blue-500 shadow-xs active:scale-95 transition cursor-pointer"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold text-white bg-blue-600 hover:bg-blue-500 shadow-xs active:scale-95 transition cursor-pointer"
               >
                 <IconSparkles className="w-3.5 h-3.5" />
                 <span>Ask CodeBuddy</span>
@@ -746,7 +746,7 @@ export default function CampusInteractiveMap({
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: "auto" }}
                 exit={{ opacity: 0, height: 0 }}
-                className="pt-2 border-t border-slate-800 space-y-1.5 text-xs text-slate-300 max-h-32 overflow-y-auto scrollbar-thin"
+                className="pt-2 border-t border-slate-800 space-y-1.5 text-xs text-slate-300 max-h-28 overflow-y-auto scrollbar-thin"
               >
                 <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
                   Walkway Route Steps ({CAMPUS_NAV_NODES[startNodeId]?.label || "Start"} → {activeDestination.shortName || activeDestination.name})

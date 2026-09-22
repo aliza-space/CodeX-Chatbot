@@ -19,7 +19,7 @@ export const CAMPUS_NAV_NODES = {
   node_main_gate: { id: "node_main_gate", x: 500, y: 660, label: "Main Entrance Gate (Nandyal Rd)", lat: 15.8073, lng: 78.0375 },
   node_gate_atm: { id: "node_gate_atm", x: 570, y: 640, label: "24/7 ATM & Health Dispensary", lat: 15.8074, lng: 78.0378 },
   node_gate_junction: { id: "node_gate_junction", x: 500, y: 590, label: "Entrance Avenue Junction", lat: 15.8076, lng: 78.0375 },
-  node_auditorium_entry: { id: "node_auditorium_entry", x: 390, y: 560, label: "Silver Jubilee Auditorium Entrance", lat: 15.8078, lng: 78.0368 },
+  node_auditorium_entry: { id: "node_auditorium_entry", x: 390, y: 560, label: "Auditorium Entrance", lat: 15.8078, lng: 78.0368 },
   node_central_avenue_mid: { id: "node_central_avenue_mid", x: 500, y: 470, label: "Central Avenue & Food Plaza Cross", lat: 15.8082, lng: 78.0375 },
   node_canteen_junction: { id: "node_canteen_junction", x: 420, y: 470, label: "Main Cafeteria & Canteen Plaza", lat: 15.8082, lng: 78.0370 },
   node_food_court_entry: { id: "node_food_court_entry", x: 560, y: 470, label: "Campus Food Court & Canopy Seating", lat: 15.8082, lng: 78.0380 },
@@ -232,7 +232,7 @@ export const CAMPUS_MAP_DATA = {
     },
     {
       id: "auditorium-building",
-      name: "Silver Jubilee Auditorium",
+      name: "Auditorium",
       code: "AUDITORIUM",
       x: 230,
       y: 520,
@@ -475,7 +475,7 @@ export const CAMPUS_ZONES = [
     id: "common-facilities-zone",
     name: "Student Life, Venues & Common Facilities",
     shortName: "Student Life & Venues",
-    subtitle: "Silver Jubilee Auditorium, Amphitheatre, Food Court, Canteen & Library",
+    subtitle: "Auditorium, Amphitheatre, Food Court, Canteen & Library",
     icon: "🌟",
     badge: "Zone 2",
     themeColor: "emerald",
@@ -483,7 +483,7 @@ export const CAMPUS_ZONES = [
     facilities: [
       {
         id: "auditorium",
-        name: "Silver Jubilee Auditorium",
+        name: "Auditorium",
         shortName: "Auditorium",
         icon: "🎭",
         area: "Near Main Campus Entrance Gate",
@@ -491,17 +491,17 @@ export const CAMPUS_ZONES = [
         category: "venues",
         nodeId: "node_auditorium_entry",
         mapCoords: { x: 390, y: 560 },
-        facilityTag: "1,000+ Capacity AC Hall",
+        facilityTag: "AC Event Hall",
         whatYouShouldKnow: "Grand air-conditioned auditorium situated right near the Main Gate. Official venue for CodeX 4.0 opening ceremony, guest keynotes (Dodagatta Nihar), and university awards. Features Bose line-array audio, motorized projection, and executive VIP lounge.",
-        amenityTags: ["1,000+ Seats", "Full Air-Conditioned", "Bose Audio", "Dual 4K Projectors", "VIP Green Rooms"],
+        amenityTags: ["Full Air-Conditioned", "Bose Audio", "Dual 4K Projectors", "VIP Green Rooms"],
         summary: "Acoustically engineered grand indoor auditorium with Bose audio systems, dual high-lumen projectors, and VIP executive suites.",
         highlights: [
-          { icon: "🎭", text: "Capacity for 1,000+ attendees for inaugural sessions, symposia, and cultural fests" },
+          { icon: "🎭", text: "Premier indoor hall for inaugural sessions, guest keynotes, and award ceremonies" },
           { icon: "🎙️", text: "Host venue for keynote speaker Dodagatta Nihar and national technical conferences" },
           { icon: "🚶", text: "Just a 1-minute walk from the Main Entrance Security Gate" }
         ],
-        keywords: ["auditorium", "silver jubilee", "keynote", "ceremony", "inauguration", "speaker", "nihar", "hall", "ac", "seating", "stage", "sound", "projector"],
-        queryPrompt: "Tell me about the Silver Jubilee Auditorium at GPREC"
+        keywords: ["auditorium", "keynote", "ceremony", "inauguration", "speaker", "nihar", "hall", "ac", "stage", "sound", "projector"],
+        queryPrompt: "Tell me about the Auditorium at GPREC"
       },
       {
         id: "amphitheatre",

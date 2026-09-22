@@ -2,7 +2,6 @@ import { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   CAMPUS_ZONES,
-  findFacilityAndZone,
   calculateCampusRoute,
   GPREC_INFO
 } from "../../data/campusGuideData.js";
@@ -168,7 +167,7 @@ export default function CampusGuideModal({ isOpen, onClose, initialDestinationId
         <div className="flex-1 flex flex-col lg:flex-row overflow-hidden min-h-0">
           {/* LEFT COLUMN: COMPACT INTERACTIVE CAMPUS MAP */}
           <div
-            className={`w-full lg:w-[48%] h-full flex flex-col border-b lg:border-b-0 lg:border-r border-slate-800 p-3 sm:p-4 bg-slate-950/60 ${
+            className={`w-full lg:w-[48%] h-full flex flex-col border-b lg:border-b-0 lg:border-r border-slate-800 p-2.5 sm:p-3.5 bg-slate-950/60 min-h-0 overflow-y-auto ${
               mobileTab === "map" ? "flex" : "hidden lg:flex"
             }`}
           >
@@ -181,7 +180,7 @@ export default function CampusGuideModal({ isOpen, onClose, initialDestinationId
 
           {/* RIGHT COLUMN: CLEAN DIRECTORY & KEY DESTINATIONS */}
           <div
-            className={`flex-1 flex-col overflow-y-auto p-4 sm:p-6 space-y-4 scrollbar-thin bg-slate-900 ${
+            className={`flex-1 flex-col overflow-y-auto p-4 sm:p-6 space-y-4 scrollbar-thin bg-slate-900 min-h-0 ${
               mobileTab === "guide" ? "flex" : "hidden lg:flex"
             }`}
           >
@@ -300,7 +299,7 @@ export default function CampusGuideModal({ isOpen, onClose, initialDestinationId
                   );
                 })()}
 
-                {/* 2. Silver Jubilee Auditorium Card */}
+                {/* 2. Auditorium Card */}
                 {auditoriumData && (() => {
                   const fac = auditoriumData.facility;
                   const isSelected = selectedFacilityId === fac.id;
