@@ -14,11 +14,16 @@ export async function rewriteQuery({ history, latestQuestion }) {
   if (!history?.length || !looksLikeFollowUp(latestQuestion)) {
     return latestQuestion;
   }
-  const llm = getLLM();
-  const prompt = buildRewritePrompt({ history: history.slice(-6), latestQuestion });
-  const rewritten = await llm.complete({
-    systemPrompt: "You are a precise query-rewriting assistant.",
-    messages: [{ role: "user", content: prompt }],
-  });
-  return rewritten.trim() || latestQuestion;
+  try {
+    const llm = getLLM();
+    const prompt = buildRewritePrompt({ history: history.slice(-6), latestQuestion });
+    const rewritten = await llm.complete({
+      systemPrompt: "You are a precise query-rewriting assistant.",
+      messages: [{ role: "user", content: prompt }],
+    });
+    return rewritten.trim() || latestQuestion;
+  } catch (err) {
+    console.warn("Query rewrite fallback:", err.message);
+    return latestQuestion;
+  }
 }

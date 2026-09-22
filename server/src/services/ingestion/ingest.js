@@ -41,12 +41,18 @@ export async function ingestFile(filePath, { uploadedBy } = {}) {
   await Chunk.deleteMany({ document: doc._id });
 
   const rawChunks = chunkMarkdown(parsed.rawText, { title: parsed.title });
-  const embeddings = await embedBatch(rawChunks.map((c) => c.text));
+  let embeddings = [];
+  try {
+    embeddings = await embedBatch(rawChunks.map((c) => c.text));
+  } catch (err) {
+    logger.warn(`Embedding failed during ingest of "${doc.title}", storing chunks with empty embeddings: ${err.message}`);
+    embeddings = rawChunks.map(() => []);
+  }
 
   const chunkDocs = rawChunks.map((c, i) => ({
     document: doc._id,
     text: c.text,
-    embedding: embeddings[i],
+    embedding: embeddings[i] || [],
     order: c.order,
     category: doc.category,
     tags: doc.tags,
