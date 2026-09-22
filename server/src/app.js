@@ -1,6 +1,9 @@
 import express from "express";
 import cors from "cors";
 import helmet from "helmet";
+import path from "path";
+import { fileURLToPath } from "url";
+import fs from "fs";
 import { env } from "./config/env.js";
 import { errorHandler, notFound } from "./middleware/errorHandler.js";
 
@@ -11,6 +14,10 @@ import documentRoutes from "./routes/document.routes.js";
 import analyticsRoutes from "./routes/analytics.routes.js";
 import feedbackRoutes from "./routes/feedback.routes.js";
 import announcementRoutes from "./routes/announcement.routes.js";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const clientDistPath = path.resolve(__dirname, "../../client/dist");
 
 const app = express();
 
@@ -53,6 +60,10 @@ app.use(
 );
 app.use(express.json({ limit: "2mb" }));
 
+if (fs.existsSync(clientDistPath)) {
+  app.use(express.static(clientDistPath));
+}
+
 app.get("/health", (req, res) => res.json({ status: "ok", time: new Date().toISOString() }));
 
 app.use("/api/auth", authRoutes);
@@ -63,7 +74,18 @@ app.use("/api/admin/analytics", analyticsRoutes);
 app.use("/api/feedback", feedbackRoutes);
 app.use("/api/announcements", announcementRoutes);
 
+// SPA client fallback for non-API routes when client/dist exists
+if (fs.existsSync(clientDistPath)) {
+  app.get("*", (req, res, next) => {
+    if (req.path.startsWith("/api") || req.path.startsWith("/health")) {
+      return next();
+    }
+    res.sendFile(path.join(clientDistPath, "index.html"));
+  });
+}
+
 app.use(notFound);
 app.use(errorHandler);
 
 export default app;
+
