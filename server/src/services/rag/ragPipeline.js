@@ -291,13 +291,88 @@ function synthesizeConciseAnswer(query, chunks) {
 - **Open Activities:** All students can attend open guest lectures, webinars, and public coding contests hosted by the club throughout the year!`;
   }
 
-  // 0.3 What is GPREC
-  if (q.includes("what is gprec") || q.includes("about gprec")) {
-    return `### 🏫 About G. Pulla Reddy Engineering College (GPREC)
-- **Institution:** G. Pulla Reddy Engineering College (Autonomous), established in 1984 by the philanthropist Sri G. Pulla Reddy.
-- **Affiliation & Accreditation:** Affiliated with JNTUA, Anantapuramu, approved by AICTE, and accredited by NAAC (A+ Grade) & NBA.
-- **Campus Location:** G. Pulla Reddy Nagar, Nandyal Road, Kurnool, Andhra Pradesh - 518007 (\`15.8073° N, 78.0375° E\`).
-- **Official Website:** [https://www.gprec.ac.in](https://www.gprec.ac.in)`;
+  // 0.4 How to Reach GPREC / Directions from Station / Bus Stand
+  if (
+    q.includes("reach") ||
+    q.includes("railway") ||
+    q.includes("station") ||
+    q.includes("bus stand") ||
+    q.includes("how to get to") ||
+    q.includes("transport")
+  ) {
+    return `### 🚆 How to Reach GPREC Kurnool
+- **From Kurnool City Railway Station (KLU):** Distance ~6.5 km (~15–20 mins). Auto-rickshaws are available 24/7 directly to *"Pulla Reddy College Gate"* on Nandyal Road. Local APSRTC buses toward Nandyal/Mahanandi also stop at the gate.
+- **From Kurnool APSRTC New Bus Stand:** Distance ~5.0 km (~12–15 mins). City buses and autos are readily available along the highway route.
+- **From Hyderabad (RGIA) / Anantapur / Tirupati:** Via National Highway 44 (NH-44) connected to Kurnool bypass; follow signs to Nandyal Road / GPREC campus.
+- **Campus Address:** G. Pulla Reddy Nagar, Nandyal Road, Kurnool, Andhra Pradesh - 518007 (\`15.8073° N, 78.0375° E\`).`;
+  }
+
+  // 0.5 What to Bring on Event Day
+  if (q.includes("what to bring") || q.includes("bring on") || q.includes("documents required") || q.includes("pass")) {
+    return `### 🎒 What to Bring on CodeX 4.0 Event Day (24 Sept 2026)
+1. **Physical College ID Card:** Original physical college identity card for every team member.
+2. **Team ID / Confirmation Email:** Printed or digital confirmation with your unique Team ID (e.g., \`CDX4-0001\`).
+3. **CodeX 4.0 Pass:** Downloaded hard copy of the CodeX 4.0 Pass from the registration portal.
+- *Reporting Time:* 8:30 AM – 9:00 AM IST at **CSM Computer Labs, GPREC**.`;
+  }
+
+  // 0.6 Substitution & Team Changes
+  if (q.includes("substitut") || q.includes("change member") || q.includes("replace member")) {
+    return `### 🔄 Team Member Substitution Policy
+- **Deadline for Substitution:** Team member substitution is permitted up to **23 September 2026** (11:59 PM IST).
+- **Process:** The Team Leader must contact the student coordinators with valid credentials and the replacement student's college details.
+- **Contact:** Tabraiz (+91 9391491123) / Kashif (+91 9492068097) / Karthik Sai (+91 9032174306).`;
+  }
+
+  // 0.7 IdeaSprint
+  if (q.includes("ideasprint") || q.includes("idea sprint") || q.includes("e-summit")) {
+    return `### 💡 IdeaSprint 2026 (21 January 2026)
+- **Event:** A national-level innovation challenge organized by Coders' Club in collaboration with **E-Cell IIT Tirupati** as part of E-Summit '26.
+- **Participation:** 85 teams of 3 members each.
+- **Winner:** Team **Tech Phantoms** won the competition, qualifying for Round 2 at IIT Tirupati!`;
+  }
+
+  // 0.8 OUTSYSLAYER Hackathon
+  if (q.includes("outsyslayer") || q.includes("beyondcampuz")) {
+    return `### ⚡ OUTSYSLAYER Hackathon 2026 (25 February 2026)
+- **Event:** An offline collegiate hackathon organized in partnership with **BeyondCampuz** covering three problem domains: AI Model Trainee, Education, and Health.
+- **Participation:** 106 registered teams and 400+ participants.
+- **Winner:** Team **Soul** won 1st Place!`;
+  }
+
+  // 0.9 Code Symposium
+  if (q.includes("symposium") || q.includes("code symposium")) {
+    return `### 💻 Code Symposium Series
+- **Code Symposium 2K24 (4 May 2024):** Individual coding competition featuring a C-language quiz and 3 coding problems on Examly (154 registered participants, ₹50 fee). Winner: **P. V. S. S. Sravan** (₹1,000 prize).
+- **Code Symposium 2K26 (25 March 2026):** Conducted in collaboration with **Smart Interviews** with 45 participants (₹50 fee). 1st: **D. Dinesh**, 2nd: **D. Sreenath Reddy**, 3rd: **P. Sree Charan Reddy**.`;
+  }
+
+  // 0.10 Nexus
+  if (q.includes("nexus") || q.includes("webnex") || q.includes("codenex")) {
+    return `### 🌐 Nexus 2K25 (17 December 2025)
+- **Organized By:** GGSA Club in collaboration with Coders' Club.
+- **Tracks:** **WebNex** (AI-powered website building) and **CodeNex** (DSA Problem Solving).
+- **Participation:** 91 teams of 2 members each (₹50 registration fee per team).`;
+  }
+
+  // 0.11 Websites & Jignasa
+  if (q.includes("jignasa") || (q.includes("website") && !q.includes("dsa")) || q.includes("official site") || q.includes("link")) {
+    return `### 🌐 Official Websites
+- **Coders' Club Official Website:** [https://www.codersclubgprec.in](https://www.codersclubgprec.in) *(Launched 22 August 2024)*.
+- **CodeX 4.0 Registration Portal:** [https://codex4-0-registration-portal.codersclubgprec.in](https://codex4-0-registration-portal.codersclubgprec.in).
+- **Jignasa Annual Technical Fest Website:** [https://jignasagprec.in](https://jignasagprec.in) *(Launched 17 September 2024)*.
+- **GPREC College Website:** [https://www.gprec.ac.in](https://www.gprec.ac.in).`;
+  }
+
+  // 0.12 Faculty Convener & Coordinators
+  if (q.includes("convener") || q.includes("convenor") || q.includes("faculty") || q.includes("vishnuvardhan") || q.includes("rama rao") || q.includes("mallesi")) {
+    return `### 👨‍🏫 Coders' Club Faculty Team
+- **Faculty Convener:** **Dr. A. Vishnuvardhan Reddy** (Associate Professor, Department of ECS / CSE).
+- **Faculty Coordinators:**
+  - **Sri P. Rama Rao** (Department of CSE)
+  - **Sri V. Mallesi** (Department of CSE)
+  - **Dr. R. Sudheer Babu** (Department of ECE)
+  - **Dr. S. Anil Kumar** (Department of EEE)`;
   }
 
   // 1. First-Year (1st Year) Eligibility Check
