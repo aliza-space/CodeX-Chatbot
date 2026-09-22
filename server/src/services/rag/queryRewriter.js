@@ -28,6 +28,8 @@ const KNOWN_ENTITIES = [
   "code symposium 2k24",
   "code symposium 2k26",
   "dodagatta nihar",
+  "speaker",
+  "guest speaker",
   "wedevit",
   "microcare",
   "havemore",
@@ -72,10 +74,11 @@ export async function rewriteQuery({ history = [], latestQuestion = "" }) {
 
   // If it's a follow-up query
   if (looksLikeFollowUp(normalized)) {
-    // 1. Try smart local context extraction first
+    // 1. Try smart local context extraction first (only if current query doesn't have an explicit entity)
+    const hasExplicitEntity = KNOWN_ENTITIES.some((entity) => normalized.toLowerCase().includes(entity));
     const previousTopic = extractTopicFromHistory(history);
     let contextualized = normalized;
-    if (previousTopic && !normalized.toLowerCase().includes(previousTopic)) {
+    if (!hasExplicitEntity && previousTopic && !normalized.toLowerCase().includes(previousTopic)) {
       contextualized = `${previousTopic} ${normalized}`;
     }
 

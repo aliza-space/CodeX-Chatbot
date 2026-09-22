@@ -457,7 +457,23 @@ function synthesizeConciseAnswer(query, chunks) {
 - **5th Prize (Consolation - ₹2,000):** Team **Mind Benders** (*Bandla Dora Babu, Jeerla Subash, K G Mahesh*)`;
   }
 
-  // 7. Generic Event Winners Lookup from query / history
+  // 7. Guest Speaker (Dodagatta Nihar)
+  if (q.includes("speaker") || q.includes("nihar") || q.includes("guest")) {
+    if (q.includes("meet") || q.includes("all") || q.includes("everyone") || q.includes("winner") || q.includes("only")) {
+      return `### 🎙️ CodeX 4.0 Guest Speaker Session — Dodagatta Nihar
+- **Session Access:** **All registered participants** attending CodeX 4.0 get to attend the keynote session by **Dodagatta Nihar** (not just the winners!).
+- **Guest Speaker:** Dodagatta Nihar (Tech Educator, Web Developer, ML Engineer, 3x TEDx Speaker, Founder of MassCoders & Codedale with 500K+ followers).
+- **Session Overview:** Interactive session sharing practical coding insights, industry learning perspectives, and career guidance.
+- *Note: Personal 1-on-1 meet & greet format details are managed on-site by event coordinators.*`;
+    }
+    return `### 🎙️ CodeX 4.0 Guest Speaker — Dodagatta Nihar
+- **Guest Speaker:** **Dodagatta Nihar**
+- **Profile:** Tech Educator, Web Developer, ML Engineer, Entrepreneur, and 3x TEDx Speaker with 500K+ Instagram followers.
+- **Known For:** Making coding and technology accessible through regional-language content (primarily Telugu), founder of MassCoders and working on Codedale.
+- **Session:** Interactive keynote offering practical tech learning perspectives and career inspiration. *(Open to all registered CodeX 4.0 participants).*`;
+  }
+
+  // 8. Generic Event Winners Lookup from query / history
   if (q.includes("winner") || q.includes("who won")) {
     const winnerChunk = chunks?.find((c) =>
       (c.text || "").toLowerCase().includes("winner") || (c.text || "").toLowerCase().includes("1st prize")
@@ -471,134 +487,6 @@ function synthesizeConciseAnswer(query, chunks) {
         .trim();
       return clean;
     }
-  }
-
-  // 8. Prizes & Perks / Rewards / Sponsors for CodeX 4.0
-  if (
-    q.includes("prize") ||
-    q.includes("perk") ||
-    q.includes("reward") ||
-    q.includes("cash") ||
-    q.includes("sponsor") ||
-    q.includes("50,000") ||
-    q.includes("50000")
-  ) {
-    return `### 🏆 CodeX 4.0 Prizes, Perks & Sponsors
-- **Prize Pool:** Up to **₹50,000** total prize pool! *(The position-wise split is not published yet in the knowledge base).*
-- **Career Opportunity:** Top-winning teams have the opportunity to secure **internships with Technical Sponsor WeDevit** and other leading tech companies.
-- **Participant Perks:** Every participant receives goodies, refreshments, and a hard-copy certificate.
-- **Sponsors:** **WeDevit** (*Technical Sponsor*), **HaveMore** (*Havmor ice creams*), **Microcare**, **Fiarro Pizza**, and **RC Cola**.`;
-  }
-
-  // 9. Eligibility & Team Rules
-  if (
-    q.includes("eligib") ||
-    q.includes("team format") ||
-    q.includes("who can") ||
-    q.includes("team size") ||
-    q.includes("format") ||
-    q.includes("4th year") ||
-    q.includes("final year") ||
-    q.includes("branch") ||
-    q.includes("rule")
-  ) {
-    return `### 👥 CodeX 4.0 Eligibility & Team Rules
-- **Eligibility:** Undergraduate engineering students in **II, III, or IV Year** from GPREC and other engineering colleges/universities (*1st-year students are not eligible*).
-- **Team Size:** Exactly **2 or 3 members** per team.
-- **Final-Year Rule:** Maximum **one 4th-year student** per team (0 or 1). Teams with two or more 4th-year students are not permitted.
-- **Same-College Rule:** All members of a team must belong to the **same college**. Cross-branch and inter-year combinations within the same college are allowed and encouraged.
-- **Roll Numbers:** Each student's roll number can be registered with only one team.`;
-  }
-
-  // 10. Campus Food & Navigation Guide
-  if (
-    q.includes("food") ||
-    q.includes("canteen") ||
-    q.includes("cafeteria") ||
-    q.includes("csm") ||
-    q.includes("lab") ||
-    q.includes("map") ||
-    q.includes("location") ||
-    q.includes("direction")
-  ) {
-    return `### 📍 GPREC Campus Navigation Guide
-- **CSM Computer Labs (CodeX 4.0 Venue):** CSM Block, Ground & 1st Floor. From the Main Gate, walk straight along the central avenue for ~180 meters past the lawn.
-- **Main Cafeteria & College Canteen:** South-East zone near the sports ground (~220 meters from Main Gate).
-- **Campus Food Court:** Central Amenities Plaza (~250 meters from Main Gate). Offers juice parlors, snacks, and quick bites.
-- **Open Air Amphitheatre:** Adjacent to CSM Block courtyard (~160 meters from Main Gate).
-*(Tip: You can also tap **Campus Map** in the menu to see interactive routes and GPS markers!)*`;
-  }
-
-  // 11. Refund & Cancellation Policy
-  if (q.includes("refund") || q.includes("cancel") || q.includes("money back")) {
-    return `### 💳 CodeX 4.0 Registration Fee & Refund Policy
-- **Standard Policy:** The ₹300 registration fee is **generally non-refundable** after successful payment. There is no refund for voluntary withdrawal, absence, or disqualification.
-- **Duplicate / Excess Payments:** A verified duplicate or excess payment caused by a technical issue is refundable to the original payment source.
-- **Event Cancellation:** A refund is possible if CodeX 4.0 is completely cancelled without being rescheduled.
-- **Team-Member Substitution:** A substitution may be possible before the registration deadline of **23 September 2026** by contacting the organizers.`;
-  }
-
-  // 12. Solo / Individual Participation
-  if (q.includes("solo") || q.includes("alone") || q.includes("individual") || q.includes("single member") || q.includes("1 member")) {
-    return `### 👥 CodeX 4.0 Individual / Solo Participation
-- **Policy:** CodeX 4.0 registration is done strictly as a **team** (not individually).
-- **Team Size:** Every team must have exactly **2 or 3 members** from the same college. Solo participation is not permitted.`;
-  }
-
-  // 13. Programming Languages & Compilers (Explicitly stating what knowledge base publishes)
-  if (q.includes("language") || q.includes("c++") || q.includes("java") || q.includes("python") || q.includes("c lang") || q.includes("compiler")) {
-    return `### 💻 Programming Languages for CodeX 4.0
-- **Status:** The specific allowed programming languages and problem topics have **not been published** in the official knowledge base yet.
-- **Contact Organizers:** For details on supported languages and compiler versions, please contact the student coordinators listed in the contacts section (Tabraiz, Kashif, or Karthik Sai).`;
-  }
-
-  // 14. Date / Timing / Venue / Schedule / Rounds
-  if (
-    q.includes("when") ||
-    (q.includes("date") && !q.includes("last")) ||
-    q.includes("timing") ||
-    q.includes("schedule") ||
-    q.includes("round") ||
-    q.includes("where is codex")
-  ) {
-    return `### 📅 CodeX 4.0 Schedule & Competition Rounds
-- **Date:** 24 September 2026
-- **Reporting Time:** 8:30 AM to 9:00 AM IST (bring physical College ID, Team ID/confirmation email, and CodeX 4.0 Pass).
-- **Event Window:** 9:00 AM to 5:00 PM IST (includes Round 1, Round 2, guest speaker session, and valedictory ceremony).
-- **Venue:** CSM Computer Labs, GPREC Campus, Nandyal Road, Kurnool.
-- **Structure:** Exactly **two competition rounds**:
-  - **Round 1 (Preliminary Round):** All registered teams participate; scores determine qualifiers.
-  - **Round 2 (Grand Finale):** Top-performing teams from Round 1 compete for prizes.
-- *Note: Exact round durations, clock timings, break times, and problem topics are not published in this knowledge base; contact the organizers for updates.*`;
-  }
-
-  // 15. Registration & Fee
-  if (
-    q.includes("register") ||
-    q.includes("registration") ||
-    q.includes("fee") ||
-    q.includes("cost") ||
-    q.includes("pay") ||
-    q.includes("price") ||
-    q.includes("portal") ||
-    q.includes("link") ||
-    q.includes("300")
-  ) {
-    return `### 📝 CodeX 4.0 Registration & Fees
-- **Registration Fee:** **₹300 per team** (flat fee for the whole team, covering 2 to 3 members).
-- **Registration Deadline:** **23 September 2026**.
-- **Registration Portal:** [https://codex4-0-registration-portal.codersclubgprec.in](https://codex4-0-registration-portal.codersclubgprec.in)
-- **Payment Method:** Processed securely through Cashfree Payments (UPI, debit card, credit card, net banking).
-- **Pass & Verification:** Generates a unique Team ID (e.g., \`CDX4-0001\`). Download the CodeX 4.0 Pass to bring on the event day.`;
-  }
-
-  // 16. Guest Speaker
-  if (q.includes("speaker") || q.includes("nihar") || q.includes("guest")) {
-    return `### 🎙️ CodeX 4.0 Guest Speaker — Dodagatta Nihar
-- **Guest Speaker:** **Dodagatta Nihar**
-- **Profile:** Tech Educator, Web Developer, ML Engineer, Entrepreneur, and 3x TEDx Speaker with 500K+ Instagram followers.
-- **Known For:** Making coding and technology accessible through regional-language content (primarily Telugu), founder of MassCoders and working on Codedale.
-- *Session:* Interactive keynote offering practical tech learning perspectives and career inspiration. *(Exact time and duration are not published yet).*`;
   }
 
   // 17. Team & Contact details

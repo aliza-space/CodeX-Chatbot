@@ -52,6 +52,39 @@ export default function MessageBubble({ message, onRegenerate, onPickSuggestion 
                 <ReactMarkdown
                   remarkPlugins={[remarkGfm]}
                   components={{
+                    table({ children, ...props }) {
+                      return (
+                        <div className="my-3 w-full overflow-x-auto rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-xs bg-slate-50/50 dark:bg-slate-900/50 scrollbar-thin">
+                          <table className="w-full text-left text-xs border-collapse min-w-[340px]" {...props}>
+                            {children}
+                          </table>
+                        </div>
+                      );
+                    },
+                    thead({ children, ...props }) {
+                      return <thead className="bg-slate-100 dark:bg-slate-800/80 text-slate-900 dark:text-white font-bold" {...props}>{children}</thead>;
+                    },
+                    th({ children, ...props }) {
+                      return <th className="px-3.5 py-2.5 border-b border-slate-200 dark:border-slate-700 text-[11.5px] tracking-wide whitespace-nowrap" {...props}>{children}</th>;
+                    },
+                    td({ children, ...props }) {
+                      return <td className="px-3.5 py-2.5 border-b border-slate-100 dark:border-slate-800/60 text-[12px] align-top text-slate-700 dark:text-slate-300" {...props}>{children}</td>;
+                    },
+                    h3({ children, ...props }) {
+                      return <h3 className="font-display font-bold text-sm sm:text-base text-slate-900 dark:text-white mt-3 mb-1.5 flex items-center gap-1.5" {...props}>{children}</h3>;
+                    },
+                    ul({ children, ...props }) {
+                      return <ul className="list-disc list-inside space-y-1 my-2 text-slate-700 dark:text-slate-300 text-xs sm:text-sm" {...props}>{children}</ul>;
+                    },
+                    ol({ children, ...props }) {
+                      return <ol className="list-decimal list-inside space-y-1 my-2 text-slate-700 dark:text-slate-300 text-xs sm:text-sm" {...props}>{children}</ol>;
+                    },
+                    li({ children, ...props }) {
+                      return <li className="leading-relaxed" {...props}>{children}</li>;
+                    },
+                    p({ children, ...props }) {
+                      return <p className="mb-2 last:mb-0 leading-relaxed" {...props}>{children}</p>;
+                    },
                     code({ inline, className, children, ...props }) {
                       const match = /language-(\w+)/.exec(className || "");
                       return !inline && match ? (
