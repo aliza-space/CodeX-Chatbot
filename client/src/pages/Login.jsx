@@ -108,7 +108,7 @@ export default function Login() {
             
             <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1.5 max-w-xs leading-relaxed">
               {mode === "login"
-                ? "Sign in to access 24/7 hackathon guidance, campus navigation & team support."
+                ? "Sign in to access 24/7 team support."
                 : "Create a participant account to chat 24/7 with CodeX Buddy."}
             </p>
           </div>

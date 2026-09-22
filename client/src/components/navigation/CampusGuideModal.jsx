@@ -418,20 +418,22 @@ export default function CampusGuideModal({ isOpen, onClose, initialDestinationId
             {/* ========================================================= */}
             {/* 3. OTHER CAMPUS LOCATIONS (CLEAN DROPDOWN SELECTOR & CARD) */}
             {/* ========================================================= */}
-            <div className="pt-2 space-y-2.5">
+            <div className="pt-3 space-y-3 pb-8">
               <div className="flex items-center justify-between px-1">
                 <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
                   <span>🏛️</span>
                   <span>Other Campus Locations</span>
                 </span>
-                <span className="text-[10px] text-slate-400">
+                <span className="text-[10px] font-semibold text-slate-400 px-2 py-0.5 rounded-md bg-slate-800 border border-slate-700/60">
                   {secondaryAmenities.length} locations available
                 </span>
               </div>
 
               {/* Clean Location Dropdown Picker */}
-              <div className="flex items-center gap-2 p-2 rounded-2xl bg-slate-800/80 border border-slate-700 shadow-sm">
-                <span className="text-base pl-1">📍</span>
+              <div className="relative flex items-center rounded-2xl bg-slate-800/90 hover:bg-slate-800 border border-slate-700/80 hover:border-slate-600 shadow-sm transition-all focus-within:ring-2 focus-within:ring-blue-500/30 focus-within:border-blue-500 p-1 sm:p-1.5">
+                <div className="flex items-center justify-center w-8 h-8 rounded-xl bg-slate-700/60 text-base shrink-0 ml-1">
+                  📍
+                </div>
                 <select
                   value={selectedOtherLocationId}
                   onChange={(e) => {
@@ -440,7 +442,7 @@ export default function CampusGuideModal({ isOpen, onClose, initialDestinationId
                       setSelectedFacilityId(e.target.value);
                     }
                   }}
-                  className="bg-transparent text-slate-100 text-xs sm:text-sm font-semibold outline-none cursor-pointer flex-1 py-1"
+                  className="w-full bg-transparent text-slate-100 text-xs sm:text-sm font-semibold outline-none cursor-pointer py-2 pl-2.5 pr-8 appearance-none"
                 >
                   <option value="" className="bg-slate-900 text-slate-400">
                     -- Select a location (CIE Hub, Library, Food Court, Canteen...) --
@@ -451,6 +453,9 @@ export default function CampusGuideModal({ isOpen, onClose, initialDestinationId
                     </option>
                   ))}
                 </select>
+                <div className="absolute right-3.5 pointer-events-none text-slate-400 text-xs">
+                  ▼
+                </div>
               </div>
 
               {/* Selected Location Details Card (Rendered on selection) */}

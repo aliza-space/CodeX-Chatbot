@@ -26,7 +26,7 @@ export const CAMPUS_NAV_NODES = {
   node_quad_circle: { id: "node_quad_circle", x: 500, y: 360, label: "Central Quadrangle Roundabout", lat: 15.8088, lng: 78.0375 },
   node_library_entry: { id: "node_library_entry", x: 420, y: 300, label: "Central Library & Digital Wing", lat: 15.8091, lng: 78.0369 },
   node_cie_entry: { id: "node_cie_entry", x: 590, y: 390, label: "CIE Innovation Hub", lat: 15.8085, lng: 78.0383 },
-  node_csm_entry: { id: "node_csm_entry", x: 710, y: 370, label: "CSM Block (Intel AI/ML Hub - 2nd Fl)", lat: 15.8088, lng: 78.0388 },
+  node_csm_entry: { id: "node_csm_entry", x: 710, y: 370, label: "CSM Block (Intel AI/ML Hub)", lat: 15.8088, lng: 78.0388 },
   node_drone_entry: { id: "node_drone_entry", x: 720, y: 460, label: "Drone & Robotics Research Lab", lat: 15.8084, lng: 78.0392 },
   node_amphi_entry: { id: "node_amphi_entry", x: 540, y: 310, label: "Open Air Amphitheatre (\"Amphi\")", lat: 15.8093, lng: 78.0382 },
   node_cse_entry: { id: "node_cse_entry", x: 670, y: 245, label: "CSE Department Block", lat: 15.8096, lng: 78.0388 },
