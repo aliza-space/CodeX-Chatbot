@@ -27,7 +27,7 @@ async function walk(dir) {
 }
 
 async function main() {
-  const kbDir = path.resolve(__dirname, env.KB_SOURCE_DIR);
+  const kbDir = path.resolve(process.cwd(), env.KB_SOURCE_DIR);
   logger.info(`Scanning knowledge base at: ${kbDir}`);
 
   await connectDB();

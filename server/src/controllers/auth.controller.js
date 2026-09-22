@@ -37,7 +37,11 @@ export const googleLogin = asyncHandler(async (req, res) => {
     return res.status(400).json({ error: "Google token is required" });
   }
 
-  const clientId = process.env.GOOGLE_CLIENT_ID || env.GOOGLE_CLIENT_ID;
+  const clientId =
+    process.env.GOOGLE_CLIENT_ID ||
+    env.GOOGLE_CLIENT_ID ||
+    "92086230756-iq85ekta3fc2q0kjlbu2g3ar6rpu5i7f.apps.googleusercontent.com";
+
   const ticket = await googleClient.verifyIdToken({
     idToken: token,
     audience: clientId,
