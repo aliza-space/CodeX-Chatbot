@@ -2,17 +2,20 @@ import mongoose from "mongoose";
 import Chunk from "../../models/Chunk.js";
 import { embedText } from "../embedding/embedder.js";
 import { env } from "../../config/env.js";
+import { normalizeQuery } from "./normalizer.js";
 
 const STOPWORDS = new Set([
   "what", "are", "the", "and", "for", "who", "is", "how", "in", "of", "to", "a", "an",
   "on", "at", "by", "with", "from", "about", "me", "tell", "give", "show", "can", "you",
   "does", "do", "i", "my", "our", "we", "this", "that", "these", "those", "which", "where",
-  "when", "why", "be", "been", "being", "have", "has", "had", "would", "should", "could"
+  "when", "why", "be", "been", "being", "have", "has", "had", "would", "should", "could",
+  "please", "some", "any", "all"
 ]);
 
 export async function retrieveChunks(query, { topK = env.RAG_TOP_K, filter = {} } = {}) {
+  const cleanQuery = normalizeQuery(query || "");
   try {
-    const queryVector = await embedText(query);
+    const queryVector = await embedText(cleanQuery);
     if (queryVector && queryVector.length > 0) {
       const pipeline = [
         {
@@ -42,9 +45,9 @@ export async function retrieveChunks(query, { topK = env.RAG_TOP_K, filter = {} 
       const results = await Chunk.aggregate(pipeline);
       if (results && results.length > 0) return results;
     }
-    return retrieveChunksFallback(query, { topK });
+    return retrieveChunksFallback(cleanQuery, { topK });
   } catch (err) {
-    return retrieveChunksFallback(query, { topK });
+    return retrieveChunksFallback(cleanQuery, { topK });
   }
 }
 
@@ -58,13 +61,13 @@ function buildAtlasFilter({ category, tags, status } = {}) {
 }
 
 export async function retrieveChunksFallback(query, { topK = env.RAG_TOP_K } = {}) {
-  const cleanQuery = (query || "").toLowerCase();
+  const cleanQuery = normalizeQuery(query || "").toLowerCase();
   const rawWords = cleanQuery.replace(/[^\w\s]/g, " ").split(/\s+/).filter(Boolean);
   const keywords = rawWords.filter((w) => w.length > 1 && !STOPWORDS.has(w));
 
   // Try vector search on loaded chunks if embeddings exist
   try {
-    const queryVector = await embedText(query);
+    const queryVector = await embedText(cleanQuery);
     if (queryVector && queryVector.length > 0) {
       const allWithEmbeddings = await Chunk.find({ "embedding.0": { $exists: true } }).lean();
       if (allWithEmbeddings.length > 0) {
@@ -87,7 +90,19 @@ export async function retrieveChunksFallback(query, { topK = env.RAG_TOP_K } = {
     const allChunks = await Chunk.find({}).lean();
     if (!allChunks || allChunks.length === 0) return [];
 
-    const isCodeX4Query = cleanQuery.includes("4.0") || cleanQuery.includes("codex 4") || (!cleanQuery.includes("2.0") && !cleanQuery.includes("3.0") && !cleanQuery.includes("past"));
+    const mentionsPastEvent =
+      cleanQuery.includes("galactic") ||
+      cleanQuery.includes("ideasprint") ||
+      cleanQuery.includes("outsyslayer") ||
+      cleanQuery.includes("symposium") ||
+      cleanQuery.includes("2.0") ||
+      cleanQuery.includes("3.0") ||
+      cleanQuery.includes("past");
+
+    const isCodeX4Query =
+      cleanQuery.includes("4.0") ||
+      cleanQuery.includes("codex 4") ||
+      (!mentionsPastEvent && (cleanQuery.includes("codex") || cleanQuery.includes("event") || cleanQuery.includes("prize") || cleanQuery.includes("rule") || cleanQuery.includes("register")));
 
     const scored = allChunks.map((chunk) => {
       let score = 0;
@@ -95,12 +110,47 @@ export async function retrieveChunksFallback(query, { topK = env.RAG_TOP_K } = {
       const title = (chunk.sourceTitle || "").toLowerCase();
       const tags = (chunk.tags || []).map((t) => (t || "").toLowerCase());
 
+      // Galactic Gamble targeting
+      if (cleanQuery.includes("galactic")) {
+        if (title.includes("galactic gamble") || tags.includes("galactic gamble")) score += 120;
+      }
+
+      // IdeaSprint targeting
+      if (cleanQuery.includes("ideasprint")) {
+        if (title.includes("ideasprint") || tags.includes("ideasprint")) score += 120;
+      }
+
+      // OUTSYSLAYER targeting
+      if (cleanQuery.includes("outsyslayer")) {
+        if (title.includes("outsyslayer") || tags.includes("outsyslayer")) score += 120;
+      }
+
+      // Code Symposium targeting
+      if (cleanQuery.includes("symposium")) {
+        if (title.includes("symposium")) score += 120;
+      }
+
+      // Learning resources targeting
+      if (cleanQuery.includes("resource") || cleanQuery.includes("learning") || cleanQuery.includes("dsa") || cleanQuery.includes("roadmap") || cleanQuery.includes("classes")) {
+        if (title.includes("learning activities") || tags.includes("learning")) score += 90;
+      }
+
+      // Upcoming events targeting
+      if (cleanQuery.includes("upcoming") || cleanQuery.includes("events coming up") || cleanQuery.includes("what events")) {
+        if (title.includes("overview") || title.includes("about coders' club")) score += 80;
+      }
+
+      // Winners targeting
+      if (cleanQuery.includes("winner") || cleanQuery.includes("who won")) {
+        if (text.includes("winners") || text.includes("1st prize")) score += 40;
+      }
+
       // CodeX 4.0 edition relevance
       if (isCodeX4Query) {
         if (title.includes("codex 4.0") || tags.includes("codex 4.0")) {
           score += 45;
         }
-        if (title.includes("codex 2.0") || title.includes("codex 3.0")) {
+        if (!mentionsPastEvent && (title.includes("codex 2.0") || title.includes("codex 3.0"))) {
           score -= 35;
         }
       }
@@ -129,7 +179,7 @@ export async function retrieveChunksFallback(query, { topK = env.RAG_TOP_K } = {
       }
 
       // Specific intent boosting
-      if (cleanQuery.includes("eligib") || cleanQuery.includes("rule") || cleanQuery.includes("team size") || cleanQuery.includes("format")) {
+      if (cleanQuery.includes("eligib") || cleanQuery.includes("rule") || cleanQuery.includes("team size") || cleanQuery.includes("format") || cleanQuery.includes("1st year") || cleanQuery.includes("first year") || cleanQuery.includes("can i join") || cleanQuery.includes("participate")) {
         if (title.includes("eligibility") || tags.includes("eligibility")) score += 80;
       }
       if (cleanQuery.includes("sponsor")) {
@@ -138,7 +188,7 @@ export async function retrieveChunksFallback(query, { topK = env.RAG_TOP_K } = {
       if (cleanQuery.includes("prize") || cleanQuery.includes("perk") || cleanQuery.includes("reward") || cleanQuery.includes("50,000")) {
         if (title.includes("overview") || tags.includes("prize pool")) score += 70;
       }
-      if (cleanQuery.includes("food") || cleanQuery.includes("canteen") || cleanQuery.includes("cafeteria") || cleanQuery.includes("csm") || cleanQuery.includes("lab") || cleanQuery.includes("map") || cleanQuery.includes("direction") || cleanQuery.includes("venue")) {
+      if (cleanQuery.includes("food") || cleanQuery.includes("canteen") || cleanQuery.includes("cafeteria") || cleanQuery.includes("csm") || cleanQuery.includes("lab") || cleanQuery.includes("map") || cleanQuery.includes("direction") || cleanQuery.includes("venue") || cleanQuery.includes("location")) {
         if (title.includes("campus") || title.includes("facilities") || title.includes("navigation")) score += 80;
       }
       if (cleanQuery.includes("schedule") || cleanQuery.includes("round") || cleanQuery.includes("timing") || cleanQuery.includes("timeline")) {
@@ -147,14 +197,14 @@ export async function retrieveChunksFallback(query, { topK = env.RAG_TOP_K } = {
       if (cleanQuery.includes("register") || cleanQuery.includes("fee") || cleanQuery.includes("portal") || cleanQuery.includes("300")) {
         if (title.includes("registration") || tags.includes("registration")) score += 80;
       }
-      if (cleanQuery.includes("contact") || cleanQuery.includes("phone") || cleanQuery.includes("coordinator") || cleanQuery.includes("call") || cleanQuery.includes("email")) {
+      if (cleanQuery.includes("contact") || cleanQuery.includes("phone") || cleanQuery.includes("coordinator") || cleanQuery.includes("call") || cleanQuery.includes("email") || cleanQuery.includes("/team")) {
         if (title.includes("contact") || title.includes("coordinator")) score += 80;
       }
 
       return {
         ...chunk,
         rawScore: score,
-        score: Math.max(0.1, Math.min(score / 100, 0.98)),
+        score: Math.max(0.05, Math.min(score / 100, 0.98)),
       };
     });
 

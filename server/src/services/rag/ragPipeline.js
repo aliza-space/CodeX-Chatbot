@@ -7,6 +7,7 @@ import { buildContextBlock, buildCitations } from "./promptBuilder.js";
 import { parseSlashCommand } from "./commands.js";
 import Announcement from "../../models/Announcement.js";
 import UnansweredQuery from "../../models/UnansweredQuery.js";
+import { normalizeQuery } from "./normalizer.js";
 import { env } from "../../config/env.js";
 
 const PROMPT_INJECTION_PATTERNS = [
@@ -77,9 +78,8 @@ export async function runRagPipeline({ userMessage, history = [], conversationId
       : await llm.complete({ systemPrompt, messages });
   } catch (llmErr) {
     console.warn("⚠️ LLM execution error in runRagPipeline, providing synthesized context response:", llmErr.message);
-    answer = synthesizeConciseAnswer(userMessage, chunks);
+    answer = synthesizeConciseAnswer(rewritten, chunks);
     if (onToken) {
-      // Stream the concise formatted response smoothly
       const words = answer.split(" ");
       for (const w of words) {
         onToken(w + " ");
@@ -89,7 +89,7 @@ export async function runRagPipeline({ userMessage, history = [], conversationId
   }
 
   const citations = buildCitations(chunks);
-  const wasAnswered = isConfident;
+  const wasAnswered = isConfident && !answer.includes("I don't have enough specific information");
 
   if (!wasAnswered) {
     await UnansweredQuery.create({
@@ -103,18 +103,28 @@ export async function runRagPipeline({ userMessage, history = [], conversationId
   return {
     answer,
     citations,
-    suggestions: buildSuggestions(chunks, slash),
+    suggestions: buildSuggestions(chunks, slash, rewritten),
     wasAnswered,
     rewrittenQuery: rewritten,
   };
 }
 
-function buildSuggestions(chunks, slash) {
+function buildSuggestions(chunks, slash, query = "") {
+  const q = (query || "").toLowerCase();
+  if (q.includes("galactic") || q.includes("past event")) {
+    return ["Who won Galactic Gamble?", "What was the registration fee?", "What events are coming up?"];
+  }
+  if (q.includes("resource") || q.includes("learn")) {
+    return ["What are the regular classes?", "How do I join Coders' Club?", "When is CodeX 4.0?"];
+  }
+  if (q.includes("eligib") || q.includes("1st year") || q.includes("rule")) {
+    return ["What is the team size?", "What are the prizes?", "How do I register?"];
+  }
   if (slash?.command === "events") return ["How do I register?", "What's the prize pool?", "Who do I contact?"];
   if (!chunks.length) return defaultSuggestions();
   const topCategory = chunks[0]?.category;
   if (topCategory === "event") return ["What's the registration deadline?", "Who are the sponsors?", "Is there a team size limit?"];
-  if (topCategory === "resource") return ["Show me the DSA roadmap", "Show me the web dev roadmap", "Show me the ML roadmap"];
+  if (topCategory === "resource") return ["Show me the DSA roadmap", "Show me the web dev roadmap", "Show me learning resources"];
   if (topCategory === "team") return ["Who is the event coordinator?", "How do I contact the club?"];
   return defaultSuggestions();
 }
@@ -123,10 +133,76 @@ function defaultSuggestions() {
   return ["What events are coming up?", "How do I join Coders' Club?", "Show me learning resources"];
 }
 
-function synthesizeConciseAnswer(userMessage, chunks) {
-  const q = (userMessage || "").toLowerCase();
+function synthesizeConciseAnswer(query, chunks) {
+  const q = normalizeQuery(query || "").toLowerCase();
 
-  // 1. Date / Timing / Venue / When is CodeX
+  // 1. First-Year (1st Year) Eligibility Check
+  if (q.includes("1st year") || q.includes("first year") || q.includes("1st yr") || (q.includes("first") && q.includes("join"))) {
+    return `### 👥 First-Year Eligibility Rule for CodeX 4.0
+- **Participation Status:** First-year (1st-year) students are **not eligible** to participate as contestants in CodeX 4.0.
+- **Eligible Batches:** CodeX 4.0 is open only to undergraduate engineering students in their **II, III, or IV Year** of study.
+- **Club Activities for 1st Years:** First-year students are warmly encouraged to join regular Coders' Club learning classes, review sessions, and problem-solving workshops throughout the year to prepare for upcoming hackathons and CodeX editions!`;
+  }
+
+  // 2. Learning Resources & Classes
+  if (q.includes("resource") || q.includes("learning") || q.includes("dsa") || q.includes("roadmap") || q.includes("classes") || q.includes("how to learn")) {
+    return `### 📚 Coders' Club Learning Activities & Resources
+- **Regular Guided Classes:** Weekly sessions guided by **Dr. A. Vishnuvardhan Reddy** covering Mathematics, Data Structures & Algorithms (DSA), Problem Solving, and Competitive Programming.
+- **Peer Review Classes:** Supervised by senior student coordinators to clear doubts and provide 1-on-1 mentorship.
+- **Programming Contests:** Regular practice contests conducted on **HackerRank**, **Smart Interviews**, and **Examly**.
+- **Interview Preparation:** Technical group discussions, coding quizzes, and "find-the-output" debugging rounds held on alternate weeks.
+- **Official Website:** Access roadmaps and past materials at [https://www.codersclubgprec.in](https://www.codersclubgprec.in).`;
+  }
+
+  // 3. Upcoming Events
+  if (q.includes("upcoming") || q.includes("events coming up") || q.includes("next event") || q.includes("what events")) {
+    return `### 🚀 Upcoming Coders' Club Events
+- **CodeX 4.0 (Flagship Coding Competition):**
+  - **Date:** 24 September 2026 (9:00 AM – 5:00 PM IST)
+  - **Venue:** CSM Computer Labs, GPREC Campus
+  - **Registration Deadline:** 23 September 2026
+  - **Prize Pool:** Up to **₹50,000** in cash prizes and awards!
+- **Regular DSA Classes & Practice Contests:** Weekly sessions across all branches.
+- **Internal SIH Hackathons & Tech Bootcamps:** Follow [@coders_club_gprec](https://instagram.com/coders_club_gprec) for latest announcement updates.`;
+  }
+
+  // 4. Galactic Gamble Winners & Details
+  if (q.includes("galactic") && (q.includes("winner") || q.includes("who won") || q.includes("result") || q.includes("rank"))) {
+    return `### 🏆 Galactic Gamble (3 January 2026) Winners
+- **2nd Year Winners:**
+  - **1st Prize (Winner - ₹750):** Team **Tech Titans** (*Shaik Mohammad Adil, Shaik Muhammad Arshad*)
+  - **2nd Prize (Runner-up - ₹500):** Team **Alpha** (*Panga Guru Sai Kumar Reddy, Vaddi Praneeth Kumar*)
+- **3rd Year Winners:**
+  - **1st Prize (Winner - ₹750):** Team **Clover** (*Veluru Navadeep Reddy, Rama Kanth Reddy*)
+  - **2nd Prize (Runner-up - ₹500):** Team **Pirates** (*Sirigireddy Nithin Reddy, Roddam Shaik Arbaz*)
+- *Prizes were presented by Dr. A. Vishnuvardhan Reddy, Mr. I. Venkata Rameswar Reddy, and Mr. P. Rama Rao at CSM Block.*`;
+  }
+
+  // 5. CodeX 2.0 Winners
+  if (q.includes("2.0") && (q.includes("winner") || q.includes("who won"))) {
+    return `### 🏆 CodeX 2.0 (24 August 2024) Winners
+- **1st Prize (₹8,500):** Team **CP Champs** (*Vankam Venkata Durga Prasad, Divite Dinesh*)
+- **2nd Prize (₹6,000):** Team **Decoders** (*Papireddy Gari Guna Manisha, Avula Bharath Reddy, Swathi Challa*)
+- **3rd Prize (₹4,000):** Team **GPREC1985** (*Gunduboina Dileep, Surya Rudrakshala, Kunchepu Hrushikesavagokulu*)
+- **4th Prize (Consolation - ₹2,000):** Team **Bot$$Coders** (*B Thirumaleswar Reddy, Adoni Bhaskar, Pakalwada Riyaz Ahamed*)
+- **5th Prize (Consolation - ₹2,000):** Team **Mind Benders** (*Bandla Dora Babu, Jeerla Subash, K G Mahesh*)`;
+  }
+
+  // 6. Generic Event Winners Lookup from Chunks
+  if (q.includes("winner") || q.includes("who won")) {
+    const winnerChunk = chunks.find((c) => (c.text || "").toLowerCase().includes("winner") || (c.text || "").toLowerCase().includes("1st prize"));
+    if (winnerChunk) {
+      const clean = winnerChunk.text
+        .replace(/^\[.*?\]\s*/gm, "")
+        .replace(/^\*\*Category:\*\*.*$/gm, "")
+        .replace(/^\*\*Tags:\*\*.*$/gm, "")
+        .replace(/^\*\*Date:\*\*.*$/gm, "")
+        .trim();
+      return clean;
+    }
+  }
+
+  // 7. Date / Timing / Venue / When is CodeX 4.0
   if (q.includes("when") || (q.includes("date") && !q.includes("last")) || q.includes("timing") || q.includes("where is codex")) {
     return `### 📅 CodeX 4.0 Event Details
 - **Date:** 24 September 2026
@@ -136,7 +212,7 @@ function synthesizeConciseAnswer(userMessage, chunks) {
 - **Registration Portal:** [https://codex4-0-registration-portal.codersclubgprec.in](https://codex4-0-registration-portal.codersclubgprec.in)`;
   }
 
-  // 2. Prizes & Perks / Rewards / Sponsors
+  // 8. Prizes & Perks / Rewards / Sponsors
   if (q.includes("prize") || q.includes("perk") || q.includes("reward") || q.includes("cash") || q.includes("sponsor")) {
     return `### 🏆 CodeX 4.0 Prizes, Perks & Sponsors
 - **Prize Pool:** Up to **₹50,000** in cash prizes and winner awards!
@@ -145,7 +221,7 @@ function synthesizeConciseAnswer(userMessage, chunks) {
 - **Event Sponsors:** **WeDevit** (*Technical Sponsor*), **HaveMore** (*Havmor ice-creams*), **Microcare Academy**, **Fiarro Pizza**, and **RC Cola**.`;
   }
 
-  // 3. Eligibility & Team Rules
+  // 9. Eligibility & Team Rules
   if (q.includes("eligib") || q.includes("who can") || q.includes("team size") || q.includes("format") || q.includes("4th year") || q.includes("final year") || q.includes("branch") || q.includes("rule")) {
     return `### 👥 CodeX 4.0 Eligibility & Team Rules
 - **Eligibility:** Undergraduate engineering students in **II, III, or IV Year** from GPREC and any other recognized college/university (*1st-year students are not eligible*).
@@ -155,7 +231,7 @@ function synthesizeConciseAnswer(userMessage, chunks) {
 - **Roll Numbers:** Each student's roll number can only be registered in one team.`;
   }
 
-  // 4. Registration & Fee
+  // 10. Registration & Fee
   if (q.includes("register") || q.includes("registration") || q.includes("fee") || q.includes("cost") || q.includes("pay") || q.includes("price") || q.includes("portal") || q.includes("link") || q.includes("300")) {
     return `### 📝 CodeX 4.0 Registration & Fees
 - **Registration Fee:** **₹300 per team** (flat fee for the whole team, not per member).
@@ -164,7 +240,7 @@ function synthesizeConciseAnswer(userMessage, chunks) {
 - **Payment Modes:** Online via Cashfree Payments (UPI, Cards, Net Banking). You will receive an official Team ID (e.g., \`CDX4-0001\`) upon successful payment.`;
   }
 
-  // 5. Speaker
+  // 11. Guest Speaker
   if (q.includes("speaker") || q.includes("nihar") || q.includes("guest")) {
     return `### 🎙️ CodeX 4.0 Guest Speaker
 - **Guest Speaker:** **Dodagatta Nihar**
@@ -172,7 +248,7 @@ function synthesizeConciseAnswer(userMessage, chunks) {
 - **Session:** Delivering an inspiring interactive session on tech careers, industry skills, and real-world coding.`;
   }
 
-  // 6. Campus Food & Labs Navigation
+  // 12. Campus Food & Labs Navigation
   if (q.includes("food") || q.includes("canteen") || q.includes("cafeteria") || q.includes("csm") || q.includes("lab") || q.includes("map") || q.includes("location") || q.includes("direction")) {
     return `### 📍 GPREC Campus Navigation Guide
 - **CSM Computer Labs (Event Venue):** Ground & 1st Floor of CSM Block. From the Main Gate, walk straight along the central avenue for ~180 meters past the lawn.
@@ -182,7 +258,7 @@ function synthesizeConciseAnswer(userMessage, chunks) {
 *(Tip: You can also tap **Campus Map** in the menu to see interactive routes and GPS markers!)*`;
   }
 
-  // 7. Team & Contact details
+  // 13. Team & Contact details
   if (q.includes("team") || q.includes("contact") || q.includes("coordinator") || q.includes("phone") || q.includes("email") || q.includes("number") || q.includes("/team")) {
     return `### 📞 Coders' Club & CodeX 4.0 Contacts
 - **Faculty Convener:** Dr. A. Vishnuvardhan Reddy (Associate Professor, ECS/CSE)
@@ -195,7 +271,7 @@ function synthesizeConciseAnswer(userMessage, chunks) {
 - **Website:** [https://www.codersclubgprec.in](https://www.codersclubgprec.in)`;
   }
 
-  // 8. Schedule & Rounds
+  // 14. Schedule & Rounds
   if (q.includes("schedule") || q.includes("round") || q.includes("timeline")) {
     return `### ⏱️ CodeX 4.0 Schedule & Competition Format
 - **Rounds:** Two coding rounds testing problem-solving, logic, and competitive programming.
@@ -207,8 +283,8 @@ function synthesizeConciseAnswer(userMessage, chunks) {
 - **04:30 PM – 05:00 PM:** Valedictory & Prize Distribution Ceremony`;
   }
 
-  // 9. Generic Fallback: Clean and extract matching sections concisely
-  if (chunks && chunks.length > 0) {
+  // 15. Clean Content Extraction from Top Chunk if score is relevant
+  if (chunks && chunks.length > 0 && chunks[0].score >= 0.35) {
     const text = (chunks[0].text || "")
       .replace(/^\[.*?\]\s*/gm, "")
       .replace(/^\*\*Category:\*\*.*$/gm, "")
@@ -216,10 +292,12 @@ function synthesizeConciseAnswer(userMessage, chunks) {
       .replace(/^\*\*Date:\*\*.*$/gm, "")
       .trim();
 
-    const lines = text.split("\n").filter(l => !l.startsWith("# ") && l.trim().length > 0);
-    return lines.slice(0, 8).join("\n\n");
+    const lines = text.split("\n").filter((l) => !l.startsWith("# ") && l.trim().length > 0);
+    if (lines.length > 0) {
+      return lines.slice(0, 8).join("\n\n");
+    }
   }
 
-  return "CodeX 4.0 is the flagship collegiate coding competition hosted by Coders' Club at GPREC, Kurnool on 24 September 2026. Teams of 2–3 participants compete across multiple rounds with prizes up to ₹50,000 sponsored by WeDevit and other top tech companies.";
+  // 16. Honest "I don't know" fallback
+  return "I don't have enough specific information on that in my knowledge base. For further details, feel free to reach out to the Coders' Club coordinators directly at codersclub@gprec.ac.in or contact student leads Tabraiz (+91 9391491123) / Kashif (+91 9492068097).";
 }
-
