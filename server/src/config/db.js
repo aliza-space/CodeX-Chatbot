@@ -13,7 +13,12 @@ export async function connectDB() {
 
   mongoose.set("strictQuery", true);
   try {
-    await mongoose.connect(env.MONGODB_URI);
+    await mongoose.connect(env.MONGODB_URI, {
+      maxPoolSize: 50,
+      minPoolSize: 10,
+      serverSelectionTimeoutMS: 5000,
+      socketTimeoutMS: 45000,
+    });
     logger.info(`MongoDB connected: ${mongoose.connection.host}`);
   } catch (err) {
     logger.error("MongoDB connection failed", err);

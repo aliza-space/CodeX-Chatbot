@@ -177,7 +177,7 @@ export default function Login() {
           </div>
 
           {/* Google Sign-In Button (First / Top Option) */}
-          <div className="flex justify-center w-full min-h-[44px] overflow-hidden rounded-full bg-transparent">
+          <div className="flex justify-center w-full min-h-[44px] overflow-hidden rounded-full bg-transparent [&_iframe]:!bg-transparent">
             <GoogleLogin
               onSuccess={handleGoogleSuccess}
               onError={handleGoogleError}

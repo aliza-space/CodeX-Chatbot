@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+import { useSearchParams } from "react-router-dom";
 import Navbar from "../components/common/Navbar.jsx";
 import ChatWindow from "../components/chat/ChatWindow.jsx";
 import { useChatStore } from "../store/chatStore.js";
@@ -14,12 +15,32 @@ import {
 } from "../components/common/Icons.jsx";
 
 export default function ChatPage() {
+  const [searchParams, setSearchParams] = useSearchParams();
   const { isMapOpen, closeMap, mapDestinationId, openMap } = useChatStore();
   const { sendMessage } = useChatStream();
   const [announcement, setAnnouncement] = useState(
     "CodeX 4.0 registrations close on 23 September 2026 — register before slots fill up!"
   );
   const [showBanner, setShowBanner] = useState(true);
+  const processedDeepLink = useRef(false);
+
+  // Handle QR code deep links (?q=/events or ?nav=csm_labs)
+  useEffect(() => {
+    if (processedDeepLink.current) return;
+    const query = searchParams.get("q") || searchParams.get("cmd");
+    const nav = searchParams.get("nav");
+
+    if (query) {
+      processedDeepLink.current = true;
+      sendMessage(query);
+      // Clean up URL query param cleanly
+      setSearchParams({}, { replace: true });
+    } else if (nav) {
+      processedDeepLink.current = true;
+      openMap(nav);
+      setSearchParams({}, { replace: true });
+    }
+  }, [searchParams, sendMessage, openMap, setSearchParams]);
 
   useEffect(() => {
     api

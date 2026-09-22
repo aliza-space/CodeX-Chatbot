@@ -78,12 +78,17 @@ export async function runRagPipeline({ userMessage, history = [], conversationId
   const wasAnswered = isConfident;
 
   if (!wasAnswered) {
-    await UnansweredQuery.create({
-      question: userMessage,
-      rewrittenQuery: rewritten,
-      conversation: conversationId,
-      topScoreSeen: bestScoreOverall,
-    });
+    try {
+      const isValidId = conversationId && mongoose.Types.ObjectId.isValid(conversationId);
+      await UnansweredQuery.create({
+        question: userMessage,
+        rewrittenQuery: rewritten,
+        conversation: isValidId ? conversationId : undefined,
+        topScoreSeen: bestScoreOverall,
+      });
+    } catch (err) {
+      console.warn("Could not log UnansweredQuery:", err.message);
+    }
   }
 
   return {

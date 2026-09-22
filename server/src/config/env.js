@@ -16,7 +16,7 @@ const schema = z.object({
   GOOGLE_CLIENT_SECRET: z.string().optional(),
 
   LLM_PROVIDER: z.enum(["gemini", "openai", "anthropic"]).default("gemini"),
-  LLM_MODEL: z.string().default("gemini-3.1-flash-lite"),
+  LLM_MODEL: z.string().default("gemini-3.6-flash"),
   GEMINI_API_KEY: z.string().optional(),
   OPENAI_API_KEY: z.string().optional(),
   ANTHROPIC_API_KEY: z.string().optional(),

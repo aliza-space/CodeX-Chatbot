@@ -152,3 +152,12 @@ body {
 .venue-pin-container:hover {
   transform: translate(-50%, -108%) scale(1.06);
 }
+
+/* Remove white iframe background container for Google Sign-In */
+iframe[src*="accounts.google.com"],
+div[id^="g_id_"] iframe,
+.g_id_signin iframe {
+  background-color: transparent !important;
+  background: transparent !important;
+  color-scheme: normal;
+}

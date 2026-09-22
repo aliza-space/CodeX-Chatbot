@@ -10,7 +10,9 @@
     "start": "node src/server.js",
     "seed": "node src/seed/seed.js",
     "ingest": "node src/seed/ingestKnowledgeBase.js",
-    "tunnel": "npx ngrok http 5000"
+    "tunnel": "npx ngrok http 5000",
+    "test": "node src/tests/ragIntegrationTest.js",
+    "test:load": "node src/tests/loadTest.js"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
