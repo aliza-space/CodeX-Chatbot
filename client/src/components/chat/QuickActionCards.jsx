@@ -1,79 +1,76 @@
 import { motion } from "framer-motion";
-import { IconTrophy, IconGuide, IconCpu } from "../common/Icons.jsx";
+import { IconTrophy, IconPin, IconCpu, IconSparkles } from "../common/Icons.jsx";
 
-const TILES = [
+const STARTERS = [
   {
     icon: IconTrophy,
-    title: "Prizes & Perks",
-    desc: "Up to ₹50,000 prize pool, certificates & internship opportunities with WeDevit and other tech companies",
-    badge: "Rewards",
-    badgeColor: "bg-orange-50 dark:bg-orange-950/60 text-orange-600 dark:text-orange-400 border-orange-200 dark:border-orange-800/60",
-    iconColor: "bg-orange-50 dark:bg-orange-950/60 text-orange-600 dark:text-orange-400 border-orange-200 dark:border-orange-800/60",
+    title: "Prizes & Rewards",
+    subtitle: "₹50,000 cash prize pool, trophies, certificates & internship opportunities",
     query: "What are the prizes and perks for CodeX 4.0?",
-  },
-  {
-    icon: IconGuide,
-    title: "Rules & Format",
-    desc: "2-3 members per team, eligibility criteria & judging rubric",
-    badge: "Guidelines",
-    badgeColor: "bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-800/60",
-    iconColor: "bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-800/60",
-    query: "What are the eligibility rules and team format for CodeX 4.0?",
+    badge: "Rewards",
+    color: "text-amber-500 bg-amber-50 dark:bg-amber-950/40 border-amber-200/60 dark:border-amber-800/40",
   },
   {
     icon: IconCpu,
-    title: "Event Schedule",
-    desc: "24 Sept 2026, 9:00 AM - 5:00 PM @ CSM Labs",
-    badge: "Timeline",
-    badgeColor: "bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border-indigo-200 dark:border-indigo-800/60",
-    iconColor: "bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border-indigo-200 dark:border-indigo-800/60",
-    query: "What is the detailed schedule and venue for CodeX 4.0?",
+    title: "Rules & Eligibility",
+    subtitle: "2–3 members per team, eligibility criteria, and scoring rounds",
+    query: "What are the eligibility rules and team format for CodeX 4.0?",
+    badge: "Guidelines",
+    color: "text-blue-500 bg-blue-50 dark:bg-blue-950/40 border-blue-200/60 dark:border-blue-800/40",
   },
   {
-    icon: () => <span className="text-sm">📍</span>,
-    title: "Campus Guide & Areas",
-    desc: "Academic Area (CSM/CSE Labs) & Common Facilities (Library, Canteen, Amphi)",
-    badge: "2 Areas",
-    badgeColor: "bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800/60",
-    iconColor: "bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800/60",
-    query: "What facilities and areas are there in GPREC campus?",
+    icon: () => <span className="text-base">📅</span>,
+    title: "Event Timeline",
+    subtitle: "24 Sept 2026, 9:00 AM – 5:00 PM IST @ CSM Computer Labs",
+    query: "What is the detailed schedule, reporting time, and rounds for CodeX 4.0?",
+    badge: "Schedule",
+    color: "text-indigo-500 bg-indigo-50 dark:bg-indigo-950/40 border-indigo-200/60 dark:border-indigo-800/40",
+  },
+  {
+    icon: IconPin,
+    title: "Campus Guide & Map",
+    subtitle: "Directions to CSM Labs, Central Library, Canteens & Auditorium",
+    query: "Where is the CSM computer lab and what facilities are nearby at GPREC?",
+    badge: "Navigation",
+    color: "text-emerald-500 bg-emerald-50 dark:bg-emerald-950/40 border-emerald-200/60 dark:border-emerald-800/40",
   },
 ];
 
 export default function QuickActionCards({ onPick }) {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-3.5 max-w-xl mx-auto mt-4 sm:mt-5 w-full text-left">
-      {TILES.map((tile, i) => {
-        const IconComponent = tile.icon;
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3 w-full max-w-2xl mx-auto mt-4 sm:mt-6 text-left">
+      {STARTERS.map((s, idx) => {
+        const IconComponent = s.icon;
         return (
           <motion.button
-            key={tile.title}
-            onClick={() => onPick(tile.query)}
-            initial={{ opacity: 0, y: 10 }}
+            key={s.title}
+            onClick={() => onPick(s.query)}
+            initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: i * 0.05, duration: 0.2 }}
+            transition={{ delay: idx * 0.06, duration: 0.2 }}
             whileHover={{ y: -2, scale: 1.01 }}
-            whileTap={{ scale: 0.98 }}
-            className="group relative text-left p-4 rounded-2xl border border-slate-200/80 dark:border-slate-800/80 bg-slate-50/80 dark:bg-slate-800/50 hover:bg-white dark:hover:bg-slate-800 hover:shadow-md hover:border-blue-500/40 dark:hover:border-blue-500/40 transition-all flex flex-col justify-between cursor-pointer"
+            whileTap={{ scale: 0.99 }}
+            className="group relative p-3.5 sm:p-4 rounded-2xl bg-white dark:bg-slate-900/80 hover:bg-slate-50 dark:hover:bg-slate-850/90 border border-slate-200/80 dark:border-slate-800/80 hover:border-blue-500/40 dark:hover:border-blue-500/40 shadow-xs hover:shadow-md transition-all flex flex-col justify-between cursor-pointer text-left"
           >
             <div>
-              <div className="flex items-center justify-between mb-2.5">
-                <div className={`p-2 rounded-xl border ${tile.iconColor} group-hover:scale-110 transition-transform`}>
+              <div className="flex items-center justify-between mb-2">
+                <div className={`p-2 rounded-xl border ${s.color} group-hover:scale-105 transition-transform`}>
                   <IconComponent className="w-4 h-4" />
                 </div>
-                <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border ${tile.badgeColor}`}>
-                  {tile.badge}
+                <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border ${s.color}`}>
+                  {s.badge}
                 </span>
               </div>
-              <h3 className="font-display font-bold text-xs sm:text-sm text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors truncate">
-                {tile.title}
-              </h3>
+
+              <h4 className="font-display font-semibold text-xs sm:text-sm text-slate-900 dark:text-slate-100 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                {s.title}
+              </h4>
               <p className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed line-clamp-2">
-                {tile.desc}
+                {s.subtitle}
               </p>
             </div>
 
-            <div className="mt-3 pt-2.5 border-t border-slate-200/60 dark:border-slate-700/60 flex items-center gap-1.5 text-[11px] font-semibold text-blue-600 dark:text-blue-400">
+            <div className="mt-3 pt-2 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between text-[11px] font-medium text-slate-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
               <span>Ask CodeX Buddy</span>
               <span className="group-hover:translate-x-1 transition-transform font-bold">→</span>
             </div>

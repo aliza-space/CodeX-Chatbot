@@ -226,11 +226,11 @@ export default function CampusInteractiveMap({
   const destCoords = CAMPUS_NAV_NODES[destId] || routeData?.points?.[routeData.points.length - 1] || null;
 
   return (
-    <div className="flex flex-col w-full h-full min-h-0 bg-slate-950 text-slate-100 rounded-2xl sm:rounded-3xl border border-slate-800 overflow-hidden shadow-2xl">
+    <div className="flex flex-col w-full h-full min-h-0 bg-slate-950 text-slate-100 rounded-2xl sm:rounded-3xl border border-slate-800 overflow-y-auto scrollbar-thin shadow-2xl">
       {/* ========================================================= */}
       {/* 1. TOP BAR: COMPACT, CLEAN ROUTE PICKER (FROM / TO / GPS) */}
       {/* ========================================================= */}
-      <div className="p-2 sm:p-3 bg-slate-900/95 border-b border-slate-800 backdrop-blur-md shrink-0 z-20">
+      <div className="p-2 sm:p-3 bg-slate-900/95 border-b border-slate-800 backdrop-blur-md shrink-0 z-20 sticky top-0">
         <div className="flex items-center gap-2">
           {/* Start and End Selectors */}
           <div className="flex-1 flex flex-col gap-1.5 min-w-0">
@@ -720,7 +720,7 @@ export default function CampusInteractiveMap({
       {/* ========================================================= */}
       {/* 3. LIVE ROUTE STATS & STEP-BY-STEP DRAWER                 */}
       {/* ========================================================= */}
-      <div className="p-2.5 sm:p-3 bg-slate-900/95 border-t border-slate-800 backdrop-blur-md flex flex-col gap-2 shrink-0 z-20">
+      <div className="p-3 sm:p-3.5 pb-4 sm:pb-4 bg-slate-900/95 border-t border-slate-800 backdrop-blur-md flex flex-col gap-2 shrink-0 z-20">
         <div className="flex items-center justify-between gap-3">
           <div className="flex items-center gap-2.5 min-w-0">
             <span className="text-lg p-2 rounded-xl bg-slate-800 shrink-0">

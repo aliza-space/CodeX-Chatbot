@@ -1,6 +1,5 @@
 import { env } from "../../config/env.js";
 
-<<<<<<< HEAD
 // Category-specific adaptive confidence thresholds
 // High-stakes data (rules, team contacts) requires higher precision than general resources.
 const CATEGORY_THRESHOLDS = {
@@ -25,17 +24,8 @@ export function rerank(chunks, { topK = env.RAG_TOP_K, minScore } = {}) {
     const threshold = minScore !== undefined ? minScore : getCategoryThreshold(c.category);
     return c.score >= threshold;
   });
-=======
-// Score-based re-rank: drop below-threshold chunks, dedupe near-identical text
-// (same document + overlapping content), and cap to topK.
-export function rerank(chunks, { topK = env.RAG_TOP_K, minScore = env.RAG_MIN_SCORE } = {}) {
-  // Use adaptive threshold (0.30 or minScore) so fallback keyword matches are not dropped
-  const threshold = Math.min(minScore ?? 0.72, 0.30);
-  const filtered = chunks.filter((c) => c.score >= threshold);
 
-  // If filtered is empty but we have candidates, fallback to top candidates
-  const candidates = filtered.length > 0 ? filtered : chunks.filter((c) => c.score >= 0.15);
->>>>>>> 04c21e6827bc48647e297d4f16c6dee6797ca8e2
+  const candidates = filtered.length > 0 ? filtered : chunks.filter((c) => c.score >= 0.50);
 
   const seen = new Set();
   const deduped = [];
@@ -47,7 +37,9 @@ export function rerank(chunks, { topK = env.RAG_TOP_K, minScore = env.RAG_MIN_SC
     if (deduped.length >= topK) break;
   }
 
-  const bestScoreOverall = chunks.length ? Math.max(...chunks.map((c) => c.score)) : 0;
+  const bestScoreOverall = chunks.length
+    ? Math.max(...chunks.map((c) => (Number.isFinite(c.score) ? c.score : 0)))
+    : 0;
 
-  return { chunks: deduped, bestScoreOverall, isConfident: deduped.length > 0 };
+  return { chunks: deduped, bestScoreOverall, isConfident: filtered.length > 0 };
 }

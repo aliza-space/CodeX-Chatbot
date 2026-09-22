@@ -69,35 +69,24 @@ export async function runRagPipeline({ userMessage, history = [], conversationId
   const systemPrompt = buildSystemPrompt({ context, language, announcements });
 
   let answer = "";
-  const directAnswer = synthesizeConciseAnswer(rewritten, chunks);
-  const isConfidentDirectMatch = directAnswer && !directAnswer.includes("I don't have enough specific information");
+  try {
+    const llm = getLLM();
+    const messages = [...history.slice(-8), { role: "user", content: userMessage }];
 
-  if (isConfidentDirectMatch) {
-    answer = directAnswer;
+    answer = onToken
+      ? await llm.streamChat({ systemPrompt, messages, onToken })
+      : await llm.complete({ systemPrompt, messages });
+  } catch (llmErr) {
+    console.warn("⚠️ LLM execution fallback in runRagPipeline:", llmErr.message);
+    const directAnswer = synthesizeConciseAnswer(rewritten, chunks);
+    answer =
+      directAnswer ||
+      "I don't have enough specific information on that in my knowledge base. For further details, feel free to reach out to the Coders' Club coordinators directly at codersclub@gprec.ac.in.";
     if (onToken) {
       const words = answer.split(" ");
       for (const w of words) {
         onToken(w + " ");
         await new Promise((r) => setTimeout(r, 10));
-      }
-    }
-  } else {
-    try {
-      const llm = getLLM();
-      const messages = [...history.slice(-8), { role: "user", content: userMessage }];
-
-      answer = onToken
-        ? await llm.streamChat({ systemPrompt, messages, onToken })
-        : await llm.complete({ systemPrompt, messages });
-    } catch (llmErr) {
-      console.warn("⚠️ LLM execution fallback in runRagPipeline:", llmErr.message);
-      answer = directAnswer || "I don't have enough specific information on that in my knowledge base. For further details, feel free to reach out to the Coders' Club coordinators directly at codersclub@gprec.ac.in.";
-      if (onToken) {
-        const words = answer.split(" ");
-        for (const w of words) {
-          onToken(w + " ");
-          await new Promise((r) => setTimeout(r, 10));
-        }
       }
     }
   }

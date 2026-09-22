@@ -3,19 +3,11 @@ import { env } from "../../config/env.js";
 const BASE = "https://generativelanguage.googleapis.com/v1beta/models";
 
 function getLLMModel() {
-  const m = env.LLM_MODEL;
-  if (!m || m === "gemini-3.1-flash-lite" || m === "gemini-flash" || m === "default") {
-    return "gemini-1.5-flash";
-  }
-  return m;
+  return env.LLM_MODEL || "gemini-3.1-flash-lite";
 }
 
 function getEmbeddingModel() {
-  const m = env.EMBEDDING_MODEL;
-  if (!m || m === "gemini-embedding-001" || m.includes("gemini-embedding")) {
-    return "text-embedding-004";
-  }
-  return m;
+  return env.EMBEDDING_MODEL || "gemini-embedding-001";
 }
 
 function toGeminiContents(messages) {
@@ -26,7 +18,7 @@ function toGeminiContents(messages) {
 }
 
 export async function complete({ systemPrompt, messages }) {
-  const modelsToTry = [getLLMModel(), "gemini-1.5-flash-latest", "gemini-2.0-flash", "gemini-1.5-flash", "gemini-1.5-pro"];
+  const modelsToTry = [getLLMModel(), "gemini-3.1-flash-lite", "gemini-3.5-flash"];
   const uniqueModels = [...new Set(modelsToTry)];
   let lastError;
 
@@ -56,7 +48,7 @@ export async function complete({ systemPrompt, messages }) {
 
 // Streams token-by-token via Gemini's streamGenerateContent (SSE-style chunks of JSON).
 export async function streamChat({ systemPrompt, messages, onToken }) {
-  const modelsToTry = [getLLMModel(), "gemini-1.5-flash-latest", "gemini-2.0-flash", "gemini-1.5-flash", "gemini-1.5-pro"];
+  const modelsToTry = [getLLMModel(), "gemini-3.1-flash-lite", "gemini-3.5-flash"];
   const uniqueModels = [...new Set(modelsToTry)];
   let lastError;
 

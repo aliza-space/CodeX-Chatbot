@@ -3,17 +3,26 @@ import { buildRewritePrompt } from "../../prompts/rewrite.prompt.js";
 import { normalizeQuery } from "./normalizer.js";
 
 const FOLLOWUP_HINTS = [
-  "it", "that", "this", "its", "them", "those", "he", "she", "they",
+  "it", "that", "this", "its", "them", "those", "he", "she", "they", "their", "theirs", "his", "her",
+  "contact", "phone", "number", "numbers", "mobile", "whatsapp", "email", "address", "call", "reach",
   "winners", "who won", "winner", "prizes", "prize", "timing", "time",
   "when", "where", "how much", "fee", "cost", "rules", "rule", "eligible",
-  "why", "how", "format", "rounds", "speaker", "who", "more"
+  "why", "how", "format", "rounds", "speaker", "who", "more", "details"
 ];
 
 const KNOWN_ENTITIES = [
-  "galactic gamble",
   "codex 4.0",
   "codex 2.0",
   "codex 3.0",
+  "coordinators",
+  "student coordinators",
+  "faculty coordinators",
+  "contacts",
+  "tabraiz",
+  "kashif",
+  "karthik sai",
+  "vishnuvardhan reddy",
+  "galactic gamble",
   "ideasprint",
   "outsyslayer",
   "code symposium 2k24",
