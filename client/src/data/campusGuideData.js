@@ -12,8 +12,10 @@ export const GPREC_INFO = {
   tagline: "Premier autonomous engineering campus & home of CodeX Coding Events and CIE Innovation Hub",
   zonesCount: 2,
   facilitiesCount: 13,
-  visitorHighlight: "Spanning 30+ lush green acres with cutting-edge Intel AI labs, CIE startup incubator, modern food courts, and a vibrant tech community."
+  visitorHighlight: "Spanning 30+ lush green acres with cutting-edge Intel AI labs, CIE startup incubator, modern food courts, and a vibrant tech community.",
+  gps: { lat: 15.8073, lng: 78.0375 }
 };
+
 
 // =========================================================================
 // 1. STRUCTURED CAMPUS NAVIGATION NODES & WAYPOINTS
