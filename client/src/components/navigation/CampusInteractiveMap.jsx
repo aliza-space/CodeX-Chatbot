@@ -3,43 +3,25 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   CAMPUS_MAP_DATA,
   CAMPUS_NAV_NODES,
+  CAMPUS_LOCATIONS,
   calculateCampusRoute,
   findFacilityAndZone,
+  resolveToNodeId,
   GPREC_INFO
 } from "../../data/campusGuideData.js";
 import {
   IconSparkles
 } from "../common/Icons.jsx";
 
-// The two designated primary destinations
-const PRIMARY_DESTINATIONS = [
-  {
-    id: "csm-labs",
-    name: "CSM Department",
-    subtitle: "Intel AI Labs & Hackathon Arena",
-    icon: "💻",
-    nodeId: "node_csm_entry",
-    badge: "Primary CodeX Arena"
-  },
-  {
-    id: "auditorium",
-    name: "Auditorium",
-    subtitle: "Keynotes & Opening Ceremony",
-    icon: "🎭",
-    nodeId: "node_auditorium_entry",
-    badge: "AC Event Hall"
-  }
-];
-
 export default function CampusInteractiveMap({
   selectedFacilityId,
   onSelectFacility,
   onAskBuddy
 }) {
-  // Navigation State
+  // Navigation State: Start Node and Destination Node/Facility
   const [startNodeId, setStartNodeId] = useState("node_main_gate");
-  const [destFacilityId, setDestFacilityId] = useState(
-    selectedFacilityId === "auditorium" ? "auditorium" : "csm-labs"
+  const [destId, setDestId] = useState(
+    selectedFacilityId === "auditorium" ? "node_auditorium_entry" : "node_csm_entry"
   );
   const [showSteps, setShowSteps] = useState(false);
 
@@ -57,7 +39,8 @@ export default function CampusInteractiveMap({
   // Sync destination when parent selection changes
   useEffect(() => {
     if (selectedFacilityId) {
-      setDestFacilityId(selectedFacilityId);
+      const resolved = resolveToNodeId(selectedFacilityId);
+      setDestId(resolved);
     }
   }, [selectedFacilityId]);
 
@@ -135,11 +118,22 @@ export default function CampusInteractiveMap({
     );
   };
 
-  // Calculate Route between Start Node and Destination
+  // Swap Start and Destination points
+  const handleSwapPoints = () => {
+    const temp = startNodeId;
+    setStartNodeId(destId);
+    setDestId(temp);
+    const match = findFacilityAndZone(temp);
+    if (match && onSelectFacility) {
+      onSelectFacility(match.zone.id, match.facility.id);
+    }
+  };
+
+  // Calculate Route between Start Node and Destination Node across any combination
   const routeData = useMemo(() => {
-    if (!destFacilityId) return null;
-    return calculateCampusRoute(startNodeId, destFacilityId);
-  }, [startNodeId, destFacilityId]);
+    if (!startNodeId || !destId) return null;
+    return calculateCampusRoute(startNodeId, destId);
+  }, [startNodeId, destId]);
 
   // SVG Polyline string for the route path
   const routePathString = useMemo(() => {
@@ -147,12 +141,27 @@ export default function CampusInteractiveMap({
     return routeData.points.map((p, i) => `${i === 0 ? "M" : "L"} ${p.x} ${p.y}`).join(" ");
   }, [routeData]);
 
-  // Selected Facility Object
-  const activeDestination = useMemo(() => {
-    if (!destFacilityId) return null;
-    const match = findFacilityAndZone(destFacilityId);
+  // Selected Start & Destination Info Objects
+  const startLocationInfo = useMemo(() => {
+    return CAMPUS_LOCATIONS.find((l) => l.id === startNodeId) || {
+      name: CAMPUS_NAV_NODES[startNodeId]?.label || "Start Point",
+      shortName: "Start",
+      icon: "📍"
+    };
+  }, [startNodeId]);
+
+  const destLocationInfo = useMemo(() => {
+    return CAMPUS_LOCATIONS.find((l) => l.id === destId || l.facilityId === destId) || {
+      name: CAMPUS_NAV_NODES[destId]?.label || "Destination",
+      shortName: "Destination",
+      icon: "🎯"
+    };
+  }, [destId]);
+
+  const activeDestinationFacility = useMemo(() => {
+    const match = findFacilityAndZone(destId);
     return match?.facility || null;
-  }, [destFacilityId]);
+  }, [destId]);
 
   // Map Pan Drag Handlers
   const handleMouseDown = (e) => {
@@ -203,9 +212,10 @@ export default function CampusInteractiveMap({
     setPan({ x: 0, y: 0 });
   };
 
-  // Select destination
-  const handleSelectDestination = (markerId) => {
-    setDestFacilityId(markerId);
+  // Select destination from building clicks
+  const handleSelectBuildingDestination = (markerId) => {
+    const resolved = resolveToNodeId(markerId);
+    setDestId(resolved);
     if (onSelectFacility) {
       const match = findFacilityAndZone(markerId);
       if (match) onSelectFacility(match.zone.id, match.facility.id);
@@ -213,42 +223,19 @@ export default function CampusInteractiveMap({
   };
 
   const startPointCoords = CAMPUS_NAV_NODES[startNodeId] || CAMPUS_NAV_NODES.node_main_gate;
-  const destCoords = routeData?.points?.[routeData.points.length - 1] || null;
+  const destCoords = CAMPUS_NAV_NODES[destId] || routeData?.points?.[routeData.points.length - 1] || null;
 
   return (
     <div className="flex flex-col w-full h-full min-h-0 bg-slate-950 text-slate-100 rounded-3xl border border-slate-800 overflow-hidden shadow-2xl">
       {/* ========================================================= */}
-      {/* 1. TOP BAR: CLEAN PRIMARY DESTINATION SELECTOR & START    */}
+      {/* 1. TOP BAR: START POINT DROPDOWN -> SWAP -> END POINT     */}
       {/* ========================================================= */}
       <div className="p-2.5 sm:p-3 bg-slate-900/95 border-b border-slate-800 backdrop-blur-md flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2 shrink-0 z-20">
-        {/* Primary Destination Switcher (CSM Department vs Auditorium) */}
-        <div className="flex items-center gap-1.5 p-1 rounded-2xl bg-slate-950/80 border border-slate-800">
-          {PRIMARY_DESTINATIONS.map((dest) => {
-            const isSelected = destFacilityId === dest.id;
-            return (
-              <button
-                key={dest.id}
-                type="button"
-                onClick={() => handleSelectDestination(dest.id)}
-                className={`flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-semibold transition cursor-pointer ${
-                  isSelected
-                    ? "bg-blue-600 text-white shadow-md shadow-blue-500/25 ring-1 ring-blue-400/40"
-                    : "text-slate-400 hover:text-white hover:bg-slate-800/60"
-                }`}
-              >
-                <span>{dest.icon}</span>
-                <span className="truncate">{dest.name}</span>
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Start Point & GPS Controls */}
-        <div className="flex items-center gap-1.5 shrink-0 text-xs">
-          {/* Start Point Picker */}
-          <div className="flex items-center gap-1 bg-slate-800/90 px-2.5 py-1.5 rounded-xl border border-slate-700 text-[11px]">
+        <div className="flex items-center gap-1.5 flex-1 min-w-0 flex-wrap">
+          {/* 1. Start Point Dropdown */}
+          <div className="flex items-center gap-1.5 bg-slate-800/90 px-2.5 py-1.5 rounded-xl border border-slate-700 text-xs flex-1 min-w-[135px]">
             <span className="w-2 h-2 rounded-full bg-blue-400 shrink-0" />
-            <span className="text-blue-300 font-bold">Start:</span>
+            <span className="text-blue-300 font-bold text-[11px] shrink-0">Start:</span>
             <select
               value={startNodeId}
               onChange={(e) => {
@@ -256,19 +243,52 @@ export default function CampusInteractiveMap({
                 setGpsStatus("idle");
                 setGpsToast(null);
               }}
-              className="bg-transparent text-slate-200 outline-none cursor-pointer max-w-[130px] truncate font-medium"
+              className="bg-transparent text-slate-100 text-xs outline-none cursor-pointer w-full truncate font-medium"
             >
-              <option value="node_main_gate" className="bg-slate-900">Main Gate (Default)</option>
-              <option value="node_csm_entry" className="bg-slate-900">CSM & Intel AI Labs</option>
-              <option value="node_auditorium_entry" className="bg-slate-900">Auditorium</option>
-              <option value="node_cie_entry" className="bg-slate-900">CIE Innovation Hub</option>
-              <option value="node_library_entry" className="bg-slate-900">Central Library</option>
-              <option value="node_food_court_entry" className="bg-slate-900">Food Court</option>
-              <option value="node_canteen_junction" className="bg-slate-900">Main Canteen</option>
+              {CAMPUS_LOCATIONS.map((loc) => (
+                <option key={`start-${loc.id}`} value={loc.id} className="bg-slate-900 text-slate-100">
+                  {loc.icon} {loc.name}
+                </option>
+              ))}
             </select>
           </div>
 
-          {/* GPS Live Button */}
+          {/* Quick Swap Button */}
+          <button
+            type="button"
+            onClick={handleSwapPoints}
+            title="Swap Start & Destination"
+            className="p-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 transition cursor-pointer text-xs shrink-0"
+          >
+            ⇄
+          </button>
+
+          {/* 2. End Point / Destination Dropdown */}
+          <div className="flex items-center gap-1.5 bg-slate-800/90 px-2.5 py-1.5 rounded-xl border border-slate-700 text-xs flex-1 min-w-[135px]">
+            <span className="w-2 h-2 rounded-full bg-amber-400 shrink-0" />
+            <span className="text-amber-300 font-bold text-[11px] shrink-0">End:</span>
+            <select
+              value={destId}
+              onChange={(e) => {
+                setDestId(e.target.value);
+                const match = findFacilityAndZone(e.target.value);
+                if (match && onSelectFacility) {
+                  onSelectFacility(match.zone.id, match.facility.id);
+                }
+              }}
+              className="bg-transparent text-slate-100 text-xs outline-none cursor-pointer w-full truncate font-medium"
+            >
+              {CAMPUS_LOCATIONS.map((loc) => (
+                <option key={`dest-${loc.id}`} value={loc.id} className="bg-slate-900 text-slate-100">
+                  {loc.icon} {loc.name}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        {/* GPS Live Button */}
+        <div className="flex items-center gap-1.5 shrink-0">
           <button
             onClick={handleToggleGps}
             title="Use Live Geolocation"
@@ -462,24 +482,31 @@ export default function CampusInteractiveMap({
 
             {/* Campus Buildings & Footprints */}
             {CAMPUS_MAP_DATA.buildings.map((b) => {
-              const isSelected = destFacilityId === b.markerId;
-              const isPrimary = b.markerId === "csm-labs" || b.markerId === "auditorium";
+              const isSelected = destId === b.nodeId || destId === b.markerId;
+              const isStart = startNodeId === b.nodeId || startNodeId === b.markerId;
+              const isKeyBuilding = b.markerId === "csm-labs" || b.markerId === "auditorium";
 
               return (
                 <g
                   key={b.id}
-                  onClick={() => handleSelectDestination(b.markerId)}
+                  onClick={() => handleSelectBuildingDestination(b.markerId)}
                   className="cursor-pointer transition-opacity duration-200 hover:opacity-100"
                 >
                   {/* Building Base Glow on selection */}
-                  {isSelected && (
+                  {(isSelected || isStart) && (
                     <rect
                       x={b.x - 4}
                       y={b.y - 4}
                       width={b.w + 8}
                       height={b.h + 8}
                       rx="14"
-                      fill={b.markerId === "auditorium" ? "rgba(168, 85, 247, 0.4)" : "rgba(59, 130, 246, 0.45)"}
+                      fill={
+                        isStart
+                          ? "rgba(56, 189, 248, 0.4)"
+                          : b.markerId === "auditorium"
+                          ? "rgba(168, 85, 247, 0.4)"
+                          : "rgba(245, 158, 11, 0.4)"
+                      }
                     />
                   )}
                   {/* Building Block Body */}
@@ -490,24 +517,28 @@ export default function CampusInteractiveMap({
                     height={b.h}
                     rx="9"
                     fill={
-                      isSelected
+                      isStart
+                        ? "#0369a1"
+                        : isSelected
                         ? b.markerId === "auditorium"
                           ? "#6b21a8"
-                          : "#1d4ed8"
-                        : isPrimary
+                          : "#b45309"
+                        : isKeyBuilding
                         ? "#1e293b"
                         : "#0f172a"
                     }
                     stroke={
-                      isSelected
+                      isStart
+                        ? "#38bdf8"
+                        : isSelected
                         ? b.markerId === "auditorium"
                           ? "#d8b4fe"
-                          : "#93c5fd"
-                        : isPrimary
+                          : "#fde68a"
+                        : isKeyBuilding
                         ? "#3b82f6"
                         : "#334155"
                     }
-                    strokeWidth={isSelected ? "2.5" : isPrimary ? "1.8" : "1"}
+                    strokeWidth={isSelected || isStart ? "2.5" : isKeyBuilding ? "1.8" : "1"}
                     className="hover:stroke-blue-400 hover:fill-slate-800 transition-all"
                   />
                   {/* Building Code */}
@@ -515,7 +546,7 @@ export default function CampusInteractiveMap({
                     x={b.x + b.w / 2}
                     y={b.y + b.h / 2 - 4}
                     textAnchor="middle"
-                    fill={isPrimary ? "#ffffff" : "#94a3b8"}
+                    fill={isKeyBuilding || isSelected || isStart ? "#ffffff" : "#94a3b8"}
                     fontSize="11"
                     fontFamily="monospace"
                     fontWeight="bold"
@@ -528,10 +559,10 @@ export default function CampusInteractiveMap({
                     x={b.x + b.w / 2}
                     y={b.y + b.h / 2 + 12}
                     textAnchor="middle"
-                    fill={isSelected ? "#e2e8f0" : isPrimary ? "#cbd5e1" : "#64748b"}
+                    fill={isSelected || isStart ? "#e2e8f0" : isKeyBuilding ? "#cbd5e1" : "#64748b"}
                     fontSize="8.5"
                     fontFamily="sans-serif"
-                    fontWeight={isPrimary ? "600" : "500"}
+                    fontWeight={isKeyBuilding ? "600" : "500"}
                     className="pointer-events-none select-none"
                   >
                     {b.name.length > 18 ? b.name.slice(0, 16) + "…" : b.name}
@@ -603,7 +634,7 @@ export default function CampusInteractiveMap({
             )}
 
             {/* ========================================================= */}
-            {/* "YOU ARE HERE" PULSATING START BEACON                     */}
+            {/* "YOU ARE HERE / START" PULSATING START BEACON             */}
             {/* ========================================================= */}
             {startPointCoords && (
               <g transform={`translate(${startPointCoords.x}, ${startPointCoords.y})`}>
@@ -611,9 +642,9 @@ export default function CampusInteractiveMap({
                 <circle r="14" fill="#0284c7" opacity="0.65" />
                 <circle r="7" fill="#38bdf8" stroke="#ffffff" strokeWidth="2.5" />
                 <g transform="translate(0, -24)">
-                  <rect x="-42" y="-12" width="84" height="18" rx="9" fill="#0c4a6e" stroke="#38bdf8" strokeWidth="1.5" />
-                  <text x="0" y="0" textAnchor="middle" dominantBaseline="middle" fill="#f0f9ff" fontSize="9" fontWeight="bold" letterSpacing="0.5">
-                    YOU ARE HERE
+                  <rect x="-36" y="-12" width="72" height="18" rx="9" fill="#0c4a6e" stroke="#38bdf8" strokeWidth="1.5" />
+                  <text x="0" y="0" textAnchor="middle" dominantBaseline="middle" fill="#f0f9ff" fontSize="8.5" fontWeight="bold" letterSpacing="0.5">
+                    START
                   </text>
                 </g>
               </g>
@@ -681,89 +712,87 @@ export default function CampusInteractiveMap({
       {/* ========================================================= */}
       {/* 3. LIVE ROUTE STATS & STEP-BY-STEP DRAWER                 */}
       {/* ========================================================= */}
-      {activeDestination && (
-        <div className="p-2.5 sm:p-3 bg-slate-900/95 border-t border-slate-800 backdrop-blur-md flex flex-col gap-2 shrink-0 z-20">
-          <div className="flex items-center justify-between gap-3">
-            <div className="flex items-center gap-2.5 min-w-0">
-              <span className="text-lg p-2 rounded-xl bg-slate-800 shrink-0">
-                {activeDestination.icon}
-              </span>
-              <div className="min-w-0">
-                <div className="flex items-center gap-2 flex-wrap">
-                  <h4 className="text-xs sm:text-sm font-bold text-white truncate">
-                    {activeDestination.name}
-                  </h4>
-                  {activeDestination.facilityTag && (
-                    <span className="text-[9.5px] font-semibold px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 border border-slate-700">
-                      {activeDestination.facilityTag}
-                    </span>
-                  )}
-                </div>
-                <p className="text-[11px] text-blue-400 font-medium truncate">
-                  {activeDestination.area}
-                </p>
+      <div className="p-2.5 sm:p-3 bg-slate-900/95 border-t border-slate-800 backdrop-blur-md flex flex-col gap-2 shrink-0 z-20">
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2.5 min-w-0">
+            <span className="text-lg p-2 rounded-xl bg-slate-800 shrink-0">
+              {destLocationInfo.icon || "📍"}
+            </span>
+            <div className="min-w-0">
+              <div className="flex items-center gap-2 flex-wrap">
+                <h4 className="text-xs sm:text-sm font-bold text-white truncate">
+                  {startLocationInfo.shortName} ➔ {destLocationInfo.shortName}
+                </h4>
+                {activeDestinationFacility?.facilityTag && (
+                  <span className="text-[9.5px] font-semibold px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 border border-slate-700">
+                    {activeDestinationFacility.facilityTag}
+                  </span>
+                )}
+              </div>
+              <p className="text-[11px] text-blue-400 font-medium truncate">
+                {destLocationInfo.name}
+              </p>
+            </div>
+          </div>
+
+          {/* Synchronized Route Distance & ETA Pill */}
+          {routeData?.success && (
+            <div className="bg-blue-950/90 border border-blue-800 px-3 py-1 rounded-xl text-right shrink-0 shadow-xs">
+              <div className="text-xs font-bold text-blue-300 flex items-center justify-end gap-1">
+                <span>{routeData.totalDistanceMeters}m</span>
+              </div>
+              <div className="text-[10px] text-blue-400 font-medium">
+                ~{routeData.estimatedMinutes} min walk
               </div>
             </div>
-
-            {/* Synchronized Route Distance & ETA Pill */}
-            {routeData?.success && (
-              <div className="bg-blue-950/90 border border-blue-800 px-3 py-1 rounded-xl text-right shrink-0 shadow-xs">
-                <div className="text-xs font-bold text-blue-300 flex items-center justify-end gap-1">
-                  <span>{routeData.totalDistanceMeters}m</span>
-                </div>
-                <div className="text-[10px] text-blue-400 font-medium">
-                  ~{routeData.estimatedMinutes} min walk
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Action Row */}
-          <div className="flex items-center justify-between gap-2 pt-0.5">
-            <button
-              onClick={() => setShowSteps(!showSteps)}
-              className="text-[11px] font-semibold text-slate-300 hover:text-white underline cursor-pointer"
-            >
-              {showSteps ? "Hide Walkway Steps ▲" : "View Turn-by-Turn Route ▼"}
-            </button>
-
-            {onAskBuddy && (
-              <button
-                type="button"
-                onClick={() => onAskBuddy(activeDestination)}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold text-white bg-blue-600 hover:bg-blue-500 shadow-xs active:scale-95 transition cursor-pointer"
-              >
-                <IconSparkles className="w-3.5 h-3.5" />
-                <span>Ask CodeBuddy</span>
-              </button>
-            )}
-          </div>
-
-          {/* Turn-by-turn Step List */}
-          <AnimatePresence>
-            {showSteps && routeData?.steps && (
-              <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: "auto" }}
-                exit={{ opacity: 0, height: 0 }}
-                className="pt-2 border-t border-slate-800 space-y-1.5 text-xs text-slate-300 max-h-28 overflow-y-auto scrollbar-thin"
-              >
-                <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
-                  Walkway Route Steps ({CAMPUS_NAV_NODES[startNodeId]?.label || "Start"} → {activeDestination.shortName || activeDestination.name})
-                </div>
-                {routeData.steps.map((step, idx) => (
-                  <div key={idx} className="flex items-start gap-2 text-[11px]">
-                    <span className="w-4 h-4 rounded-full bg-blue-900 text-blue-300 text-[9px] font-bold flex items-center justify-center shrink-0 mt-0.5">
-                      {idx + 1}
-                    </span>
-                    <span className="leading-tight text-slate-200">{step}</span>
-                  </div>
-                ))}
-              </motion.div>
-            )}
-          </AnimatePresence>
+          )}
         </div>
-      )}
+
+        {/* Action Row */}
+        <div className="flex items-center justify-between gap-2 pt-0.5">
+          <button
+            onClick={() => setShowSteps(!showSteps)}
+            className="text-[11px] font-semibold text-slate-300 hover:text-white underline cursor-pointer"
+          >
+            {showSteps ? "Hide Walkway Steps ▲" : "View Turn-by-Turn Route ▼"}
+          </button>
+
+          {onAskBuddy && (
+            <button
+              type="button"
+              onClick={() => onAskBuddy(activeDestinationFacility || destLocationInfo)}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold text-white bg-blue-600 hover:bg-blue-500 shadow-xs active:scale-95 transition cursor-pointer"
+            >
+              <IconSparkles className="w-3.5 h-3.5" />
+              <span>Ask CodeX Buddy</span>
+            </button>
+          )}
+        </div>
+
+        {/* Turn-by-turn Step List */}
+        <AnimatePresence>
+          {showSteps && routeData?.steps && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              className="pt-2 border-t border-slate-800 space-y-1.5 text-xs text-slate-300 max-h-28 overflow-y-auto scrollbar-thin"
+            >
+              <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                Walkway Route Steps ({startLocationInfo.shortName} → {destLocationInfo.shortName})
+              </div>
+              {routeData.steps.map((step, idx) => (
+                <div key={idx} className="flex items-start gap-2 text-[11px]">
+                  <span className="w-4 h-4 rounded-full bg-blue-900 text-blue-300 text-[9px] font-bold flex items-center justify-center shrink-0 mt-0.5">
+                    {idx + 1}
+                  </span>
+                  <span className="leading-tight text-slate-200">{step}</span>
+                </div>
+              ))}
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
     </div>
   );
 }

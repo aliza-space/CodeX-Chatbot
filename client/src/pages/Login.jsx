@@ -81,7 +81,7 @@ export default function Login() {
             </div>
 
             <h1 className="font-display font-bold text-2xl sm:text-3xl text-slate-900 dark:text-white tracking-tight">
-              CodeBuddy <span className="text-blue-600 dark:text-blue-400">Account</span>
+              CodeX Buddy <span className="text-blue-600 dark:text-blue-400">Account</span>
             </h1>
             <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
               {mode === "login" ? "Sign in to continue your hackathon journey" : "Create a new participant account"}

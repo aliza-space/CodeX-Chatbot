@@ -50,7 +50,7 @@ export default function CampusGuideModal({ isOpen, onClose, initialDestinationId
   useEffect(() => {
     if (isOpen) {
       const prevTitle = document.title;
-      document.title = "GPREC Campus Guide & Navigation — CodeBuddy";
+      document.title = "GPREC Campus Guide & Navigation — CodeX Buddy";
       return () => {
         document.title = prevTitle;
       };
@@ -292,7 +292,7 @@ export default function CampusGuideModal({ isOpen, onClose, initialDestinationId
                           className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold text-white bg-blue-600 hover:bg-blue-500 shadow-xs active:scale-95 transition cursor-pointer"
                         >
                           <IconSparkles className="w-3.5 h-3.5" />
-                          <span>Ask CodeBuddy</span>
+                          <span>Ask CodeX Buddy</span>
                         </button>
                       </div>
                     </div>
@@ -394,7 +394,7 @@ export default function CampusGuideModal({ isOpen, onClose, initialDestinationId
                           className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold text-white bg-purple-600 hover:bg-purple-500 shadow-xs active:scale-95 transition cursor-pointer"
                         >
                           <IconSparkles className="w-3.5 h-3.5" />
-                          <span>Ask CodeBuddy</span>
+                          <span>Ask CodeX Buddy</span>
                         </button>
                       </div>
                     </div>

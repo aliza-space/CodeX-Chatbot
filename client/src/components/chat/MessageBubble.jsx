@@ -43,7 +43,7 @@ export default function MessageBubble({ message, onRegenerate, onPickSuggestion 
         {/* Name & Time Header */}
         <div className="flex items-center gap-1.5 px-1 mb-1 text-[10px] text-slate-400">
           <span className="font-semibold text-slate-600 dark:text-slate-300">
-            {isUser ? "You" : "CodeBuddy"}
+            {isUser ? "You" : "CodeX Buddy"}
           </span>
           <span>•</span>
           <span>{time}</span>

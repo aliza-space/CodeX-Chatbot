@@ -74,7 +74,7 @@ export default function QuickActionCards({ onPick }) {
             </div>
 
             <div className="mt-3 pt-2.5 border-t border-slate-200/60 dark:border-slate-700/60 flex items-center gap-1.5 text-[11px] font-semibold text-blue-600 dark:text-blue-400">
-              <span>Ask CodeBuddy</span>
+              <span>Ask CodeX Buddy</span>
               <span className="group-hover:translate-x-1 transition-transform font-bold">→</span>
             </div>
           </motion.button>

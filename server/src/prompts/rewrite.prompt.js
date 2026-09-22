@@ -4,7 +4,7 @@
 
 export function buildRewritePrompt({ history, latestQuestion }) {
   const historyText = history
-    .map((m) => `${m.role === "user" ? "User" : "CodeBuddy"}: ${m.content}`)
+    .map((m) => `${m.role === "user" ? "User" : "CodeX Buddy"}: ${m.content}`)
     .join("\n");
 
   return `Rewrite the user's latest message into a fully self-contained search query,

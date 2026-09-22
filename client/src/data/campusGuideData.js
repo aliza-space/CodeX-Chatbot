@@ -637,6 +637,24 @@ export const CAMPUS_ZONES = [
   }
 ];
 
+// Structured list of all campus locations for Start/End dropdowns
+export const CAMPUS_LOCATIONS = [
+  { id: "node_main_gate", facilityId: "node_main_gate", name: "Main Entrance Gate (Nandyal Rd)", shortName: "Main Gate", icon: "🚪" },
+  { id: "node_csm_entry", facilityId: "csm-labs", name: "CSM Department (Intel AI Labs)", shortName: "CSM Department", icon: "💻" },
+  { id: "node_auditorium_entry", facilityId: "auditorium", name: "Auditorium (AC Event Hall)", shortName: "Auditorium", icon: "🎭" },
+  { id: "node_cie_entry", facilityId: "cie-hub", name: "CIE Innovation Hub", shortName: "CIE Hub", icon: "🚀" },
+  { id: "node_library_entry", facilityId: "central-library", name: "Central Library & Digital Wing", shortName: "Central Library", icon: "📚" },
+  { id: "node_food_court_entry", facilityId: "food-court", name: "Campus Food Court", shortName: "Food Court", icon: "🍔" },
+  { id: "node_canteen_junction", facilityId: "cafeteria", name: "Main Canteen & Cafeteria", shortName: "Main Canteen", icon: "☕" },
+  { id: "node_amphi_entry", facilityId: "amphitheatre", name: "Open Air Amphitheatre", shortName: "Amphitheatre", icon: "🎤" },
+  { id: "node_cse_entry", facilityId: "cse-block", name: "CSE Department Block", shortName: "CSE Block", icon: "🖥️" },
+  { id: "node_ece_entry", facilityId: "ece-eee-block", name: "ECE & EEE Department Block", shortName: "ECE/EEE Block", icon: "⚡" },
+  { id: "node_mech_entry", facilityId: "mech-civil-block", name: "Mechanical & Civil Workshops", shortName: "Mech & Civil", icon: "🔧" },
+  { id: "node_drone_entry", facilityId: "drone-robotics-lab", name: "Drone & Robotics Lab", shortName: "Drone Lab", icon: "🛸" },
+  { id: "node_sports_entry", facilityId: "indoor-stadium", name: "Indoor Sports Stadium & Gym", shortName: "Sports Stadium", icon: "🏸" },
+  { id: "node_gate_atm", facilityId: "atm-health-amenities", name: "24/7 ATM & Health Dispensary", shortName: "ATM & Clinic", icon: "🏥" }
+];
+
 // Helper to resolve any ID/string to a valid graph node ID
 export function resolveToNodeId(target) {
   if (!target) return "node_main_gate";
@@ -663,15 +681,27 @@ function generateRouteSteps(path, startNodeId, destNodeId) {
     const currNode = CAMPUS_NAV_NODES[path[i]];
     if (currNode) {
       if (currNode.id === "node_quad_circle") {
-        steps.push("Reach Central Quadrangle Roundabout (pass the garden lawn)");
+        steps.push("Head through Central Quadrangle Roundabout (pass the garden lawn)");
       } else if (currNode.id === "node_central_avenue_mid") {
         steps.push("Follow tree-lined Central Avenue past the Food Plaza");
       } else if (currNode.id === "node_cie_entry") {
-        steps.push("Turn along Innovation Way past CIE Innovation Hub");
+        steps.push("Walk along Innovation Way past CIE Innovation Hub");
       } else if (currNode.id === "node_gate_junction") {
-        steps.push("Head North from Main Security checkpoint");
+        steps.push("Pass through Entrance Avenue Junction");
+      } else if (currNode.id === "node_canteen_junction") {
+        steps.push("Proceed past Main Cafeteria & Canteen Plaza");
+      } else if (currNode.id === "node_library_entry") {
+        steps.push("Pass along the Central Library walkway");
+      } else if (currNode.id === "node_amphi_entry") {
+        steps.push("Walk past the Open Air Amphitheatre");
+      } else if (currNode.id === "node_cse_entry") {
+        steps.push("Continue along the CSE Department corridor");
+      } else if (currNode.id === "node_ece_entry") {
+        steps.push("Pass along the ECE/EEE Block walkway");
+      } else if (currNode.id === "node_mech_entry") {
+        steps.push("Proceed past the Mechanical Workshops lane");
       } else {
-        steps.push(`Continue through ${currNode.label}`);
+        steps.push(`Continue via ${currNode.label}`);
       }
     }
   }

@@ -71,7 +71,7 @@ export default function ChatWindow({ variant = "widget" }) {
 
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] sm:text-xs font-bold bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800 mb-2 shadow-xs">
               <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
-              <span>CodeBuddy Assistant • CodeX 4.0</span>
+              <span>CodeX Buddy Assistant • CodeX 4.0</span>
             </div>
 
             <h3 className="font-display font-bold text-xl sm:text-2xl text-slate-900 dark:text-white tracking-tight mb-1">
@@ -121,7 +121,7 @@ export default function ChatWindow({ variant = "widget" }) {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="Ask CodeBuddy or type / for commands..."
+            placeholder="Ask CodeX Buddy or type / for commands..."
             rows={1}
             aria-label="Message input"
             className="flex-1 resize-none bg-transparent px-3 py-1.5 sm:py-2 text-sm text-slate-900 dark:text-white focus:outline-none placeholder:text-slate-400 max-h-28 sm:max-h-32 leading-relaxed"
