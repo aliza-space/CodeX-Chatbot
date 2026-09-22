@@ -1,8 +1,13 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import { GoogleLogin } from "@react-oauth/google";
 import { useAuth } from "../hooks/useAuth.js";
 import ThemeToggle from "../components/common/ThemeToggle.jsx";
+
+// Mobile browsers block OAuth popups — use redirect flow instead
+const isMobileDevice = /Mobi|Android|iPhone|iPad|IEMobile|WPDesktop/i.test(
+  typeof navigator !== "undefined" ? navigator.userAgent : ""
+);
 
 export default function Login() {
   const [mode, setMode] = useState("login"); // login | register
@@ -58,7 +63,7 @@ export default function Login() {
     }
   };
 
-  const handleGoogleSuccess = async (credentialResponse) => {
+  const handleGoogleSuccess = useCallback(async (credentialResponse) => {
     setError(null);
     setLoading(true);
     try {
@@ -72,11 +77,23 @@ export default function Login() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [loginWithGoogle, navigate]);
 
   const handleGoogleError = () => {
     setError("Google Sign-In was unsuccessful. Please try again.");
   };
+
+  // After Google redirect flow on mobile, Google posts back to our page with
+  // a `credential` query parameter. Parse it and complete sign-in automatically.
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const credential = params.get("credential");
+    if (credential) {
+      // Clean the URL immediately so a refresh doesn't re-trigger this
+      window.history.replaceState({}, "", window.location.pathname);
+      handleGoogleSuccess({ credential });
+    }
+  }, [handleGoogleSuccess]);
 
   return (
     <div className="min-h-[100dvh] flex flex-col justify-between bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 px-3 sm:px-4 py-4 sm:py-6 transition-colors">
@@ -204,6 +221,8 @@ export default function Login() {
                 shape="pill"
                 size="large"
                 text="continue_with"
+                ux_mode={isMobileDevice ? "redirect" : "popup"}
+                redirect_uri={`${window.location.origin}/login`}
               />
             )}
           </div>

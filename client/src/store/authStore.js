@@ -8,15 +8,26 @@ export const useAuthStore = create(
       token: null,
       user: null,
       isAuthenticated: false,
+      _hasHydrated: false,
+
+      setHasHydrated: (state) => set({ _hasHydrated: state }),
+
       login: (token, user) => set({ token, user, isAuthenticated: true }),
+
       loginWithGoogle: async (googleToken) => {
         const { data } = await api.post("/api/auth/google", { token: googleToken });
         set({ token: data.token, user: data.user, isAuthenticated: true });
         return data.user;
       },
+
       logout: () => set({ token: null, user: null, isAuthenticated: false }),
     }),
-    { name: "codebuddy-auth" }
+    {
+      name: "codebuddy-auth",
+      onRehydrateStorage: () => (state) => {
+        // Called after Zustand finishes reading from localStorage
+        state?.setHasHydrated(true);
+      },
+    }
   )
 );
-
