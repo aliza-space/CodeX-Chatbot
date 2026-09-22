@@ -29,6 +29,74 @@ function detectLanguage(text) {
   return "en";
 }
 
+function detectConversationalGreeting(text) {
+  const raw = (text || "").trim().toLowerCase();
+  const clean = raw.replace(/[?!.,;:_]/g, "").trim();
+
+  // 1. Identity / Persona questions
+  if (
+    clean.includes("who are you") ||
+    clean.includes("who r u") ||
+    clean.includes("what are you") ||
+    clean.includes("what is your name") ||
+    clean.includes("tell me about yourself") ||
+    clean.includes("introduce yourself") ||
+    clean.includes("what can you do") ||
+    clean.includes("how can you help") ||
+    (clean.includes("who") && (clean.includes("hello") || clean.includes("hi") || clean.includes("hey") || clean.includes("you")))
+  ) {
+    return {
+      answer: `👋 Hello! I am **CodeX Buddy** — the official 24/7 AI event assistant for **Coders' Club** at **G. Pulla Reddy Engineering College (GPREC), Kurnool**.\n\nI'm here to help you with everything about the **CodeX 4.0 Hackathon** (24 September 2026), including:\n- 👥 **Team Rules & Eligibility** (2–3 members, II/III/IV years)\n- 🏆 **₹50,000 Prize Pool**, awards, and internship opportunities with **WeDevit** and **Microcare Academy**\n- 🎙️ **Guest Speaker Insights** (Dodagatta Nihar)\n- 📝 **Registration Details** (₹300 flat team fee)\n- 📍 **Interactive Campus Navigation** with walking directions to CSM Labs & Food Court\n\nWhat would you like to explore today?`,
+      suggestions: ["What are the eligibility rules?", "What's the prize pool?", "Who is the guest speaker?", "Where are the CSM Labs?"]
+    };
+  }
+
+  // 2. Pure Greetings
+  const pureGreetings = ["hi", "hello", "hey", "hola", "namaste", "good morning", "good afternoon", "good evening", "yo", "sup", "helo", "hii", "hiii"];
+  if (pureGreetings.includes(clean)) {
+    return {
+      answer: `👋 Hello! How can I help you today?\n\nI'm **CodeX Buddy**, ready to answer any questions about the **CodeX 4.0 Hackathon** rules, cash prizes, registration, guest speaker session, or GPREC campus navigation!`,
+      suggestions: ["What are the eligibility rules?", "What are the prizes?", "How do I register?", "Show me campus map"]
+    };
+  }
+
+  // 3. Gratitude
+  if (clean === "thank you" || clean === "thanks" || clean === "thank u" || clean.startsWith("thank you") || clean.startsWith("thanks")) {
+    return {
+      answer: `You're very welcome! 😊 Feel free to ask if you have any more questions about CodeX 4.0 or Coders' Club. Happy coding! 🚀`,
+      suggestions: ["What events are coming up?", "Show me campus map", "Who is the guest speaker?"]
+    };
+  }
+
+  // 4. Goodbyes
+  if (clean === "bye" || clean === "goodbye" || clean === "see you" || clean === "cya") {
+    return {
+      answer: `Goodbye! Best of luck with CodeX 4.0! 🌟 If you ever need assistance, I'm here 24/7.`,
+      suggestions: ["What are the prizes?", "How do I register?"]
+    };
+  }
+
+  // 5. "How are you" / small talk
+  if (
+    clean === "how are you" ||
+    clean === "how r u" ||
+    clean === "how are u" ||
+    clean.startsWith("hi how") ||
+    clean.startsWith("hello how") ||
+    clean.startsWith("hey how") ||
+    (clean.includes("how are you") && clean.length < 30) ||
+    (clean.includes("how r u") && clean.length < 30)
+  ) {
+    return {
+      answer: `I'm doing great — always 100% uptime! 😄\n\nI'm **CodeX Buddy**, your AI assistant for CodeX 4.0 and Coders' Club GPREC. What would you like to know?`,
+      suggestions: ["What are the eligibility rules?", "What are the prizes?", "How do I register?"]
+    };
+  }
+
+  return null;
+}
+
+
 async function getActiveAnnouncements() {
   const now = new Date();
   const anns = await Announcement.find({
@@ -48,6 +116,25 @@ export async function runRagPipeline({ userMessage, history = [], conversationId
       "Ask me anything about Coders' Club events, resources, or the team instead!";
     onToken?.(safeReply);
     return { answer: safeReply, citations: [], suggestions: defaultSuggestions(), wasAnswered: true };
+  }
+
+  // ⚡ ChatGPT-Style Instant Conversational Greetings & Persona Handler (<10ms)
+  const chitChat = detectConversationalGreeting(userMessage);
+  if (chitChat) {
+    if (onToken) {
+      const words = chitChat.answer.split(" ");
+      for (const w of words) {
+        onToken(w + " ");
+        await new Promise((r) => setTimeout(r, 6));
+      }
+    }
+    return {
+      answer: chitChat.answer,
+      citations: [],
+      suggestions: chitChat.suggestions,
+      wasAnswered: true,
+      rewrittenQuery: userMessage,
+    };
   }
 
   const language = detectLanguage(userMessage);
@@ -520,20 +607,98 @@ function synthesizeConciseAnswer(query, chunks) {
 - **Food & Beverage Partners:** **Fiarro Pizza** and **RC Cola**`;
   }
 
-  // 9. Eligibility & Team Rules / Team Format / Team Size
+  // 8.9 Granular Specific Queries: Team Size Only (No extra info)
+  if (
+    q === "what is team size" ||
+    q === "team size" ||
+    q === "team size limit" ||
+    q.includes("team size") ||
+    q.includes("how many members") ||
+    q.includes("members in a team") ||
+    q.includes("member in a team") ||
+    q.includes("how many people") ||
+    q.includes("how many students") ||
+    q.includes("solo") ||
+    q.includes("individual participation")
+  ) {
+    return `Each team in CodeX 4.0 must have exactly **2 or 3 members** belonging to the same college. (Solo participation is strictly not permitted).`;
+  }
+
+  // 8.10 Granular Specific Queries: Final-Year (4th Year) Rule Only
+  if (
+    (q.includes("4th year") || q.includes("final year")) &&
+    !q.includes("eligibility") &&
+    !q.includes("all rules")
+  ) {
+    return `Each team can have a **maximum of one 4th-year student** (0 or 1). Teams with two or more final-year students are not permitted.`;
+  }
+
+  // 8.11 Granular Specific Queries: First-Year Rule Only
+  if (
+    (q.includes("1st year") || q.includes("first year")) &&
+    (q.includes("can") || q.includes("allow") || q.includes("eligible") || q.includes("participate") || q.includes("join"))
+  ) {
+    return `First-year (1st-year) students are **not eligible** to compete in CodeX 4.0. The event is open only to undergraduate engineering students in their **II, III, or IV Year**.`;
+  }
+
+  // 8.12 Granular Specific Queries: Registration Fee Only
+  if (
+    q === "what is the fee" ||
+    q === "registration fee" ||
+    q === "fee" ||
+    q === "fee details" ||
+    q === "cost" ||
+    q === "how much" ||
+    q === "price" ||
+    (q.includes("fee") && !q.includes("refund") && !q.includes("cancel") && !q.includes("process") && !q.includes("all"))
+  ) {
+    return `The registration fee for CodeX 4.0 is **₹300 per team** (flat fee covering all 2 to 3 members).`;
+  }
+
+  // 8.13 Granular Specific Queries: Date & Timings Only
+  if (
+    q === "when is codex 4.0" ||
+    q === "when is codex" ||
+    q === "event date" ||
+    q === "date of codex 4.0" ||
+    q === "date" ||
+    (q.includes("date") && !q.includes("last") && !q.includes("deadline") && !q.includes("refund"))
+  ) {
+    return `CodeX 4.0 will be held on **24 September 2026** (9:00 AM – 5:00 PM IST; reporting at 8:30 AM IST).`;
+  }
+
+  // 8.14 Granular Specific Queries: Venue Only
+  if (
+    q === "where is codex 4.0" ||
+    q === "where is codex" ||
+    q === "venue" ||
+    q === "location" ||
+    q === "event venue" ||
+    q === "event location" ||
+    q === "where is the event" ||
+    q === "where is it" ||
+    q === "where is it held" ||
+    q === "where will it be held" ||
+    q.includes("where is codex") ||
+    q.includes("where is the event") ||
+    q.includes("where will codex") ||
+    q.includes("where will it") ||
+    (q.includes("venue") && !q.includes("canteen") && !q.includes("food")) ||
+    (q.includes("where") && q.includes("held")) ||
+    (q.includes("where") && q.includes("event") && q.length < 40)
+  ) {
+    return `CodeX 4.0 will be hosted at the **CSM Computer Labs, GPREC Campus, Nandyal Road, Kurnool**.`;
+  }
+
+  // 9. Broad Overview: Eligibility & Team Rules
   if (
     q.includes("eligib") ||
     q.includes("team format") ||
-    q.includes("team size") ||
     q.includes("who can") ||
     q.includes("format") ||
-    q.includes("rule") ||
     q.includes("rules") ||
-    q.includes("4th year") ||
-    q.includes("final year") ||
-    q.includes("branch") ||
-    q.includes("combination") ||
-    (q.includes("team") && (q.includes("size") || q.includes("format") || q.includes("rule") || q.includes("member") || q.includes("limit") || q.includes("allow") || q.includes("form") || q.includes("eligib")))
+    q.includes("criteria") ||
+    (q.includes("team") && (q.includes("format") || q.includes("rule") || q.includes("limit") || q.includes("form") || q.includes("eligib")))
   ) {
     return `### 👥 CodeX 4.0 Eligibility & Team Rules
 - **Eligibility:** Open to undergraduate engineering students in their **II, III, or IV Year** from GPREC and all other recognized engineering colleges (*1st-year students are not eligible to compete*).
