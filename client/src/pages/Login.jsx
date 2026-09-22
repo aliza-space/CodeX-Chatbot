@@ -166,6 +166,32 @@ export default function Login() {
             </button>
           </div>
 
+          {/* Google Sign-In Button (First / Top Option) */}
+          <div className="flex justify-center w-full min-h-[44px]">
+            <GoogleLogin
+              onSuccess={handleGoogleSuccess}
+              onError={handleGoogleError}
+              useOneTap={false}
+              theme="outline"
+              shape="pill"
+              size="large"
+              text="continue_with"
+              width="100%"
+            />
+          </div>
+
+          {/* Modern Divider */}
+          <div className="relative my-5">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-slate-200 dark:border-slate-800" />
+            </div>
+            <div className="relative flex justify-center text-[11px] uppercase tracking-wider">
+              <span className="bg-white dark:bg-slate-900 px-3 text-slate-400 font-semibold">
+                Or
+              </span>
+            </div>
+          </div>
+
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-4">
             {mode === "register" && (
@@ -278,32 +304,6 @@ export default function Login() {
               )}
             </button>
           </form>
-
-          {/* Modern Divider */}
-          <div className="relative my-5">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-slate-200 dark:border-slate-800" />
-            </div>
-            <div className="relative flex justify-center text-[11px] uppercase tracking-wider">
-              <span className="bg-white dark:bg-slate-900 px-3 text-slate-400 font-semibold">
-                Or continue with
-              </span>
-            </div>
-          </div>
-
-          {/* Google Sign-In Button */}
-          <div className="flex justify-center w-full min-h-[44px]">
-            <GoogleLogin
-              onSuccess={handleGoogleSuccess}
-              onError={handleGoogleError}
-              useOneTap={false}
-              theme="outline"
-              shape="pill"
-              size="large"
-              text="continue_with"
-              width="100%"
-            />
-          </div>
 
         </div>
       </main>
