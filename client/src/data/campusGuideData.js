@@ -526,47 +526,47 @@ export const CAMPUS_ZONES = [
       },
       {
         id: "food-court",
-        name: "Campus Food Court",
-        shortName: "Food Court",
-        icon: "🥤",
-        area: "Central Amenities Plaza",
-        badge: "Hangout & Wi-Fi",
+        name: "Campus Canteen & Cafeteria",
+        shortName: "Campus Canteen",
+        icon: "☕",
+        area: "Central Amenities Wing",
+        badge: "Canteen & Refreshments",
         category: "food",
         nodeId: "node_food_court_entry",
         mapCoords: { x: 560, y: 470 },
-        facilityTag: "Open 9 AM – 6:30 PM",
-        whatYouShouldKnow: "Vibrant open-air food plaza with covered outdoor canopy tables and full campus Wi-Fi coverage. Serves hot grilled sandwiches, pizzas, veg burgers, noodles, momos, thick shakes, fresh fruit juices, and ice creams.",
-        amenityTags: ["Fast Food & Snacks", "Juice & Dessert Bar", "Outdoor Canopy Seating", "Campus Wi-Fi", "Open 9 AM – 6:30 PM"],
-        summary: "Vibrant open-air lifestyle dining space with outdoor tables — prime spot for hackathon teams to recharge between sprints.",
+        facilityTag: "Canteen • Student & Staff Facility",
+        whatYouShouldKnow: "Official campus canteen facility at GPREC providing fresh snacks, tea, coffee, and refreshments for students and staff throughout college hours. Managed with oversight from the institutional Canteen Committee (comprising faculty and student representatives) to maintain strict cleanliness, hygiene, and subsidized student-friendly pricing.",
+        amenityTags: ["Refreshments & Snacks", "Tea & Coffee", "Canteen Committee Monitored", "Subsidized Rates", "Clean Dining Space"],
+        summary: "Official GPREC campus canteen providing fresh snacks, tea, coffee, and daily refreshments supervised by the institutional Canteen Committee.",
         highlights: [
-          { icon: "🍕", text: "Quick bites menu: Grilled sandwiches, burgers, noodles, rolls, and chaat" },
-          { icon: "🥤", text: "Juice & dessert bar: Fresh fruit juices, cold coffee, thick milkshakes, and ice creams" },
-          { icon: "📶", text: "Open 9:00 AM – 6:30 PM (extended during hackathons and college fests)" }
+          { icon: "☕", text: "Fresh tea, filter coffee, snacks, and refreshments available throughout college hours" },
+          { icon: "🛡️", text: "Quality, cleanliness, and student-friendly pricing monitored by the institutional Canteen Committee" },
+          { icon: "👥", text: "Central socializing and refreshment space for students and faculty between academic sessions" }
         ],
-        keywords: ["food court", "food", "snacks", "pizza", "burger", "sandwich", "juice", "shake", "ice cream", "coffee", "wifi", "tables", "eating", "dining"],
-        queryPrompt: "What food and snack options are available in GPREC Food Court?"
+        keywords: ["canteen", "cafeteria", "tea", "coffee", "snacks", "refreshments", "food", "dining", "canteen committee", "hygiene"],
+        queryPrompt: "Tell me about the GPREC campus canteen and cafeteria facilities"
       },
       {
         id: "cafeteria",
-        name: "Main Cafeteria & College Canteen",
-        shortName: "Main Canteen",
+        name: "College Canteen Dining Hall",
+        shortName: "Dining Hall",
         icon: "🍴",
         area: "South-East Dining Block",
-        badge: "Breakfast & Lunch",
+        badge: "Meals & Refreshments",
         category: "food",
         nodeId: "node_canteen_junction",
         mapCoords: { x: 420, y: 470 },
-        facilityTag: "Canteen • 8:30 AM – 5:30 PM",
-        whatYouShouldKnow: "Large institutional dining hall serving authentic South Indian breakfast (crispy dosas, idli-vada, poori, upma), full vegetarian lunch thalis, and filter coffee at subsidised student-friendly pricing under Canteen Committee hygiene supervision.",
-        amenityTags: ["Breakfast: 8:30 – 11:30 AM", "Lunch: 12:00 – 2:30 PM", "Subsidised Rates", "Filter Coffee & Tea", "Indoor Seating"],
-        summary: "Hygiene-monitored institutional cafeteria serving fresh breakfast, lunch, and evening snacks supervised by the GPREC Canteen Committee.",
+        facilityTag: "Open College Hours",
+        whatYouShouldKnow: "Spacious dining hall providing wholesome meals, breakfast, and refreshments for students and staff throughout college working hours under Canteen Committee hygiene supervision.",
+        amenityTags: ["Wholesome Meals", "Breakfast & Snacks", "Subsidized Rates", "Faculty & Student Dining"],
+        summary: "Hygiene-monitored institutional cafeteria serving fresh breakfast, lunch, and daily refreshments supervised by the GPREC Canteen Committee.",
         highlights: [
-          { icon: "🥞", text: "Breakfast (8:30 AM – 11:30 AM): Crispy dosas, idli-vada, poori, and filter coffee" },
-          { icon: "🍛", text: "Lunch Meals (12:00 PM – 2:30 PM): Vegetarian thalis, sambar rice, curd rice, and variety rice" },
-          { icon: "☕", text: "Clean dining hall with ample seating and student-friendly pricing" }
+          { icon: "🍲", text: "Freshly prepared breakfast and lunch meals for students and faculty" },
+          { icon: "☕", text: "Tea, coffee, and light refreshments served throughout working hours" },
+          { icon: "🛡️", text: "Clean dining space with active Canteen Committee supervision" }
         ],
-        keywords: ["canteen", "cafeteria", "breakfast", "lunch", "dosa", "idli", "thali", "meals", "coffee", "tea", "subsidised", "hygiene", "food", "dining"],
-        queryPrompt: "What are the GPREC Canteen breakfast and lunch timings?"
+        keywords: ["canteen", "cafeteria", "dining", "meals", "breakfast", "lunch", "refreshments", "tea", "coffee"],
+        queryPrompt: "What are the GPREC Canteen dining facilities?"
       },
       {
         id: "central-library",
@@ -578,60 +578,61 @@ export const CAMPUS_ZONES = [
         category: "library",
         nodeId: "node_library_entry",
         mapCoords: { x: 420, y: 300 },
-        facilityTag: "66,000+ Volumes • SLIM 21",
-        whatYouShouldKnow: "Automated SLIM 21 library with 66,000+ volumes, 150+ seat air-conditioned reading halls, and high-speed Digital Library workstations with IEEE Xplore, ScienceDirect, and NPTEL access. Quietest place on campus to debug or read research papers.",
-        amenityTags: ["66,000+ Volumes", "IEEE Digital Wing", "150+ Seats", "Quiet Study Hall", "Open 9 AM – 7 PM"],
-        summary: "Fully automated with SLIM 21 library management software, offering 66,106+ volumes, 14,153 titles, and 150+ seat reading spaces.",
+        facilityTag: "66,106 Volumes • SLIM 21",
+        whatYouShouldKnow: "Fully automated library with SLIM 21 software featuring 66,106 volumes, 14,153 titles, and subscriptions to 84 National and 979 International Journals. Includes a spacious reading room and an Electronics Resources Wing (Digital Library) with online access to IEEE Xplore, ScienceDirect (Elsevier), ASME, ASCE, INFLIBNET (NLIST), DELNET, and NPTEL video courses. Open 9:00 AM to 7:00 PM.",
+        amenityTags: ["66,106 Volumes", "14,153 Titles", "IEEE Xplore & ScienceDirect", "SLIM 21 Automated", "Open 9 AM – 7 PM"],
+        summary: "Fully automated with SLIM 21 library management software, offering 66,106 volumes, 14,153 titles, and spacious reading halls.",
         highlights: [
-          { icon: "📖", text: "Digital Library wing with 12 high-speed workstations with IEEE Xplore & ScienceDirect" },
-          { icon: "📚", text: "Extensive collection of engineering, AI, data science, algorithms, and competitive exam books" },
-          { icon: "🖨️", text: "Reprography, quiet study zones, and reference archives" }
+          { icon: "📖", text: "66,106+ volumes & 14,153 titles covering engineering, AI, basic sciences, and competitive exams" },
+          { icon: "💻", text: "Digital Library (Electronics Resources Wing) with IEEE Xplore, ScienceDirect, and NPTEL access" },
+          { icon: "🕒", text: "Open 9:00 AM to 7:00 PM with spacious reference and reading sections" }
         ],
         keywords: ["library", "books", "ieee", "research", "digital", "quiet", "study", "reading", "slim 21", "journals", "photocopy", "print", "nptel"],
-        queryPrompt: "Tell me about the Central Library facilities and timings at GPREC"
+        queryPrompt: "Tell me about the Central Library facilities, digital resources, and timings at GPREC"
       },
       {
         id: "indoor-stadium",
-        name: "Indoor Sports Stadium & Grounds",
-        shortName: "Indoor Stadium & Gym",
+        name: "Sports Complex & Indoor Stadium",
+        shortName: "Indoor Stadium & Grounds",
         icon: "🏟️",
-        area: "North-East Campus Perimeter",
-        badge: "Sports & Fitness",
+        area: "Sports Wing & Playgrounds",
+        badge: "Sports & Games",
         category: "venues",
         nodeId: "node_sports_entry",
         mapCoords: { x: 760, y: 170 },
-        facilityTag: "Sports Stadium & Gym",
-        whatYouShouldKnow: "Spacious sports arena featuring tournament-grade wooden badminton courts, table tennis, cardio & strength gym equipment, and expansive grounds for cricket and basketball.",
-        amenityTags: ["Badminton Courts", "Table Tennis", "Fitness Gym", "Cricket Ground", "Basketball Court"],
-        summary: "Multipurpose sports complex housing indoor wooden badminton courts, table tennis, fitness gym, and expansive athletic grounds.",
+        facilityTag: "Indoor Stadium & Sports Grounds",
+        whatYouShouldKnow: "Sports and games facilities managed by the official Sports & Games Committee. Features a multipurpose Indoor Stadium for badminton tournaments, table tennis, carrom, and chess, along with outdoor grounds and courts for cricket, basketball, volleyball, and football.",
+        amenityTags: ["Badminton Courts", "Table Tennis", "Sports & Games Committee", "Cricket Ground", "Basketball Court"],
+        summary: "Multipurpose sports complex housing indoor wooden badminton courts, table tennis, and expansive athletic grounds.",
         highlights: [
-          { icon: "🏸", text: "Indoor stadium for badminton, table tennis, carrom, and chess" },
-          { icon: "🏋️", text: "Equipped fitness gymnasium and outdoor grounds for cricket and basketball" }
+          { icon: "🏸", text: "Indoor Stadium for badminton tournaments, table tennis, carrom, and chess" },
+          { icon: "⚽", text: "Outdoor sports grounds and courts for cricket, football, basketball, and volleyball" },
+          { icon: "🏆", text: "Overseen by the GPREC Sports & Games Committee for intramural and inter-collegiate events" }
         ],
-        keywords: ["sports", "stadium", "badminton", "table tennis", "gym", "fitness", "cricket", "basketball", "workout", "cardio", "courts"],
-        queryPrompt: "What sports and gym facilities are available at GPREC?"
+        keywords: ["sports", "stadium", "badminton", "table tennis", "cricket", "basketball", "volleyball", "grounds", "courts", "games"],
+        queryPrompt: "What sports, indoor stadium, and playground facilities are available at GPREC?"
       },
       {
         id: "atm-health-amenities",
-        name: "Main Gate Amenities, 24/7 ATM & Health Clinic",
-        shortName: "Gate, ATM & Health Clinic",
+        name: "Health Centre, Union Bank & General Amenities",
+        shortName: "Health Centre & Amenities",
         icon: "🏥",
         area: "Main Security Gate & Admin Annex",
-        badge: "Visitor Amenities",
+        badge: "Campus Amenities",
         category: "amenities",
         nodeId: "node_main_gate",
         mapCoords: { x: 500, y: 660 },
-        facilityTag: "24/7 ATM & Health Clinic",
-        whatYouShouldKnow: "Essential visitor services located immediately inside the Main Entrance Gate. Features 24/7 Canara Bank and SBI cash ATMs, campus medical clinic providing free first aid and medicines, RO chilled drinking water, and dedicated visitor parking.",
-        amenityTags: ["24/7 Cash ATMs", "Emergency Dispensary", "RO Chilled Water", "Visitor Parking", "Security Helpdesk"],
-        summary: "Essential conveniences located right at the campus entrance for visiting students, participants, and parents.",
+        facilityTag: "Health Centre 9 AM – 5 PM • Union Bank",
+        whatYouShouldKnow: "Comprehensive on-campus amenities including an exclusive Health Centre operating from 9:00 AM to 5:00 PM staffed by a qualified Medical Officer and 3 nursing staff for consultations, first aid, and medicines. Also features an on-campus Union Bank of India branch and ATM, Book Store for textbooks and stationery, copier and courier services, and RO purified drinking water.",
+        amenityTags: ["Health Centre 9 AM – 5 PM", "Union Bank & ATM", "Campus Book Store", "Copier & Courier", "RO Purified Water"],
+        summary: "Essential campus amenities including an exclusive Health Centre, on-campus Union Bank branch with ATM, bookstore, and courier services.",
         highlights: [
-          { icon: "💳", text: "24/7 Cash ATMs (Canara Bank & SBI) located right inside the Main Security Gate" },
-          { icon: "🩺", text: "Campus Health Centre & Dispensary providing free emergency consultations and medicines" },
-          { icon: "💧", text: "RO chilled drinking water dispensers installed on all academic floors" }
+          { icon: "🏥", text: "Health Centre (9:00 AM – 5:00 PM): Staffed by a qualified Medical Officer and 3 nurses for medical care" },
+          { icon: "🏦", text: "Banking Services: On-campus Union Bank of India branch and 24/7 ATM facility" },
+          { icon: "📚", text: "Book Store & Services: Campus bookstore for textbooks, stationery, copier facilities, and courier support" }
         ],
-        keywords: ["atm", "cash", "bank", "canara", "sbi", "health", "clinic", "doctor", "first aid", "emergency", "medicine", "water", "ro", "parking", "security", "gate"],
-        queryPrompt: "Where is the ATM and health center on GPREC campus?"
+        keywords: ["health centre", "clinic", "doctor", "medical", "first aid", "bank", "union bank", "atm", "book store", "stationery", "copier", "courier", "water"],
+        queryPrompt: "What general amenities, health center, and bank facilities are available at GPREC?"
       }
     ]
   }

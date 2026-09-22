@@ -25,25 +25,13 @@ G. Pulla Reddy Engineering College (GPREC), Kurnool, spans an expansive, green, 
 
 ---
 
-## Main Cafeteria and College Canteen
-- **Location:** South-East zone of the campus, close to the Administrative building and sports grounds.
-- **Operating Hours:** 8:30 AM to 5:30 PM on college days and hackathon event days.
-- **Menu & Food Options:**
-  - Morning Tiffins: Fresh South Indian breakfast including idli, vada, dosas, puri, upma, and pongal.
-  - Lunch Meals: Hygienic vegetarian thali meals, sambar rice, curd rice, fried rice, and variety meals.
-  - Beverages & Snacks: Authentic South Indian filter coffee, tea, lemon tea, cool drinks, samosas, vegetable puffs, mirchi bajji, and bakery snacks.
-- **Quality & Hygiene:** Overseen by the institutional **Canteen Committee** comprising both faculty and elected student representatives to maintain strict cleanliness, quality standards, and subsidised, student-friendly pricing.
-
----
-
-## Campus Food Court
-- **Location:** Central Student Amenities Plaza, along the tree-lined pedestrian avenue leading toward the residential hostels.
-- **Operating Hours:** 9:00 AM to 6:30 PM (extended during hackathons and student fests).
-- **Offerings & Ambience:**
-  - Vibrant open-air lifestyle dining hub popular with students, mentors, and inter-college participants.
-  - Quick-service menu: Grilled sandwiches, veg burgers, pizzas, hakka noodles, rolls, pasta, and chaat items.
-  - Dessert & Drink Parlor: Fresh seasonal fruit juices, thick milkshakes, cold coffee, mocktails, ice creams, and cones.
-  - Equipped with shaded outdoor canopy tables, ambient lighting, and high-speed campus Wi-Fi — a prime brainstorming and relaxation spot for hackathon teams between coding sessions.
+## Campus Canteen & Cafeteria
+- **Location:** On-Campus Central Amenities Zone.
+- **Operating Hours:** Throughout college working hours.
+- **Offerings & Services:**
+  - Provides fresh snacks, breakfast, tea, coffee, and wholesome meals for students and staff.
+  - Serves as a primary refreshment and social hub for students and faculty between academic sessions.
+- **Administration & Oversight:** Overseen by the institutional **Canteen Committee** (comprising faculty members and student representatives) ensuring strict hygiene standards, food quality, and subsidized student-friendly pricing.
 
 ---
 
@@ -96,9 +84,10 @@ G. Pulla Reddy Engineering College (GPREC), Kurnool, spans an expansive, green, 
 ---
 
 ## General Amenities and On-Campus Conveniences
-- **Banking & ATM:** 24/7 Canara Bank ATM and SBI ATM situated near the Main Security Entrance Gate for convenient cash withdrawals.
-- **Campus Health Center & Dispensary:** Resident medical officer and qualified nursing staff providing free first aid, health consultations, emergency care, and essential medicines.
-- **Drinking Water:** Advanced multi-stage Reverse Osmosis (RO) purified chilled drinking water dispensers installed on every floor of all department blocks.
-- **Student Restrooms & Common Rooms:** Modern, sanitised washrooms on all wings; separate Girls' Common Room equipped with relaxation seating and privacy amenities.
+- **Health Centre:** Exclusive on-campus Health Centre operating from 9:00 AM to 5:00 PM, staffed by a qualified Medical Officer and 3 nurses providing free consultations, first aid, and emergency care.
+- **Banking & ATM:** On-campus **Union Bank of India** branch and 24/7 ATM facilities.
+- **Campus Book Store:** On-campus store supplying core engineering textbooks, notebooks, and academic stationery.
+- **Copier & Telecom Services:** High-speed reprography, photocopying, courier services, and STD/ISD telecom facilities.
+- **Drinking Water:** Advanced multi-stage Reverse Osmosis (RO) purified chilled drinking water dispensers installed on all academic wings.
 - **Campus Security:** Round-the-clock security personnel, boom barriers at entrance gates, and pervasive CCTV surveillance ensuring a safe campus environment.
-- **Visitor Parking:** Spacious dedicated parking zone for two-wheelers and four-wheelers immediately inside the Main Entrance Gate.
+- **Visitor Parking:** Dedicated parking zones for two-wheelers and four-wheelers immediately inside the Main Entrance Gate.
