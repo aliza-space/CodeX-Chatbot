@@ -46,8 +46,9 @@ export default function Navbar() {
                   <span className="font-display font-bold text-sm sm:text-base tracking-tight text-slate-900 dark:text-white truncate">
                     CodeX <span className="text-blue-600 dark:text-blue-400">4.0</span>
                   </span>
-                  <span className="hidden xs:inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800">
-                    Live Portal
+                  <span className="hidden xs:inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/60">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                    <span>24/7 AI Active</span>
                   </span>
                 </div>
                 <p className="text-[10px] text-slate-500 dark:text-slate-400 truncate hidden sm:block">

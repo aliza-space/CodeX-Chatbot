@@ -70,15 +70,15 @@ export default function ChatWindow({ variant = "widget" }) {
             </div>
 
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] sm:text-xs font-bold bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800 mb-2 shadow-xs">
-              <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
-              <span>CodeX Buddy Assistant • CodeX 4.0</span>
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+              <span>⚡ CodeX Buddy • 24/7 AI Assistant</span>
             </div>
 
             <h3 className="font-display font-bold text-xl sm:text-2xl text-slate-900 dark:text-white tracking-tight mb-1">
               How can I help you today?
             </h3>
             <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 max-w-md mb-2 leading-relaxed px-2">
-              Ask anything regarding CodeX 4.0 hackathon rules, venue maps, schedules, and prizes.
+              Available 24/7 for CodeX 4.0 hackathon guidance, Dijkstra campus navigation, problem tracks & schedules.
             </p>
 
             <QuickActionCards onPick={handleSend} />
