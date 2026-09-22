@@ -14,6 +14,9 @@ import announcementRoutes from "./routes/announcement.routes.js";
 
 const app = express();
 
+// Trust Render/Vercel/Nginx reverse proxy so rate-limiting and IP logging work correctly
+app.set("trust proxy", 1);
+
 const isAllowedOrigin = (origin) => {
   if (!origin) return true;
   if (origin === env.CLIENT_URL) return true;

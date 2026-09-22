@@ -1,0 +1,53 @@
+services:
+  - type: web
+    name: codex-chatbot-server
+    env: node
+    region: singapore
+    plan: free
+    rootDir: server
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 5000
+      - key: MONGODB_URI
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: JWT_EXPIRES_IN
+        value: 7d
+      - key: CLIENT_URL
+        sync: false
+      - key: GOOGLE_CLIENT_ID
+        sync: false
+      - key: GOOGLE_CLIENT_SECRET
+        sync: false
+      - key: LLM_PROVIDER
+        value: gemini
+      - key: LLM_MODEL
+        value: gemini-1.5-flash
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: EMBEDDING_PROVIDER
+        value: gemini
+      - key: EMBEDDING_MODEL
+        value: gemini-embedding-001
+      - key: EMBEDDING_DIMENSIONS
+        value: 768
+      - key: VECTOR_INDEX_NAME
+        value: chunk_vector_index
+      - key: RAG_TOP_K
+        value: 5
+      - key: RAG_MIN_SCORE
+        value: 0.72
+      - key: CHUNK_TOKENS
+        value: 500
+      - key: CHUNK_OVERLAP
+        value: 50
+      - key: RATE_LIMIT_WINDOW_MS
+        value: 60000
+      - key: RATE_LIMIT_MAX
+        value: 30

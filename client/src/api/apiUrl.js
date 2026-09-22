@@ -1,26 +1,33 @@
 /**
  * Dynamically resolves the API Base URL.
- * When accessing from localhost, uses http://localhost:5000.
- * When accessing from a mobile phone or another device on the local Wi-Fi (e.g. 192.168.x.x),
- * it dynamically targets the same host IP on port 5000 instead of failing on the phone's localhost.
+ * - In production (Vercel): reads VITE_API_URL set via Vercel env vars (your Render URL).
+ * - In local dev on a phone/LAN: auto-detects the host IP and targets port 5000.
+ * - In local dev on localhost: defaults to http://localhost:5000.
  */
 export function getApiBaseUrl() {
   const envUrl = import.meta.env.VITE_API_URL;
 
+  // If a VITE_API_URL is set and it's not a localhost URL, always trust it (production)
+  if (envUrl && !envUrl.includes("localhost") && !envUrl.includes("127.0.0.1")) {
+    return envUrl;
+  }
+
   if (typeof window !== "undefined") {
     const { hostname, protocol } = window.location;
-    const isNetworkHost = hostname !== "localhost" && hostname !== "127.0.0.1";
 
     // If on a LAN IP (e.g. 192.168.x.x for local phone testing)
-    if (isNetworkHost && !hostname.includes("vercel.app") && (!envUrl || envUrl.includes("localhost") || envUrl.includes("127.0.0.1"))) {
-      return `${protocol}//${hostname}:5000`;
-    }
+    const isLanHost =
+      hostname !== "localhost" &&
+      hostname !== "127.0.0.1" &&
+      !hostname.includes("vercel.app") &&
+      !hostname.includes("onrender.com");
 
-    // If deployed on Vercel or live production domain
-    if (hostname.includes("vercel.app") && (!envUrl || envUrl.includes("localhost"))) {
-      return "https://codex-chatbot-rcxe.onrender.com";
+    if (isLanHost) {
+      return `${protocol}//${hostname}:5000`;
     }
   }
 
-  return envUrl || "https://codex-chatbot-rcxe.onrender.com";
+  // Local dev default
+  return envUrl || "http://localhost:5000";
 }
+
