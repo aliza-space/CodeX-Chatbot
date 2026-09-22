@@ -526,13 +526,9 @@ export default function CampusGuideModal({ isOpen, onClose, initialDestinationId
 
                       {/* Action Buttons */}
                       <div className="flex items-center justify-between pt-1 border-t border-slate-700/80">
-                        <button
-                          type="button"
-                          onClick={() => setSelectedFacilityId(activeOtherFacility.id)}
-                          className="text-xs font-semibold text-blue-400 hover:text-blue-300 underline cursor-pointer"
-                        >
-                          🗺️ View on Map
-                        </button>
+                        <span className="text-[11px] text-slate-400 font-medium">
+                          Active Map Destination
+                        </span>
                         <button
                           type="button"
                           onClick={() => handleAskAboutFacility(activeOtherFacility)}
