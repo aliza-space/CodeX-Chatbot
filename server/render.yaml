@@ -34,7 +34,7 @@ services:
       - key: EMBEDDING_PROVIDER
         value: gemini
       - key: EMBEDDING_MODEL
-        value: gemini-embedding-001
+        value: text-embedding-004
       - key: EMBEDDING_DIMENSIONS
         value: 768
       - key: VECTOR_INDEX_NAME

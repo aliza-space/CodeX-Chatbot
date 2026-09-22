@@ -54,7 +54,8 @@ export const streamChat = asyncHandler(async (req, res) => {
     });
     endSSE(res);
   } catch (err) {
-    sendSSE(res, "error", { message: err.message });
+    console.error("❌ streamChat error:", err);
+    sendSSE(res, "error", { message: err.message || "Failed to process chat message" });
     endSSE(res);
   }
 });
