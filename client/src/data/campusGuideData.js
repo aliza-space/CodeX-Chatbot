@@ -1,4 +1,4 @@
-// Official visitor-focused GPREC campus data sourced from www.gprec.ac.in and Coders' Club GPREC
+// Official visitor-focused GPREC campus data sourced from www.gprec.ac.in and CIE GPREC
 
 export const GPREC_INFO = {
   name: "G. Pulla Reddy Engineering College (Autonomous)",
@@ -7,8 +7,8 @@ export const GPREC_INFO = {
   location: "G. Pulla Reddy Nagar, Nandyal Road, Kurnool, AP - 518007",
   gps: { lat: 15.8073, lng: 78.0375 },
   website: "https://www.gprec.ac.in",
-  tagline: "Premier autonomous engineering campus & home of Coders' Club and CodeX Hackathons",
-  visitorHighlight: "Spanning 30+ lush green acres with cutting-edge Intel AI labs, active startup incubators, modern food courts, and a vibrant tech community."
+  tagline: "Premier autonomous engineering campus & home of CodeX Hackathons and CIE Innovation Hub",
+  visitorHighlight: "Spanning 30+ lush green acres with cutting-edge Intel AI labs, CIE startup incubator, modern food courts, and a vibrant tech community."
 };
 
 // =========================================================================
@@ -25,7 +25,7 @@ export const CAMPUS_NAV_NODES = {
   node_food_court_entry: { id: "node_food_court_entry", x: 560, y: 470, label: "Campus Food Court & Canopy Seating", lat: 15.8082, lng: 78.0380 },
   node_quad_circle: { id: "node_quad_circle", x: 500, y: 360, label: "Central Quadrangle Roundabout", lat: 15.8088, lng: 78.0375 },
   node_library_entry: { id: "node_library_entry", x: 420, y: 300, label: "Central Library & Digital Wing", lat: 15.8091, lng: 78.0369 },
-  node_cie_entry: { id: "node_cie_entry", x: 590, y: 390, label: "Coders' Club & CIE Innovation Hub", lat: 15.8085, lng: 78.0383 },
+  node_cie_entry: { id: "node_cie_entry", x: 590, y: 390, label: "CIE Innovation Hub", lat: 15.8085, lng: 78.0383 },
   node_csm_entry: { id: "node_csm_entry", x: 710, y: 370, label: "CSM Block (Intel AI/ML Hub - 2nd Fl)", lat: 15.8088, lng: 78.0388 },
   node_drone_entry: { id: "node_drone_entry", x: 720, y: 460, label: "Drone & Robotics Research Lab", lat: 15.8084, lng: 78.0392 },
   node_amphi_entry: { id: "node_amphi_entry", x: 540, y: 310, label: "Open Air Amphitheatre (\"Amphi\")", lat: 15.8093, lng: 78.0382 },
@@ -123,7 +123,6 @@ export const CAMPUS_NAV_GRAPH = {
 
 // =========================================================================
 // 2. CAMPUS MAP VISUAL ELEMENTS (BUILDINGS, ROADS, GREENERY)
-// Buildings positioned outside roads, clear corridor walkways
 // =========================================================================
 export const CAMPUS_MAP_DATA = {
   viewBox: "0 0 1000 720",
@@ -163,7 +162,7 @@ export const CAMPUS_MAP_DATA = {
     },
     {
       id: "cie-hub",
-      name: "Coders' Club & CIE Center",
+      name: "CIE Innovation Hub",
       code: "CIE",
       x: 605,
       y: 390,
@@ -172,7 +171,7 @@ export const CAMPUS_MAP_DATA = {
       zone: "academic-zone",
       category: "startups",
       color: "indigo",
-      markerId: "coders-club-cie",
+      markerId: "cie-hub",
       nodeId: "node_cie_entry"
     },
     {
@@ -340,7 +339,7 @@ export const CAMPUS_ZONES = [
     id: "academic-zone",
     name: "Academic, Tech & Innovation Area",
     shortName: "Academic & Tech Hub",
-    subtitle: "Department blocks, Intel AI labs, Coders' Club hub & innovation centres",
+    subtitle: "Department blocks, Intel AI labs, CIE innovation hub & software centres",
     icon: "🏛️",
     badge: "Zone 1",
     themeColor: "blue",
@@ -357,59 +356,38 @@ export const CAMPUS_ZONES = [
         nodeId: "node_csm_entry",
         mapCoords: { x: 710, y: 370 },
         isHackathonHub: true,
-        liveStatus: {
-          badge: "Workstations: 14/20 Free",
-          state: "active",
-          text: "Labs 1–6 Online • 1 Gbps Fiber • 100% UPS Active"
-        },
-        whatYouShouldKnow: "Primary arena for CodeX hackathon rounds (2nd floor Lab 6). High-speed Lenovo ThinkCentre Neo 50S (i5 12th Gen, 16GB RAM) workstations, ultra-low latency 1 Gbps fiber internet, dual-port power per bench, and round-the-clock technical mentor desk.",
-        techSpecs: {
-          workstations: "240+ High-Performance PCs across Labs 1-8",
-          processors: "Intel Core i5 12th Gen / 16GB DDR4 / 512GB NVMe",
-          network: "1 Gbps Redundant Dual-Band Fiber Wi-Fi",
-          powerBackup: "100% Online UPS + Dedicated Heavy Diesel Gensets",
-          support: "Coders' Club Volunteer Mentors on 24/7 duty"
-        },
+        facilityTag: "CSM Block • 8 Labs",
+        whatYouShouldKnow: "Primary arena for CodeX and hackathon rounds. High-speed Lenovo ThinkCentre Neo 50S (i5 12th Gen, 16GB RAM) workstations, ultra-low latency 1 Gbps fiber internet, dual-port power per bench, and round-the-clock technical mentor desk.",
         summary: "State-of-the-art Intel Unnati AI/ML Center (CSM Lab 6), Drone & Robotics Lab, Python, and high-performance computing suites.",
         highlights: [
-          { icon: "⚡", text: "2nd Floor Lab 6: Intel Unnati AI/ML Center with Lenovo workstations for Deep Learning & Generative AI" },
-          { icon: "🤖", text: "Ground Floor: Core Programming Labs 1 & 2 and specialized Drone & Robotics Research Lab" },
-          { icon: "💻", text: "1st Floor: Advanced Software, DBMS & Web Labs 3–5 plus multimedia tutorial seminar halls" },
-          { icon: "🔋", text: "Equipped with dedicated online power backup for 24-hour non-stop hackathons" }
+          { icon: "💻", text: "Ground Floor: Core Programming Labs 1 & 2 (Lenovo ThinkCentre Neo 50S) and Drone & Robotics Research Lab" },
+          { icon: "🖥️", text: "1st Floor: Advanced Software, DBMS & Web Labs 3–5 plus multimedia tutorial seminar halls" },
+          { icon: "⚡", text: "2nd Floor: Intel Unnati AI/ML Center (CSM Lab 6) with high-end workstations — primary arena for CodeX 4.0 Hackathon" },
+          { icon: "🔋", text: "Equipped with 1 Gbps redundant campus fiber-optic internet and 100% online UPS power backup" }
         ],
         keywords: ["csm", "intel", "ai", "ml", "hackathon", "workstation", "pc", "computer", "lab", "lab 6", "wifi", "internet", "power", "charging", "mentor", "code", "programming", "python", "gpu"],
         queryPrompt: "Tell me about CSM Computer Labs and the Intel AI/ML Lab at GPREC"
       },
       {
-        id: "coders-club-cie",
-        name: "Coders' Club & CIE Innovation Hub",
-        shortName: "Coders' Club & CIE",
+        id: "cie-hub",
+        name: "CIE Innovation Hub",
+        shortName: "CIE Innovation Hub",
         icon: "🚀",
         area: "Ground Floor, Central Academic Wing",
-        badge: "Community & Startups",
+        badge: "Startups & Incubation",
         category: "startups",
         nodeId: "node_cie_entry",
         mapCoords: { x: 590, y: 390 },
-        liveStatus: {
-          badge: "CIE Incubator: Open",
-          state: "active",
-          text: "Mentors on duty • Hackathon Helpdesk Active"
-        },
-        whatYouShouldKnow: "The epicenter of GPREC student coding and startup culture. Home to the Coders' Club executive coordinators and the Centre for Innovation & Entrepreneurship (CIE). Visit for event registration queries, hardware components, mentor consultation, and seed funding support.",
-        techSpecs: {
-          mentorship: "Student Coordinators & Faculty Leads available",
-          facilities: "Prototyping benches, high-speed Wi-Fi, 3D printers, whiteboard brainstorm rooms",
-          activities: "CodeX Hackathons, IdeaSprint, Bootcamps, Algorithm contests",
-          hours: "8:30 AM – 8:00 PM (24/7 during CodeX events)"
-        },
-        summary: "The heartbeat of GPREC's programming culture — organizing CodeX, IdeaSprint, competitive coding bootcamps, and student-led startup incubation.",
+        facilityTag: "CIE • Innovation Wing",
+        whatYouShouldKnow: "Center for Innovation and Entrepreneurship (CIE) at GPREC. Dedicated incubation hub supporting student startups, technical prototyping, patent guidance, and seed funding consultation for innovative hardware and software projects.",
+        summary: "GPREC's official center for innovation, startup incubation, patent support, and student-led entrepreneurship.",
         highlights: [
-          { icon: "👥", text: "Headquarters of Coders' Club GPREC — student coordinators, mentors & technical leads" },
-          { icon: "💡", text: "Centre for Innovation & Entrepreneurship (CIE): Incubation support for tech prototypes and startups" },
-          { icon: "🏆", text: "Regular meetup hub for algorithm prep, project hackathons, and industry mentorship" }
+          { icon: "💡", text: "Centre for Innovation & Entrepreneurship (CIE): Incubation support for tech prototypes and student-led startups" },
+          { icon: "🛠️", text: "Prototyping equipment, 3D printing access, hardware assembly benches, and whiteboard meeting rooms" },
+          { icon: "📈", text: "Regular startup mentoring, patent filing assistance, and government innovation funding guidance" }
         ],
-        keywords: ["cie", "coders club", "startup", "incubation", "entrepreneurship", "mentor", "helpdesk", "registration", "organizer", "team", "whiteboard", "prototype", "funding", "ideasprint"],
-        queryPrompt: "Tell me about Coders' Club and the CIE Innovation Center at GPREC"
+        keywords: ["cie", "innovation", "startup", "incubation", "entrepreneurship", "mentor", "helpdesk", "registration", "whiteboard", "prototype", "funding", "ideasprint"],
+        queryPrompt: "Tell me about the CIE Innovation Center at GPREC"
       },
       {
         id: "cse-block",
@@ -421,17 +399,8 @@ export const CAMPUS_ZONES = [
         category: "hackathon",
         nodeId: "node_cse_entry",
         mapCoords: { x: 670, y: 245 },
-        liveStatus: {
-          badge: "Cloud Labs: Open",
-          state: "active",
-          text: "Lecture theatres & networking suites operational"
-        },
+        facilityTag: "CSE Block • Smart Halls",
         whatYouShouldKnow: "Core computing department with smart lecture halls and cloud computing testbeds. Features Linux terminal stations, network simulation rigs, and faculty consultation chambers for external participants.",
-        techSpecs: {
-          labs: "Networking Labs, Cloud Computing Suites, OS & Compiler Lab",
-          displays: "Interactive 4K Smart Panels in lecture theatres",
-          capacity: "Tiered seating for 120+ students per lecture hall"
-        },
         summary: "Core CSE lecture theatres, advanced networking suites, cloud labs, and faculty research chambers.",
         highlights: [
           { icon: "🖥️", text: "Spacious tiered lecture halls equipped with digital smart boards and 4K projectors" },
@@ -450,17 +419,8 @@ export const CAMPUS_ZONES = [
         category: "hackathon",
         nodeId: "node_ece_entry",
         mapCoords: { x: 500, y: 200 },
-        liveStatus: {
-          badge: "IoT Workbench: Active",
-          state: "active",
-          text: "Microcontrollers & sensor kits available"
-        },
+        facilityTag: "ECE/EEE • Hardware Labs",
         whatYouShouldKnow: "Hardware prototyping hub for electronics and electrical engineering. Features Raspberry Pi, Arduino, ESP32 development kits, VLSI testing, and high-voltage electrical machinery labs.",
-        techSpecs: {
-          hardware: "ESP32, Raspberry Pi 4, Arduino, FPGA kits, DSOs",
-          labs: "VLSI Design, Embedded Systems, DSP & IoT Lab, Power Electronics",
-          workbench: "Soldering stations and component stockroom"
-        },
         summary: "Electronics & Communication and Electrical engineering hubs housing advanced microprocessors, DSP, and renewable energy testbeds.",
         highlights: [
           { icon: "🔌", text: "Microprocessor, embedded systems, and VLSI circuit prototyping labs with test equipment" },
@@ -479,17 +439,8 @@ export const CAMPUS_ZONES = [
         category: "hackathon",
         nodeId: "node_drone_entry",
         mapCoords: { x: 720, y: 460 },
-        liveStatus: {
-          badge: "Telemetry: Standby",
-          state: "active",
-          text: "Flight arena available for sensor calibration"
-        },
+        facilityTag: "Robotics Arena",
         whatYouShouldKnow: "Ground floor CSM block facility dedicated to autonomous quadcopters, fixed-wing UAVs, computer vision obstacle avoidance, and ROS (Robot Operating System) robotics.",
-        techSpecs: {
-          equipment: "Custom carbon-fiber quadcopters, LIDAR sensors, stereo vision cameras",
-          software: "ROS 2, PX4 Autopilot, OpenCV, Gazebo Simulation",
-          testing: "Enclosed net testing arena for flight calibration"
-        },
         summary: "Specialized laboratory for unmanned aerial vehicles (UAVs), computer vision navigation, and IoT sensor integration.",
         highlights: [
           { icon: "🚁", text: "Dedicated hardware assembly benches and drone flight testing arena" },
@@ -508,17 +459,8 @@ export const CAMPUS_ZONES = [
         category: "startups",
         nodeId: "node_mech_entry",
         mapCoords: { x: 350, y: 160 },
-        liveStatus: {
-          badge: "Workshops: Open",
-          state: "active",
-          text: "CNC machining & 3D prototyping station available"
-        },
+        facilityTag: "Central Workshops",
         whatYouShouldKnow: "Central workshops housing heavy mechanical machinery, CNC milling, lathe equipment, structural engineering rigs, and 3D printing manufacturing units.",
-        techSpecs: {
-          machinery: "CNC Milling Centers, Industrial Lathes, Universal Testing Machine (UTM)",
-          cadcam: "AutoCAD, SolidWorks, ANSYS finite element workstations",
-          safety: "PPE / protective goggles required in heavy machining bays"
-        },
         summary: "Central mechanical engineering workshops, 3D design centers, concrete testing, and fluid dynamics testing rigs.",
         highlights: [
           { icon: "🏭", text: "CNC machining centers, 3D printing facilities, and automated welding workshops" },
@@ -549,11 +491,7 @@ export const CAMPUS_ZONES = [
         category: "venues",
         nodeId: "node_auditorium_entry",
         mapCoords: { x: 390, y: 560 },
-        liveStatus: {
-          badge: "Seating: 1,000+ Ready",
-          state: "active",
-          text: "Acoustic line-array & 4K dual projection online"
-        },
+        facilityTag: "1,000+ Capacity AC Hall",
         whatYouShouldKnow: "Grand air-conditioned auditorium situated right near the Main Gate. Official venue for CodeX 4.0 opening ceremony, guest keynotes (Dodagatta Nihar), and university awards. Features Bose line-array audio, motorized projection, and executive VIP lounge.",
         amenityTags: ["1,000+ Seats", "Full Air-Conditioned", "Bose Audio", "Dual 4K Projectors", "VIP Green Rooms"],
         summary: "Acoustically engineered grand indoor auditorium with Bose audio systems, dual high-lumen projectors, and VIP executive suites.",
@@ -575,11 +513,7 @@ export const CAMPUS_ZONES = [
         category: "venues",
         nodeId: "node_amphi_entry",
         mapCoords: { x: 540, y: 310 },
-        liveStatus: {
-          badge: "Lawn Vibes: Open",
-          state: "active",
-          text: "Social break & music jam arena"
-        },
+        facilityTag: "800+ Open Air Arena",
         whatYouShouldKnow: "GPREC's favorite outdoor social hangout. Tiered semi-circular stone steps under shady trees, perfect for evening guitar jams, team mixers, pitch dry-runs, and hackathon fresh-air breaks.",
         amenityTags: ["800+ Tiered Seating", "Open-Air Lawn", "Acoustic Courtyard", "Evening Lighting", "Tree Shaded"],
         summary: "Tiered semi-circular stone terrace arena accommodating 800+ students for cultural fests, club meetups, and open-air ceremonies.",
@@ -600,11 +534,7 @@ export const CAMPUS_ZONES = [
         category: "food",
         nodeId: "node_food_court_entry",
         mapCoords: { x: 560, y: 470 },
-        liveStatus: {
-          badge: "Food Court: Open",
-          state: "active",
-          text: "Pizzas, shakes, snacks & campus Wi-Fi online"
-        },
+        facilityTag: "Open 9 AM – 6:30 PM",
         whatYouShouldKnow: "Vibrant open-air food plaza with covered outdoor canopy tables and full campus Wi-Fi coverage. Serves hot grilled sandwiches, pizzas, veg burgers, noodles, momos, thick shakes, fresh fruit juices, and ice creams.",
         amenityTags: ["Fast Food & Snacks", "Juice & Dessert Bar", "Outdoor Canopy Seating", "Campus Wi-Fi", "Open 9 AM – 6:30 PM"],
         summary: "Vibrant open-air lifestyle dining space with outdoor tables — prime spot for hackathon teams to recharge between sprints.",
@@ -626,11 +556,7 @@ export const CAMPUS_ZONES = [
         category: "food",
         nodeId: "node_canteen_junction",
         mapCoords: { x: 420, y: 470 },
-        liveStatus: {
-          badge: "Canteen: Active",
-          state: "active",
-          text: "Fresh tiffins, vegetarian thalis & filter coffee"
-        },
+        facilityTag: "Canteen • 8:30 AM – 5:30 PM",
         whatYouShouldKnow: "Large institutional dining hall serving authentic South Indian breakfast (crispy dosas, idli-vada, poori, upma), full vegetarian lunch thalis, and filter coffee at subsidised student-friendly pricing under Canteen Committee hygiene supervision.",
         amenityTags: ["Breakfast: 8:30 – 11:30 AM", "Lunch: 12:00 – 2:30 PM", "Subsidised Rates", "Filter Coffee & Tea", "Indoor Seating"],
         summary: "Hygiene-monitored institutional cafeteria serving fresh breakfast, lunch, and evening snacks supervised by the GPREC Canteen Committee.",
@@ -652,11 +578,7 @@ export const CAMPUS_ZONES = [
         category: "library",
         nodeId: "node_library_entry",
         mapCoords: { x: 420, y: 300 },
-        liveStatus: {
-          badge: "Reading Room: 42/150",
-          state: "active",
-          text: "IEEE Xplore terminals & quiet zones open"
-        },
+        facilityTag: "66,000+ Volumes • SLIM 21",
         whatYouShouldKnow: "Automated SLIM 21 library with 66,000+ volumes, 150+ seat air-conditioned reading halls, and high-speed Digital Library workstations with IEEE Xplore, ScienceDirect, and NPTEL access. Quietest place on campus to debug or read research papers.",
         amenityTags: ["66,000+ Volumes", "IEEE Digital Wing", "150+ Seats", "Quiet Study Hall", "Open 9 AM – 7 PM"],
         summary: "Fully automated with SLIM 21 library management software, offering 66,106+ volumes, 14,153 titles, and 150+ seat reading spaces.",
@@ -678,11 +600,7 @@ export const CAMPUS_ZONES = [
         category: "venues",
         nodeId: "node_sports_entry",
         mapCoords: { x: 760, y: 170 },
-        liveStatus: {
-          badge: "Courts: Available",
-          state: "active",
-          text: "Wooden badminton courts & cardio gym open"
-        },
+        facilityTag: "Sports Stadium & Gym",
         whatYouShouldKnow: "Spacious sports arena featuring tournament-grade wooden badminton courts, table tennis, cardio & strength gym equipment, and expansive grounds for cricket and basketball.",
         amenityTags: ["Badminton Courts", "Table Tennis", "Fitness Gym", "Cricket Ground", "Basketball Court"],
         summary: "Multipurpose sports complex housing indoor wooden badminton courts, table tennis, fitness gym, and expansive athletic grounds.",
@@ -703,11 +621,7 @@ export const CAMPUS_ZONES = [
         category: "amenities",
         nodeId: "node_main_gate",
         mapCoords: { x: 500, y: 660 },
-        liveStatus: {
-          badge: "ATM & Clinic: 24/7",
-          state: "active",
-          text: "Canara/SBI ATMs online • First aid nurse on duty"
-        },
+        facilityTag: "24/7 ATM & Health Clinic",
         whatYouShouldKnow: "Essential visitor services located immediately inside the Main Entrance Gate. Features 24/7 Canara Bank and SBI cash ATMs, campus medical clinic providing free first aid and medicines, RO chilled drinking water, and dedicated visitor parking.",
         amenityTags: ["24/7 Cash ATMs", "Emergency Dispensary", "RO Chilled Water", "Visitor Parking", "Security Helpdesk"],
         summary: "Essential conveniences located right at the campus entrance for visiting students, participants, and parents.",
@@ -753,7 +667,7 @@ function generateRouteSteps(path, startNodeId, destNodeId) {
       } else if (currNode.id === "node_central_avenue_mid") {
         steps.push("Follow tree-lined Central Avenue past the Food Plaza");
       } else if (currNode.id === "node_cie_entry") {
-        steps.push("Turn along Innovation Way past Coders' Club & CIE Hub");
+        steps.push("Turn along Innovation Way past CIE Innovation Hub");
       } else if (currNode.id === "node_gate_junction") {
         steps.push("Head North from Main Security checkpoint");
       } else {
@@ -877,7 +791,6 @@ export function searchCampusGuide(query, activeCategory = "all") {
 
   for (const zone of CAMPUS_ZONES) {
     for (const facility of zone.facilities) {
-      // Category filter check
       if (activeCategory !== "all" && facility.category !== activeCategory) {
         if (
           !(activeCategory === "hackathon" && (facility.category === "hackathon" || facility.isHackathonHub)) &&
@@ -938,7 +851,7 @@ export function findFacilityAndZone(queryOrId) {
       const match =
         q.includes(facility.id) ||
         (facility.id === "csm-labs" && (q.includes("csm") || q.includes("intel") || q.includes("hackathon") || q.includes("lab 6"))) ||
-        (facility.id === "coders-club-cie" && (q.includes("coders club") || q.includes("cie") || q.includes("startup") || q.includes("incubation") || q.includes("club"))) ||
+        (facility.id === "cie-hub" && (q.includes("cie") || q.includes("startup") || q.includes("incubation") || q.includes("coders club"))) ||
         (facility.id === "central-library" && (q.includes("library") || q.includes("book") || q.includes("slim 21") || q.includes("ieee"))) ||
         (facility.id === "cafeteria" && (q.includes("canteen") || q.includes("cafeteria") || q.includes("breakfast") || q.includes("dosa") || q.includes("thali"))) ||
         (facility.id === "food-court" && (q.includes("food court") || q.includes("juice") || q.includes("pizza") || q.includes("burger") || q.includes("shake"))) ||
