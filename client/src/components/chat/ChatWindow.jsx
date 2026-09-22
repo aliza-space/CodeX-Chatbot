@@ -162,9 +162,9 @@ export default function ChatWindow({ variant = "widget" }) {
 
         {/* Status Line */}
         <div className="hidden sm:flex items-center justify-between mt-1.5 px-1 text-[11px] text-slate-400">
-          <span className="flex items-center gap-1">
-            <IconSparkles className="w-3.5 h-3.5 text-blue-500" />
-            <span>RAG-powered live intelligence</span>
+          <span className="flex items-center gap-1.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+            <span>Coders' Club • GPREC</span>
           </span>
           <span>Press Enter ↵ to send</span>
         </div>
