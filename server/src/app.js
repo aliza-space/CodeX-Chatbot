@@ -17,6 +17,10 @@ const app = express();
 const isAllowedOrigin = (origin) => {
   if (!origin) return true;
   if (origin === env.CLIENT_URL) return true;
+  if (env.CLIENT_URL && env.CLIENT_URL.split(",").map((s) => s.trim()).includes(origin)) return true;
+  if (/^https?:\/\/.*\.vercel\.app$/.test(origin)) return true;
+  if (/^https?:\/\/.*\.onrender\.com$/.test(origin)) return true;
+  if (/^https?:\/\/.*\.netlify\.app$/.test(origin)) return true;
   if (/^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin)) return true;
   if (/^http:\/\/(192\.168\.\d+\.\d+|10\.\d+\.\d+\.\d+|172\.(1[6-9]|2\d|3[0-1])\.\d+\.\d+)(:\d+)?$/.test(origin)) return true;
   if (env.NODE_ENV === "development") return true;
