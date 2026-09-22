@@ -511,6 +511,20 @@ function synthesizeConciseAnswer(query, chunks) {
 - **Support Hours:** Mon–Sat, 9:00 AM – 7:00 PM IST (Typical response time: 12–24 hours).`;
   }
 
+  // 17.1 Round 1 / Round 2 Question Difficulty & Problem Topics
+  if (
+    q.includes("difficulty") ||
+    q.includes("difficult") ||
+    (q.includes("round 1") && (q.includes("question") || q.includes("topic") || q.includes("level") || q.includes("problem"))) ||
+    (q.includes("round 2") && (q.includes("question") || q.includes("topic") || q.includes("level") || q.includes("problem")))
+  ) {
+    return `### ⚡ CodeX 4.0 Question Difficulties & Problem Topics
+- **Round 1 (Preliminary Round):** Features **Easy to Medium** competitive coding problems testing Data Structures & Algorithms (arrays, strings, sorting, searching, hash maps, basic recursion, math, and logic optimization).
+- **Round 2 (Grand Finale):** Features **Medium to Advanced** algorithmic challenges testing complex DSA, dynamic programming, graph logic, and time/space optimization.
+- **Evaluation Criteria:** Accuracy, passing test cases, execution time, and memory limits.
+- **Preparation Tip:** Practice core problem-solving on HackerRank/LeetCode. For exact compiler & language guidelines, contact the student leads (Tabraiz: +91 9391491123, Kashif: +91 9492068097, Karthik Sai: +91 9032174306).`;
+  }
+
   // 18. Exact FAQ or section extraction from retrieved chunks
   const exactMatch = extractExactAnswerFromChunks(query, chunks);
   if (exactMatch) {
