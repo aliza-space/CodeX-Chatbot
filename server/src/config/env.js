@@ -12,6 +12,9 @@ const schema = z.object({
   JWT_SECRET: z.string().min(10, "JWT_SECRET must be set and reasonably long"),
   JWT_EXPIRES_IN: z.string().default("7d"),
 
+  GOOGLE_CLIENT_ID: z.string().optional(),
+  GOOGLE_CLIENT_SECRET: z.string().optional(),
+
   LLM_PROVIDER: z.enum(["gemini", "openai", "anthropic"]).default("gemini"),
   LLM_MODEL: z.string().default("gemini-1.5-flash"),
   GEMINI_API_KEY: z.string().optional(),

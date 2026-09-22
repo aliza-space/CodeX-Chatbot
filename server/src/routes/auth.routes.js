@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { z } from "zod";
-import { register, login, me, changePassword } from "../controllers/auth.controller.js";
+import { register, login, googleLogin, me, changePassword } from "../controllers/auth.controller.js";
 import { validate } from "../middleware/validate.js";
 import { verifyToken, requireAuth } from "../middleware/auth.js";
 import { authRateLimiter } from "../middleware/rateLimiter.js";
@@ -18,6 +18,10 @@ const loginSchema = z.object({
   password: z.string().min(6),
 });
 
+const googleSchema = z.object({
+  token: z.string().min(1, "Google token is required"),
+});
+
 const changePasswordSchema = z.object({
   currentPassword: z.string().min(1),
   newPassword: z.string().min(6),
@@ -25,8 +29,10 @@ const changePasswordSchema = z.object({
 
 router.post("/register", authRateLimiter, validate(registerSchema), register);
 router.post("/login", authRateLimiter, validate(loginSchema), login);
+router.post("/google", authRateLimiter, validate(googleSchema), googleLogin);
 
 router.get("/me", verifyToken, requireAuth, me);
 router.post("/change-password", verifyToken, requireAuth, validate(changePasswordSchema), changePassword);
 
 export default router;
+

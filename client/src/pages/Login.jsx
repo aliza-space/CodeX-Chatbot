@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
+import { GoogleLogin } from "@react-oauth/google";
 import { useAuth } from "../hooks/useAuth.js";
 import ThemeToggle from "../components/common/ThemeToggle.jsx";
 
@@ -9,7 +10,7 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
-  const { login, register, isAuthenticated } = useAuth();
+  const { login, register, loginWithGoogle, isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -45,6 +46,26 @@ export default function Login() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleGoogleSuccess = async (credentialResponse) => {
+    setError(null);
+    setLoading(true);
+    try {
+      if (!credentialResponse?.credential) {
+        throw new Error("No Google credential received");
+      }
+      await loginWithGoogle(credentialResponse.credential);
+      navigate("/", { replace: true });
+    } catch (err) {
+      setError(err.response?.data?.error || err.message || "Google Sign-In failed");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGoogleError = () => {
+    setError("Google Sign-In was unsuccessful. Please try again.");
   };
 
   return (
@@ -258,6 +279,32 @@ export default function Login() {
             </button>
           </form>
 
+          {/* Modern Divider */}
+          <div className="relative my-5">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-slate-200 dark:border-slate-800" />
+            </div>
+            <div className="relative flex justify-center text-[11px] uppercase tracking-wider">
+              <span className="bg-white dark:bg-slate-900 px-3 text-slate-400 font-semibold">
+                Or continue with
+              </span>
+            </div>
+          </div>
+
+          {/* Google Sign-In Button */}
+          <div className="flex justify-center w-full min-h-[44px]">
+            <GoogleLogin
+              onSuccess={handleGoogleSuccess}
+              onError={handleGoogleError}
+              useOneTap={false}
+              theme="outline"
+              shape="pill"
+              size="large"
+              text="continue_with"
+              width="100%"
+            />
+          </div>
+
         </div>
       </main>
 
@@ -268,4 +315,5 @@ export default function Login() {
     </div>
   );
 }
+
 

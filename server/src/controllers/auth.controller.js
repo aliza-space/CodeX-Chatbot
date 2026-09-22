@@ -1,7 +1,10 @@
 import jwt from "jsonwebtoken";
+import { OAuth2Client } from "google-auth-library";
 import User from "../models/User.js";
 import { env } from "../config/env.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
+
+const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID || env.GOOGLE_CLIENT_ID);
 
 function signToken(user) {
   return jwt.sign({ id: user._id, role: user.role, name: user.name }, env.JWT_SECRET, {
@@ -28,6 +31,42 @@ export const login = asyncHandler(async (req, res) => {
   res.json({ token: signToken(user), user: publicUser(user) });
 });
 
+export const googleLogin = asyncHandler(async (req, res) => {
+  const { token } = req.body;
+  if (!token) {
+    return res.status(400).json({ error: "Google token is required" });
+  }
+
+  const clientId = process.env.GOOGLE_CLIENT_ID || env.GOOGLE_CLIENT_ID;
+  const ticket = await googleClient.verifyIdToken({
+    idToken: token,
+    audience: clientId,
+  });
+
+  const payload = ticket.getPayload();
+  if (!payload || !payload.email) {
+    return res.status(400).json({ error: "Invalid Google token payload" });
+  }
+
+  const { email, name, picture } = payload;
+  let user = await User.findOne({ email: email.toLowerCase().trim() });
+
+  if (!user) {
+    user = await User.create({
+      name: name || email.split("@")[0],
+      email: email.toLowerCase().trim(),
+      authProvider: "google",
+      avatar: picture,
+      role: "member",
+    });
+  } else if (!user.avatar && picture) {
+    user.avatar = picture;
+    await user.save();
+  }
+
+  res.json({ token: signToken(user), user: publicUser(user) });
+});
+
 export const me = asyncHandler(async (req, res) => {
   const user = await User.findById(req.user.id).lean();
   res.json({ user: publicUser(user) });
@@ -50,5 +89,6 @@ export const changePassword = asyncHandler(async (req, res) => {
 });
 
 function publicUser(u) {
-  return { id: u._id, name: u.name, email: u.email, role: u.role, preferredLanguage: u.preferredLanguage };
+  return { id: u._id, name: u.name, email: u.email, role: u.role, preferredLanguage: u.preferredLanguage, avatar: u.avatar };
 }
+
