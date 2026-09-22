@@ -522,7 +522,11 @@ function synthesizeConciseAnswer(query, chunks) {
 - **Round 1 (Preliminary Round):** Features **Easy to Medium** competitive coding problems testing Data Structures & Algorithms (arrays, strings, sorting, searching, hash maps, basic recursion, math, and logic optimization).
 - **Round 2 (Grand Finale):** Features **Medium to Advanced** algorithmic challenges testing complex DSA, dynamic programming, graph logic, and time/space optimization.
 - **Evaluation Criteria:** Accuracy, passing test cases, execution time, and memory limits.
-- **Preparation Tip:** Practice core problem-solving on HackerRank/LeetCode. For exact compiler & language guidelines, contact the student leads (Tabraiz: +91 9391491123, Kashif: +91 9492068097, Karthik Sai: +91 9032174306).`;
+- **Student Leads Support Steps:**
+  1. **Tabraiz (SMD Tabraiz):** [+91 9391491123](tel:+919391491123)
+  2. **Kashif (Mohammed Kashif):** [+91 9492068097](tel:+919492068097)
+  3. **Karthik Sai (Vinjamarla Karthik Sai):** [+91 9032174306](tel:+919032174306)
+  4. **Email:** [codersclub@gprec.ac.in](mailto:codersclub@gprec.ac.in)`;
   }
 
   // 18. Exact FAQ or section extraction from retrieved chunks
@@ -547,5 +551,11 @@ function synthesizeConciseAnswer(query, chunks) {
   }
 
   // 20. Honest "I don't know" fallback
-  return "I don't have enough specific information on that in my knowledge base. For further details, feel free to reach out to the Coders' Club coordinators directly at codersclub@gprec.ac.in or contact student leads Tabraiz (+91 9391491123), Kashif (+91 9492068097), or Karthik Sai (+91 9032174306).";
+  return `I don't have enough specific information on that in my knowledge base.
+
+### 📞 Contact Student Leads Step-by-Step:
+1. **Tabraiz (SMD Tabraiz):** [+91 9391491123](tel:+919391491123)
+2. **Kashif (Mohammed Kashif):** [+91 9492068097](tel:+919492068097)
+3. **Karthik Sai (Vinjamarla Karthik Sai):** [+91 9032174306](tel:+919032174306)
+4. **Email:** [codersclub@gprec.ac.in](mailto:codersclub@gprec.ac.in)`;
 }
