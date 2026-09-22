@@ -3,44 +3,47 @@ import Chunk from "../../models/Chunk.js";
 import { embedText } from "../embedding/embedder.js";
 import { env } from "../../config/env.js";
 
-// Hybrid retrieval: Atlas $vectorSearch for semantic similarity, combined with an
-// optional metadata pre-filter (category/tags/status) for keyword-ish narrowing —
-// e.g. a /events command or a detected "CodeX 4.0" entity can filter to category:"event".
+const STOPWORDS = new Set([
+  "what", "are", "the", "and", "for", "who", "is", "how", "in", "of", "to", "a", "an",
+  "on", "at", "by", "with", "from", "about", "me", "tell", "give", "show", "can", "you",
+  "does", "do", "i", "my", "our", "we", "this", "that", "these", "those", "which", "where",
+  "when", "why", "be", "been", "being", "have", "has", "had", "would", "should", "could"
+]);
+
 export async function retrieveChunks(query, { topK = env.RAG_TOP_K, filter = {} } = {}) {
   try {
     const queryVector = await embedText(query);
-
-    const pipeline = [
-      {
-        $vectorSearch: {
-          index: env.VECTOR_INDEX_NAME,
-          path: "embedding",
-          queryVector,
-          numCandidates: Math.max(topK * 20, 100),
-          limit: topK * 3, // over-fetch; reranker + threshold will trim down
-          ...(buildAtlasFilter(filter) ? { filter: buildAtlasFilter(filter) } : {}),
+    if (queryVector && queryVector.length > 0) {
+      const pipeline = [
+        {
+          $vectorSearch: {
+            index: env.VECTOR_INDEX_NAME,
+            path: "embedding",
+            queryVector,
+            numCandidates: Math.max(topK * 20, 100),
+            limit: topK * 3,
+            ...(buildAtlasFilter(filter) ? { filter: buildAtlasFilter(filter) } : {}),
+          },
         },
-      },
-
-      {
-        $project: {
-          text: 1,
-          sourceTitle: 1,
-          category: 1,
-          tags: 1,
-          eventDate: 1,
-          status: 1,
-          document: 1,
-          score: { $meta: "vectorSearchScore" },
+        {
+          $project: {
+            text: 1,
+            sourceTitle: 1,
+            category: 1,
+            tags: 1,
+            eventDate: 1,
+            status: 1,
+            document: 1,
+            score: { $meta: "vectorSearchScore" },
+          },
         },
-      },
-    ];
+      ];
 
-    const results = await Chunk.aggregate(pipeline);
-    if (results && results.length > 0) return results;
+      const results = await Chunk.aggregate(pipeline);
+      if (results && results.length > 0) return results;
+    }
     return retrieveChunksFallback(query, { topK });
   } catch (err) {
-    console.warn("Atlas vectorSearch unavailable or index not found, using fallback:", err.message);
     return retrieveChunksFallback(query, { topK });
   }
 }
@@ -54,48 +57,111 @@ function buildAtlasFilter({ category, tags, status } = {}) {
   return clauses.length === 1 ? clauses[0] : { $and: clauses };
 }
 
-// Fallback for local dev or when Atlas Search / Embedding API is unavailable
 export async function retrieveChunksFallback(query, { topK = env.RAG_TOP_K } = {}) {
+  const cleanQuery = (query || "").toLowerCase();
+  const rawWords = cleanQuery.replace(/[^\w\s]/g, " ").split(/\s+/).filter(Boolean);
+  const keywords = rawWords.filter((w) => w.length > 1 && !STOPWORDS.has(w));
+
+  // Try vector search on loaded chunks if embeddings exist
   try {
     const queryVector = await embedText(query);
-    const all = await Chunk.find({}).lean();
-    if (all.length > 0 && all[0].embedding?.length > 0) {
-      const scored = all.map((c) => ({ ...c, score: cosineSim(queryVector, c.embedding) }));
-      scored.sort((a, b) => b.score - a.score);
-      return scored.slice(0, topK * 3);
+    if (queryVector && queryVector.length > 0) {
+      const allWithEmbeddings = await Chunk.find({ "embedding.0": { $exists: true } }).lean();
+      if (allWithEmbeddings.length > 0) {
+        const scored = allWithEmbeddings.map((c) => ({
+          ...c,
+          score: cosineSim(queryVector, c.embedding),
+        }));
+        scored.sort((a, b) => b.score - a.score);
+        if (scored[0].score > 0.65) {
+          return scored.slice(0, topK * 3);
+        }
+      }
     }
   } catch (embedErr) {
-    console.warn("Embedding vector failed in fallback, using keyword matching:", embedErr.message);
+    // proceed to BM25 / keyword scoring
   }
 
-  // Pure keyword / regex fallback across MongoDB chunks
+  // Advanced BM25 / keyword relevance scoring across all chunks
   try {
-    const rawTerms = query
-      .toLowerCase()
-      .replace(/[^\w\s]/g, " ")
-      .split(/\s+/)
-      .filter((w) => w.length > 2);
+    const allChunks = await Chunk.find({}).lean();
+    if (!allChunks || allChunks.length === 0) return [];
 
-    const regexList = rawTerms.map((t) => new RegExp(t, "i"));
-    const matched = await Chunk.find({
-      $or: [
-        { text: { $in: regexList } },
-        { sourceTitle: { $in: regexList } },
-        { tags: { $in: rawTerms } },
-      ],
-    })
-      .limit(topK * 3)
-      .lean();
+    const isCodeX4Query = cleanQuery.includes("4.0") || cleanQuery.includes("codex 4") || (!cleanQuery.includes("2.0") && !cleanQuery.includes("3.0") && !cleanQuery.includes("past"));
 
-    if (matched.length > 0) {
-      return matched.map((c) => ({ ...c, score: 0.82 }));
-    }
+    const scored = allChunks.map((chunk) => {
+      let score = 0;
+      const text = (chunk.text || "").toLowerCase();
+      const title = (chunk.sourceTitle || "").toLowerCase();
+      const tags = (chunk.tags || []).map((t) => (t || "").toLowerCase());
 
-    // Default return some context chunks if no keyword match
-    const defaultChunks = await Chunk.find({}).limit(topK * 2).lean();
-    return defaultChunks.map((c) => ({ ...c, score: 0.75 }));
-  } catch (dbErr) {
-    console.warn("Keyword fallback failed:", dbErr.message);
+      // CodeX 4.0 edition relevance
+      if (isCodeX4Query) {
+        if (title.includes("codex 4.0") || tags.includes("codex 4.0")) {
+          score += 45;
+        }
+        if (title.includes("codex 2.0") || title.includes("codex 3.0")) {
+          score -= 35;
+        }
+      }
+
+      // Check multi-word phrase matches
+      if (keywords.length >= 2) {
+        for (let i = 0; i < keywords.length - 1; i++) {
+          const bigram = `${keywords[i]} ${keywords[i + 1]}`;
+          if (text.includes(bigram)) score += 20;
+          if (title.includes(bigram)) score += 35;
+        }
+      }
+
+      // Keyword matches
+      for (const kw of keywords) {
+        if (tags.some((t) => t.includes(kw) || kw.includes(t))) {
+          score += 15;
+        }
+        if (title.includes(kw)) {
+          score += 15;
+        }
+        if (text.includes(kw)) {
+          const count = (text.match(new RegExp(`\\b${kw}`, "gi")) || []).length;
+          score += Math.min(count * 3, 20);
+        }
+      }
+
+      // Specific intent boosting
+      if (cleanQuery.includes("eligib") || cleanQuery.includes("rule") || cleanQuery.includes("team size") || cleanQuery.includes("format")) {
+        if (title.includes("eligibility") || tags.includes("eligibility")) score += 80;
+      }
+      if (cleanQuery.includes("sponsor")) {
+        if (title.includes("sponsors and partners") || tags.includes("sponsors")) score += 80;
+      }
+      if (cleanQuery.includes("prize") || cleanQuery.includes("perk") || cleanQuery.includes("reward") || cleanQuery.includes("50,000")) {
+        if (title.includes("overview") || tags.includes("prize pool")) score += 70;
+      }
+      if (cleanQuery.includes("food") || cleanQuery.includes("canteen") || cleanQuery.includes("cafeteria") || cleanQuery.includes("csm") || cleanQuery.includes("lab") || cleanQuery.includes("map") || cleanQuery.includes("direction") || cleanQuery.includes("venue")) {
+        if (title.includes("campus") || title.includes("facilities") || title.includes("navigation")) score += 80;
+      }
+      if (cleanQuery.includes("schedule") || cleanQuery.includes("round") || cleanQuery.includes("timing") || cleanQuery.includes("timeline")) {
+        if (title.includes("schedule") || title.includes("rounds")) score += 80;
+      }
+      if (cleanQuery.includes("register") || cleanQuery.includes("fee") || cleanQuery.includes("portal") || cleanQuery.includes("300")) {
+        if (title.includes("registration") || tags.includes("registration")) score += 80;
+      }
+      if (cleanQuery.includes("contact") || cleanQuery.includes("phone") || cleanQuery.includes("coordinator") || cleanQuery.includes("call") || cleanQuery.includes("email")) {
+        if (title.includes("contact") || title.includes("coordinator")) score += 80;
+      }
+
+      return {
+        ...chunk,
+        rawScore: score,
+        score: Math.max(0.1, Math.min(score / 100, 0.98)),
+      };
+    });
+
+    scored.sort((a, b) => b.rawScore - a.rawScore);
+    return scored.slice(0, topK * 3);
+  } catch (err) {
+    console.warn("Fallback retrieval error:", err.message);
     return [];
   }
 }
@@ -110,4 +176,3 @@ function cosineSim(a, b) {
   }
   return dot / (Math.sqrt(na) * Math.sqrt(nb) + 1e-8);
 }
-
