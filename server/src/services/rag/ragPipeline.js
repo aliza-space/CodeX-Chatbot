@@ -221,10 +221,10 @@ function synthesizeConciseAnswer(query, chunks) {
     return `### 👥 First-Year Eligibility Rule for CodeX 4.0
 - **Participation Status:** First-year (1st-year) students are **not eligible** to participate as contestants in CodeX 4.0.
 - **Eligible Batches:** CodeX 4.0 is open only to undergraduate engineering students in their **II, III, or IV Year** of study.
-- **Club Activities for 1st Years:** First-year students are warmly encouraged to join regular Coders' Club learning classes, review sessions, and problem-solving workshops throughout the year to prepare for upcoming hackathons and CodeX editions!`;
+- **Club Activities for 1st Years:** First-year students are warmly encouraged to join regular Coders' Club learning classes, review sessions, and problem-solving workshops throughout the year to prepare for upcoming hackathons and future CodeX editions!`;
   }
 
-  // 2. Learning Resources & Classes
+  // 2. Learning Resources & Classes & Roadmaps
   if (
     q.includes("resource") ||
     q.includes("learning") ||
@@ -234,11 +234,12 @@ function synthesizeConciseAnswer(query, chunks) {
     q.includes("how to learn")
   ) {
     return `### 📚 Coders' Club Learning Activities & Resources
-- **Regular Guided Classes:** Weekly sessions guided by **Dr. A. Vishnuvardhan Reddy** covering Mathematics, Data Structures & Algorithms (DSA), Problem Solving, and Competitive Programming.
-- **Peer Review Classes:** Supervised by senior student coordinators to clear doubts and provide 1-on-1 mentorship.
-- **Programming Contests:** Regular practice contests conducted on **HackerRank**, **Smart Interviews**, and **Examly**.
+- **Regular Guided Classes:** Guided by **Dr. A. Vishnuvardhan Reddy** covering Mathematics, Data Structures and Algorithms (DSA), Coding, and Problem Solving.
+- **Contests & Practice:** Coding contests conducted on platforms such as **HackerRank** to prepare students for product-based company coding interviews and contests like CodeVita.
 - **Interview Preparation:** Technical group discussions, coding quizzes, and "find-the-output" debugging rounds held on alternate weeks.
-- **Official Website:** Access roadmaps and past materials at [https://www.codersclubgprec.in](https://www.codersclubgprec.in).`;
+- **Workshops:** Generative AI bootcamps, Google Gemini Student Ambassador recruitment, and Code Symposium series.
+- **Roadmaps:** Detailed DSA, web development, and ML roadmaps are not published in this knowledge base yet. For direct learning guidance, contact \`codersclub@gprec.ac.in\`.
+- **Official Website:** [https://www.codersclubgprec.in](https://www.codersclubgprec.in)`;
   }
 
   // 3. Upcoming Events
@@ -250,12 +251,12 @@ function synthesizeConciseAnswer(query, chunks) {
   ) {
     return `### 🚀 Upcoming Coders' Club Events
 - **CodeX 4.0 (Flagship Coding Competition):**
-  - **Date:** 24 September 2026 (9:00 AM – 5:00 PM IST)
-  - **Venue:** CSM Computer Labs, GPREC Campus
+  - **Date:** 24 September 2026 (9:00 AM – 5:00 PM IST; Reporting at 8:30 AM IST)
+  - **Venue:** CSM Computer Labs, GPREC Campus, Kurnool
   - **Registration Deadline:** 23 September 2026
-  - **Prize Pool:** Up to **₹50,000** in cash prizes and awards!
-- **Regular DSA Classes & Practice Contests:** Weekly sessions across all branches.
-- **Internal SIH Hackathons & Tech Bootcamps:** Follow [@coders_club_gprec](https://instagram.com/coders_club_gprec) for latest announcement updates.`;
+  - **Prize Pool:** Up to **₹50,000**
+- **Regular Classes & Practice Contests:** Weekly sessions across departments.
+- **Recruitment & Bootcamps:** Follow [@coders_club_gprec](https://instagram.com/coders_club_gprec) for latest announcements.`;
   }
 
   // 4. Galactic Gamble Winners & Details
@@ -273,7 +274,19 @@ function synthesizeConciseAnswer(query, chunks) {
 - *Prizes were presented by Dr. A. Vishnuvardhan Reddy, Mr. I. Venkata Rameswar Reddy, and Mr. P. Rama Rao at CSM Block.*`;
   }
 
-  // 5. CodeX 2.0 Winners
+  // 5. CodeX 3.0 Winners
+  if (
+    q.includes("3.0") &&
+    (q.includes("winner") || q.includes("who won") || q.includes("result"))
+  ) {
+    return `### 🏆 CodeX 3.0 (25 September 2025) Winners
+- **1st Prize (₹10,000):** Team **!dpsolvers** (*IIITDM Kurnool* — P Sree Charan Reddy, Gopidi Vikranth Reddy)
+- **2nd Prize (₹8,000):** Team **Unbeatable** (*GPREC*)
+- **3rd Prize (₹6,000):** Team **CP Champs** (*GPREC*)
+- *CodeX 3.0 had 94 teams and 282 participants, featuring guest speaker Sanjay Samuel (Talent Acquisition Manager).*`;
+  }
+
+  // 6. CodeX 2.0 Winners
   if (
     q.includes("2.0") &&
     (q.includes("winner") || q.includes("who won") || q.includes("result"))
@@ -286,7 +299,7 @@ function synthesizeConciseAnswer(query, chunks) {
 - **5th Prize (Consolation - ₹2,000):** Team **Mind Benders** (*Bandla Dora Babu, Jeerla Subash, K G Mahesh*)`;
   }
 
-  // 6. Generic Event Winners Lookup from query / history
+  // 7. Generic Event Winners Lookup from query / history
   if (q.includes("winner") || q.includes("who won")) {
     const winnerChunk = chunks?.find((c) =>
       (c.text || "").toLowerCase().includes("winner") || (c.text || "").toLowerCase().includes("1st prize")
@@ -302,7 +315,7 @@ function synthesizeConciseAnswer(query, chunks) {
     }
   }
 
-  // 7. Prizes & Perks / Rewards / Sponsors for CodeX 4.0
+  // 8. Prizes & Perks / Rewards / Sponsors for CodeX 4.0
   if (
     q.includes("prize") ||
     q.includes("perk") ||
@@ -313,13 +326,13 @@ function synthesizeConciseAnswer(query, chunks) {
     q.includes("50000")
   ) {
     return `### 🏆 CodeX 4.0 Prizes, Perks & Sponsors
-- **Prize Pool:** Up to **₹50,000** in cash prizes and winner awards!
-- **Career Perks:** Top-winning teams get exclusive **internship opportunities** with Technical Sponsor **WeDevit** and other leading tech companies.
-- **Participant Goodies:** Every participant receives goodies, refreshments, and a hard-copy participation certificate.
-- **Event Sponsors:** **WeDevit** (*Technical Sponsor*), **HaveMore** (*Havmor ice-creams*), **Microcare Academy**, **Fiarro Pizza**, and **RC Cola**.`;
+- **Prize Pool:** Up to **₹50,000** total prize pool! *(The position-wise split is not published yet in the knowledge base).*
+- **Career Opportunity:** Top-winning teams have the opportunity to secure **internships with Technical Sponsor WeDevit** and other leading tech companies.
+- **Participant Perks:** Every participant receives goodies, refreshments, and a hard-copy certificate.
+- **Sponsors:** **WeDevit** (*Technical Sponsor*), **HaveMore** (*Havmor ice creams*), **Microcare**, **Fiarro Pizza**, and **RC Cola**.`;
   }
 
-  // 8. Eligibility & Team Rules
+  // 9. Eligibility & Team Rules
   if (
     q.includes("eligib") ||
     q.includes("team format") ||
@@ -332,14 +345,14 @@ function synthesizeConciseAnswer(query, chunks) {
     q.includes("rule")
   ) {
     return `### 👥 CodeX 4.0 Eligibility & Team Rules
-- **Eligibility:** Undergraduate engineering students in **II, III, or IV Year** from GPREC and any other recognized college/university (*1st-year students are not eligible*).
+- **Eligibility:** Undergraduate engineering students in **II, III, or IV Year** from GPREC and other engineering colleges/universities (*1st-year students are not eligible*).
 - **Team Size:** Exactly **2 or 3 members** per team.
 - **Final-Year Rule:** Maximum **one 4th-year student** per team (0 or 1). Teams with two or more 4th-year students are not permitted.
-- **College Rule:** All team members must belong to the **same college**. Cross-branch and inter-year combinations within the same college are allowed and encouraged.
-- **Roll Numbers:** Each student's roll number can only be registered in one team.`;
+- **Same-College Rule:** All members of a team must belong to the **same college**. Cross-branch and inter-year combinations within the same college are allowed and encouraged.
+- **Roll Numbers:** Each student's roll number can be registered with only one team.`;
   }
 
-  // 9. Campus Food & Labs Navigation
+  // 10. Campus Food & Navigation Guide
   if (
     q.includes("food") ||
     q.includes("canteen") ||
@@ -351,53 +364,57 @@ function synthesizeConciseAnswer(query, chunks) {
     q.includes("direction")
   ) {
     return `### 📍 GPREC Campus Navigation Guide
-- **CSM Computer Labs (Event Venue):** Ground & 1st Floor of CSM Block. From the Main Gate, walk straight along the central avenue for ~180 meters past the lawn.
-- **Main Cafeteria / Canteen:** South-East zone near the sports ground (~220 meters from Main Gate). Offers South Indian breakfast, meals, tea/coffee.
-- **Campus Food Court:** Central Amenities Plaza (~250 meters from Main Gate). Offers pizzas, fresh juices, shakes, burgers, and snacks.
-- **Open Air Amphitheatre:** Adjacent to CSM Block courtyard.
+- **CSM Computer Labs (CodeX 4.0 Venue):** CSM Block, Ground & 1st Floor. From the Main Gate, walk straight along the central avenue for ~180 meters past the lawn.
+- **Main Cafeteria & College Canteen:** South-East zone near the sports ground (~220 meters from Main Gate).
+- **Campus Food Court:** Central Amenities Plaza (~250 meters from Main Gate). Offers juice parlors, snacks, and quick bites.
+- **Open Air Amphitheatre:** Adjacent to CSM Block courtyard (~160 meters from Main Gate).
 *(Tip: You can also tap **Campus Map** in the menu to see interactive routes and GPS markers!)*`;
   }
 
   // 11. Refund & Cancellation Policy
   if (q.includes("refund") || q.includes("cancel") || q.includes("money back")) {
     return `### 💳 CodeX 4.0 Registration Fee & Refund Policy
-- **Standard Policy:** The registration fee (₹300 per team) is **strictly non-refundable** once successfully paid.
-- **Duplicate / Excess Payments:** Any verified technical duplicate transaction or excess deduction will be refunded within 5–7 business days upon reaching out to the coordinators.
-- **Event Cancellation:** In the rare event that CodeX 4.0 is cancelled without rescheduling, a full 100% refund will be processed back to the original payment method.
-- **Member Substitution:** Team member substitution is permitted up to 23 September 2026 (11:59 PM) by contacting the student coordinators.`;
+- **Standard Policy:** The ₹300 registration fee is **generally non-refundable** after successful payment. There is no refund for voluntary withdrawal, absence, or disqualification.
+- **Duplicate / Excess Payments:** A verified duplicate or excess payment caused by a technical issue is refundable to the original payment source.
+- **Event Cancellation:** A refund is possible if CodeX 4.0 is completely cancelled without being rescheduled.
+- **Team-Member Substitution:** A substitution may be possible before the registration deadline of **23 September 2026** by contacting the organizers.`;
   }
 
   // 12. Solo / Individual Participation
   if (q.includes("solo") || q.includes("alone") || q.includes("individual") || q.includes("single member") || q.includes("1 member")) {
-    return `### 👥 CodeX 4.0 Individual / Solo Participation Policy
-- **Format:** CodeX 4.0 is strictly a **team competition**. Individual (solo) participation is **not permitted**.
-- **Team Size:** Every team must consist of **2 or 3 members** from the same college.
-- **Need Teammates?** You can connect with peers across departments/years or reach out in the Coders' Club community group to form a team!`;
+    return `### 👥 CodeX 4.0 Individual / Solo Participation
+- **Policy:** CodeX 4.0 registration is done strictly as a **team** (not individually).
+- **Team Size:** Every team must have exactly **2 or 3 members** from the same college. Solo participation is not permitted.`;
   }
 
-  // 13. Programming Languages & Compilers
-  if (q.includes("language") || q.includes("c++") || q.includes("java") || q.includes("python") || q.includes("c lang") || q.includes("ide")) {
-    return `### 💻 Supported Programming Languages for CodeX 4.0
-- **Allowed Languages:** **C**, **C++ (GCC/Clang)**, **Java (OpenJDK 17+)**, and **Python (Python 3.x)**.
-- **Evaluation Platform:** Code submissions will be evaluated on standardized competitive programming online judges (HackerRank / custom platform) with strict time and memory constraints.
-- **Environment:** Standard desktop systems with IDEs (VS Code, Code::Blocks, Eclipse) and terminals are provided in the CSM Computer Labs.`;
+  // 13. Programming Languages & Compilers (Explicitly stating what knowledge base publishes)
+  if (q.includes("language") || q.includes("c++") || q.includes("java") || q.includes("python") || q.includes("c lang") || q.includes("compiler")) {
+    return `### 💻 Programming Languages for CodeX 4.0
+- **Status:** The specific allowed programming languages and problem topics have **not been published** in the official knowledge base yet.
+- **Contact Organizers:** For details on supported languages and compiler versions, please contact the student coordinators listed in the contacts section (Tabraiz, Kashif, or Karthik Sai).`;
   }
 
-  // 14. Laptops & Hardware
-  if (q.includes("laptop") || q.includes("bring") || q.includes("pc") || q.includes("desktop") || q.includes("hardware")) {
-    return `### 🖥️ Hardware & Systems for CodeX 4.0
-- **College Lab Systems:** High-speed desktop computers with internet connectivity and all required compilers/IDEs will be provided to every team in the **CSM Computer Labs**.
-- **Personal Laptops:** Participants are **not required** to bring personal laptops for the contest rounds. Lab allocations and workstation credentials will be assigned at reporting.`;
+  // 14. Date / Timing / Venue / Schedule / Rounds
+  if (
+    q.includes("when") ||
+    (q.includes("date") && !q.includes("last")) ||
+    q.includes("timing") ||
+    q.includes("schedule") ||
+    q.includes("round") ||
+    q.includes("where is codex")
+  ) {
+    return `### 📅 CodeX 4.0 Schedule & Competition Rounds
+- **Date:** 24 September 2026
+- **Reporting Time:** 8:30 AM to 9:00 AM IST (bring physical College ID, Team ID/confirmation email, and CodeX 4.0 Pass).
+- **Event Window:** 9:00 AM to 5:00 PM IST (includes Round 1, Round 2, guest speaker session, and valedictory ceremony).
+- **Venue:** CSM Computer Labs, GPREC Campus, Nandyal Road, Kurnool.
+- **Structure:** Exactly **two competition rounds**:
+  - **Round 1 (Preliminary Round):** All registered teams participate; scores determine qualifiers.
+  - **Round 2 (Grand Finale):** Top-performing teams from Round 1 compete for prizes.
+- *Note: Exact round durations, clock timings, break times, and problem topics are not published in this knowledge base; contact the organizers for updates.*`;
   }
 
-  // 15. Other College / External Students
-  if (q.includes("other college") || q.includes("external") || q.includes("outside") || q.includes("non gprec")) {
-    return `### 🏫 Other Colleges & External Student Participation
-- **Open to All:** CodeX 4.0 is an inter-collegiate event open to undergraduate engineering students from **GPREC and any other AICTE/UGC recognized institution**.
-- **Condition:** All members within a team must be from the **same college** and carry valid college ID cards on the event day.`;
-  }
-
-  // 16. Registration & Fee
+  // 15. Registration & Fee
   if (
     q.includes("register") ||
     q.includes("registration") ||
@@ -410,21 +427,23 @@ function synthesizeConciseAnswer(query, chunks) {
     q.includes("300")
   ) {
     return `### 📝 CodeX 4.0 Registration & Fees
-- **Registration Fee:** **₹300 per team** (flat fee for the whole team, not per member).
-- **Registration Deadline:** **23 September 2026** (11:59 PM IST).
+- **Registration Fee:** **₹300 per team** (flat fee for the whole team, covering 2 to 3 members).
+- **Registration Deadline:** **23 September 2026**.
 - **Registration Portal:** [https://codex4-0-registration-portal.codersclubgprec.in](https://codex4-0-registration-portal.codersclubgprec.in)
-- **Payment Modes:** Online via Cashfree Payments (UPI, Cards, Net Banking). You will receive an official Team ID (e.g., \`CDX4-0001\`) upon successful payment.`;
+- **Payment Method:** Processed securely through Cashfree Payments (UPI, debit card, credit card, net banking).
+- **Pass & Verification:** Generates a unique Team ID (e.g., \`CDX4-0001\`). Download the CodeX 4.0 Pass to bring on the event day.`;
   }
 
-  // 12. Guest Speaker
+  // 16. Guest Speaker
   if (q.includes("speaker") || q.includes("nihar") || q.includes("guest")) {
-    return `### 🎙️ CodeX 4.0 Guest Speaker
+    return `### 🎙️ CodeX 4.0 Guest Speaker — Dodagatta Nihar
 - **Guest Speaker:** **Dodagatta Nihar**
-- **Profile:** Tech Educator, Web Developer, ML Engineer, Entrepreneur, and 3x TEDx Speaker with over 500K+ Instagram followers.
-- **Session:** Delivering an inspiring interactive session on tech careers, industry skills, and real-world coding.`;
+- **Profile:** Tech Educator, Web Developer, ML Engineer, Entrepreneur, and 3x TEDx Speaker with 500K+ Instagram followers.
+- **Known For:** Making coding and technology accessible through regional-language content (primarily Telugu), founder of MassCoders and working on Codedale.
+- *Session:* Interactive keynote offering practical tech learning perspectives and career inspiration. *(Exact time and duration are not published yet).*`;
   }
 
-  // 13. Team & Contact details
+  // 17. Team & Contact details
   if (
     q.includes("team") ||
     q.includes("contact") ||
@@ -435,35 +454,24 @@ function synthesizeConciseAnswer(query, chunks) {
     q.includes("/team")
   ) {
     return `### 📞 Coders' Club & CodeX 4.0 Contacts
-- **Faculty Convener:** Dr. A. Vishnuvardhan Reddy (Associate Professor, ECS/CSE)
-- **Student Leads for Queries:**
-  - **Tabraiz:** +91 9391491123
-  - **Kashif:** +91 9492068097
-  - **Karthik Sai:** +91 9032174306
+- **Faculty Convener:** Dr. A. Vishnuvardhan Reddy (Associate Professor, ECS, GPREC)
+- **Faculty Coordinators:** Sri P. Rama Rao (CSE), Sri V. Mallesi (CSE), Dr. R. Sudheer Babu (ECE), Dr. S. Anil Kumar (EEE)
+- **Student Contacts for CodeX 4.0:**
+  - **Tabraiz (SMD Tabraiz, CSD):** +91 9391491123
+  - **Kashif (Mohammed Kashif, CSD):** +91 9492068097
+  - **Karthik Sai (Vinjamarla Karthik Sai, ECE):** +91 9032174306
 - **Email:** \`codersclub@gprec.ac.in\`
 - **Instagram:** [@coders_club_gprec](https://instagram.com/coders_club_gprec)
-- **Website:** [https://www.codersclubgprec.in](https://www.codersclubgprec.in)`;
+- **Support Hours:** Mon–Sat, 9:00 AM – 7:00 PM IST (Typical response time: 12–24 hours).`;
   }
 
-  // 14. Schedule & Rounds
-  if (q.includes("schedule") || q.includes("round") || q.includes("timeline")) {
-    return `### ⏱️ CodeX 4.0 Schedule & Competition Format
-- **Rounds:** Two coding rounds testing problem-solving, logic, and competitive programming.
-- **08:30 AM:** Reporting & Desk Verification (CSM Block)
-- **09:00 AM – 10:00 AM:** Inauguration & Keynote with Dodagatta Nihar
-- **10:30 AM – 01:00 PM:** **Round 1 (Algorithmic Coding Round)**
-- **01:00 PM – 02:00 PM:** Lunch & Refreshments Break
-- **02:00 PM – 04:00 PM:** **Round 2 (Advanced Problem-Solving Final Round)**
-- **04:30 PM – 05:00 PM:** Valedictory & Prize Distribution Ceremony`;
-  }
-
-  // 15. Exact FAQ or section extraction from retrieved chunks
+  // 18. Exact FAQ or section extraction from retrieved chunks
   const exactMatch = extractExactAnswerFromChunks(query, chunks);
   if (exactMatch) {
     return exactMatch;
   }
 
-  // 16. Clean Content Extraction from Top Chunk if score is relevant
+  // 19. Clean Content Extraction from Top Chunk if score is relevant
   if (chunks && chunks.length > 0 && chunks[0].score >= 0.35) {
     const text = (chunks[0].text || "")
       .replace(/^\[.*?\]\s*/gm, "")
@@ -478,6 +486,6 @@ function synthesizeConciseAnswer(query, chunks) {
     }
   }
 
-  // 17. Honest "I don't know" fallback
-  return "I don't have enough specific information on that in my knowledge base. For further details, feel free to reach out to the Coders' Club coordinators directly at codersclub@gprec.ac.in or contact student leads Tabraiz (+91 9391491123) / Kashif (+91 9492068097).";
+  // 20. Honest "I don't know" fallback
+  return "I don't have enough specific information on that in my knowledge base. For further details, feel free to reach out to the Coders' Club coordinators directly at codersclub@gprec.ac.in or contact student leads Tabraiz (+91 9391491123), Kashif (+91 9492068097), or Karthik Sai (+91 9032174306).";
 }
