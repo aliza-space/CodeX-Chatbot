@@ -473,20 +473,13 @@ function synthesizeConciseAnswer(query, chunks) {
 - **Session:** Interactive keynote offering practical tech learning perspectives and career inspiration. *(Open to all registered CodeX 4.0 participants).*`;
   }
 
-  // 8. Generic Event Winners Lookup from query / history
-  if (q.includes("winner") || q.includes("who won")) {
-    const winnerChunk = chunks?.find((c) =>
-      (c.text || "").toLowerCase().includes("winner") || (c.text || "").toLowerCase().includes("1st prize")
-    );
-    if (winnerChunk) {
-      const clean = winnerChunk.text
-        .replace(/^\[.*?\]\s*/gm, "")
-        .replace(/^\*\*Category:\*\*.*$/gm, "")
-        .replace(/^\*\*Tags:\*\*.*$/gm, "")
-        .replace(/^\*\*Date:\*\*.*$/gm, "")
-        .trim();
-      return clean;
-    }
+  // 8.1 Sponsors & Partners
+  if (q.includes("sponsor") || q.includes("sponsors") || q.includes("partner")) {
+    return `### 🤝 CodeX 4.0 Official Sponsors & Partners
+- **Technical Sponsor:** **WeDevit** *(Offering internship opportunities to top winning teams)*
+- **Ice Cream Partner:** **Havmor**
+- **Education & Training Partner:** **Microcare**
+- **Food & Beverage Partners:** **Fiarro Pizza** and **RC Cola**`;
   }
 
   // 17. Team & Contact details
