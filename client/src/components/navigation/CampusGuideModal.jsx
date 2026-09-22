@@ -98,7 +98,7 @@ export default function CampusGuideModal({ isOpen, onClose, initialDestinationId
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 md:p-6">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-0 sm:p-4 md:p-6">
       {/* Backdrop */}
       <motion.div
         initial={{ opacity: 0 }}
@@ -115,35 +115,37 @@ export default function CampusGuideModal({ isOpen, onClose, initialDestinationId
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.96, y: 10 }}
         transition={{ type: "spring", damping: 26, stiffness: 320 }}
-        className="relative w-full max-w-6xl h-[92vh] max-h-[900px] bg-slate-900 rounded-3xl border border-slate-800 shadow-2xl z-50 flex flex-col overflow-hidden text-slate-100"
+        className="relative w-full max-w-6xl h-[100dvh] sm:h-[92vh] sm:max-h-[900px] bg-slate-900 rounded-none sm:rounded-3xl border-0 sm:border border-slate-800 shadow-2xl z-50 flex flex-col overflow-hidden text-slate-100"
       >
         {/* ========================================================= */}
         {/* 1. TOP HEADER                                             */}
         {/* ========================================================= */}
-        <header className="px-4 py-3 sm:px-6 sm:py-3.5 border-b border-slate-800 bg-slate-900/95 backdrop-blur-md shrink-0 flex items-center justify-between gap-3">
-          <div className="flex items-center gap-3 min-w-0">
-            <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-700 text-white flex items-center justify-center shadow-lg shadow-blue-500/20 text-lg shrink-0">
+        <header className="px-3.5 py-2.5 sm:px-6 sm:py-3.5 border-b border-slate-800 bg-slate-900/95 backdrop-blur-md shrink-0 flex items-center justify-between gap-2.5">
+          <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-700 text-white flex items-center justify-center shadow-md shadow-blue-500/20 text-base sm:text-lg shrink-0">
               🧭
             </div>
             <div className="min-w-0">
-              <h2 className="font-display font-bold text-sm sm:text-base text-white tracking-tight flex items-center gap-2 truncate">
-                <span>GPREC Campus Guide & Navigation</span>
-                <span className="hidden sm:inline-block text-[10px] font-semibold px-2 py-0.5 rounded-full bg-blue-950 text-blue-300 border border-blue-800">
+              <h2 className="font-display font-bold text-xs sm:text-base text-white tracking-tight flex items-center gap-1.5 truncate">
+                <span className="sm:hidden">Campus Guide</span>
+                <span className="hidden sm:inline">GPREC Campus Guide & Navigation</span>
+                <span className="hidden md:inline-block text-[10px] font-semibold px-2 py-0.5 rounded-full bg-blue-950 text-blue-300 border border-blue-800">
                   Fixed Official Routes
                 </span>
               </h2>
-              <p className="text-[11px] text-slate-400 truncate">
-                {GPREC_INFO.established}
+              <p className="text-[10px] sm:text-[11px] text-slate-400 truncate">
+                G. Pulla Reddy Engineering College
               </p>
             </div>
           </div>
 
-          <div className="flex items-center gap-2 shrink-0">
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
             {/* Mobile View Toggle */}
             <div className="flex lg:hidden bg-slate-800 p-0.5 rounded-xl text-xs font-semibold">
               <button
+                type="button"
                 onClick={() => setMobileTab("map")}
-                className={`px-3 py-1 rounded-lg transition cursor-pointer ${
+                className={`px-2.5 py-1 rounded-lg transition cursor-pointer text-[11px] ${
                   mobileTab === "map"
                     ? "bg-blue-600 text-white shadow-xs"
                     : "text-slate-300 hover:text-white"
@@ -152,8 +154,9 @@ export default function CampusGuideModal({ isOpen, onClose, initialDestinationId
                 🗺️ Map
               </button>
               <button
+                type="button"
                 onClick={() => setMobileTab("guide")}
-                className={`px-3 py-1 rounded-lg transition cursor-pointer ${
+                className={`px-2.5 py-1 rounded-lg transition cursor-pointer text-[11px] ${
                   mobileTab === "guide"
                     ? "bg-blue-600 text-white shadow-xs"
                     : "text-slate-300 hover:text-white"
@@ -164,8 +167,9 @@ export default function CampusGuideModal({ isOpen, onClose, initialDestinationId
             </div>
 
             <button
+              type="button"
               onClick={onClose}
-              className="w-9 h-9 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition flex items-center justify-center cursor-pointer"
+              className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition flex items-center justify-center cursor-pointer"
               aria-label="Close campus guide"
             >
               <IconCross className="w-4 h-4" />
@@ -179,7 +183,7 @@ export default function CampusGuideModal({ isOpen, onClose, initialDestinationId
         <div className="flex-1 flex flex-col lg:flex-row overflow-hidden min-h-0">
           {/* LEFT COLUMN: COMPACT INTERACTIVE CAMPUS MAP */}
           <div
-            className={`w-full lg:w-[48%] h-full flex flex-col border-b lg:border-b-0 lg:border-r border-slate-800 p-2.5 sm:p-3.5 bg-slate-950/60 min-h-0 overflow-y-auto ${
+            className={`w-full lg:w-[48%] h-full flex flex-col border-b lg:border-b-0 lg:border-r border-slate-800 p-2 sm:p-3.5 bg-slate-950/60 min-h-0 overflow-y-auto ${
               mobileTab === "map" ? "flex" : "hidden lg:flex"
             }`}
           >
@@ -192,7 +196,7 @@ export default function CampusGuideModal({ isOpen, onClose, initialDestinationId
 
           {/* RIGHT COLUMN: CLEAN DIRECTORY & KEY DESTINATIONS */}
           <div
-            className={`flex-1 flex-col overflow-y-auto p-4 sm:p-6 space-y-4 scrollbar-thin bg-slate-900 min-h-0 ${
+            className={`flex-1 flex-col overflow-y-auto p-3.5 sm:p-6 space-y-4 scrollbar-thin bg-slate-900 min-h-0 ${
               mobileTab === "guide" ? "flex" : "hidden lg:flex"
             }`}
           >

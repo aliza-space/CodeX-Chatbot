@@ -226,116 +226,124 @@ export default function CampusInteractiveMap({
   const destCoords = CAMPUS_NAV_NODES[destId] || routeData?.points?.[routeData.points.length - 1] || null;
 
   return (
-    <div className="flex flex-col w-full h-full min-h-0 bg-slate-950 text-slate-100 rounded-3xl border border-slate-800 overflow-hidden shadow-2xl">
+    <div className="flex flex-col w-full h-full min-h-0 bg-slate-950 text-slate-100 rounded-2xl sm:rounded-3xl border border-slate-800 overflow-hidden shadow-2xl">
       {/* ========================================================= */}
-      {/* 1. TOP BAR: START POINT DROPDOWN -> SWAP -> END POINT     */}
+      {/* 1. TOP BAR: COMPACT, CLEAN ROUTE PICKER (FROM / TO / GPS) */}
       {/* ========================================================= */}
-      <div className="p-2.5 sm:p-3 bg-slate-900/95 border-b border-slate-800 backdrop-blur-md flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2 shrink-0 z-20">
-        <div className="flex items-center gap-1.5 flex-1 min-w-0 flex-wrap">
-          {/* 1. Start Point Dropdown */}
-          <div className="flex items-center gap-1.5 bg-slate-800/90 px-2.5 py-1.5 rounded-xl border border-slate-700 text-xs flex-1 min-w-[135px]">
-            <span className="w-2 h-2 rounded-full bg-blue-400 shrink-0" />
-            <span className="text-blue-300 font-bold text-[11px] shrink-0">Start:</span>
-            <select
-              value={startNodeId}
-              onChange={(e) => {
-                setStartNodeId(e.target.value);
-                setGpsStatus("idle");
-                setGpsToast(null);
-              }}
-              className="bg-transparent text-slate-100 text-xs outline-none cursor-pointer w-full truncate font-medium"
-            >
-              {CAMPUS_LOCATIONS.map((loc) => (
-                <option key={`start-${loc.id}`} value={loc.id} className="bg-slate-900 text-slate-100">
-                  {loc.icon} {loc.name}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* Quick Swap Button */}
-          <button
-            type="button"
-            onClick={handleSwapPoints}
-            title="Swap Start & Destination"
-            className="p-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 transition cursor-pointer text-xs shrink-0"
-          >
-            ⇄
-          </button>
-
-          {/* 2. End Point / Destination Dropdown */}
-          <div className="flex items-center gap-1.5 bg-slate-800/90 px-2.5 py-1.5 rounded-xl border border-slate-700 text-xs flex-1 min-w-[135px]">
-            <span className="w-2 h-2 rounded-full bg-amber-400 shrink-0" />
-            <span className="text-amber-300 font-bold text-[11px] shrink-0">End:</span>
-            <select
-              value={destId}
-              onChange={(e) => {
-                setDestId(e.target.value);
-                const match = findFacilityAndZone(e.target.value);
-                if (match && onSelectFacility) {
-                  onSelectFacility(match.zone.id, match.facility.id);
-                }
-              }}
-              className="bg-transparent text-slate-100 text-xs outline-none cursor-pointer w-full truncate font-medium"
-            >
-              {CAMPUS_LOCATIONS.map((loc) => (
-                <option key={`dest-${loc.id}`} value={loc.id} className="bg-slate-900 text-slate-100">
-                  {loc.icon} {loc.name}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
-
-        {/* GPS Live Button */}
-        <div className="flex items-center gap-1.5 shrink-0">
-          <button
-            onClick={handleToggleGps}
-            title="Use Live Geolocation"
-            className={`px-2.5 py-1.5 rounded-xl font-semibold flex items-center gap-1.5 transition cursor-pointer border text-[11px] shadow-sm ${
-              gpsStatus === "on_campus"
-                ? "bg-emerald-600 text-white border-emerald-500 shadow-emerald-500/20"
-                : gpsStatus === "tracking"
-                ? "bg-amber-600 text-white border-amber-500 animate-pulse shadow-amber-500/20"
-                : "bg-slate-800 text-slate-300 border-slate-700 hover:border-blue-400"
-            }`}
-          >
-            <span>{gpsStatus === "on_campus" ? "📍 Live GPS" : "🛰️ GPS"}</span>
-          </button>
-        </div>
-      </div>
-
-      {/* GPS Status Floating Toast */}
-      <AnimatePresence>
-        {gpsToast && (
-          <motion.div
-            initial={{ opacity: 0, y: -8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            className={`mx-3 mt-2 px-3 py-2 rounded-2xl border backdrop-blur-md flex items-center justify-between gap-2.5 text-xs shadow-lg z-20 shrink-0 ${
-              gpsToast.type === "success"
-                ? "bg-emerald-950/80 border-emerald-500/40 text-emerald-200 shadow-emerald-950/40"
-                : "bg-slate-900/90 border-blue-500/40 text-blue-200 shadow-slate-950/60"
-            }`}
-          >
-            <div className="flex items-center gap-2 min-w-0">
-              <span className="p-1 rounded-lg bg-blue-500/20 text-blue-300 text-xs shrink-0">
-                📍
+      <div className="p-2 sm:p-3 bg-slate-900/95 border-b border-slate-800 backdrop-blur-md shrink-0 z-20">
+        <div className="flex items-center gap-2">
+          {/* Start and End Selectors */}
+          <div className="flex-1 flex flex-col gap-1.5 min-w-0">
+            {/* Start Point */}
+            <div className="flex items-center gap-2 bg-slate-800/90 px-2.5 py-1.5 rounded-xl border border-slate-700/80 text-xs">
+              <span className="w-2 h-2 rounded-full bg-blue-400 shrink-0" />
+              <span className="text-[10.5px] font-bold text-blue-300 uppercase tracking-wider shrink-0 w-8">
+                From
               </span>
-              <span className="truncate leading-tight font-medium">
-                {gpsToast.message}
-              </span>
+              <select
+                value={startNodeId}
+                onChange={(e) => {
+                  setStartNodeId(e.target.value);
+                  setGpsStatus("idle");
+                  setGpsToast(null);
+                }}
+                className="bg-transparent text-slate-100 text-xs font-semibold outline-none cursor-pointer w-full truncate appearance-none"
+              >
+                {CAMPUS_LOCATIONS.map((loc) => (
+                  <option key={`start-${loc.id}`} value={loc.id} className="bg-slate-900 text-slate-100">
+                    {loc.icon} {loc.name}
+                  </option>
+                ))}
+              </select>
+              <span className="text-slate-400 text-[10px] pointer-events-none shrink-0">▼</span>
             </div>
+
+            {/* Destination Point */}
+            <div className="flex items-center gap-2 bg-slate-800/90 px-2.5 py-1.5 rounded-xl border border-slate-700/80 text-xs">
+              <span className="w-2 h-2 rounded-full bg-amber-400 shrink-0" />
+              <span className="text-[10.5px] font-bold text-amber-300 uppercase tracking-wider shrink-0 w-8">
+                To
+              </span>
+              <select
+                value={destId}
+                onChange={(e) => {
+                  setDestId(e.target.value);
+                  const match = findFacilityAndZone(e.target.value);
+                  if (match && onSelectFacility) {
+                    onSelectFacility(match.zone.id, match.facility.id);
+                  }
+                }}
+                className="bg-transparent text-slate-100 text-xs font-semibold outline-none cursor-pointer w-full truncate appearance-none"
+              >
+                {CAMPUS_LOCATIONS.map((loc) => (
+                  <option key={`dest-${loc.id}`} value={loc.id} className="bg-slate-900 text-slate-100">
+                    {loc.icon} {loc.name}
+                  </option>
+                ))}
+              </select>
+              <span className="text-slate-400 text-[10px] pointer-events-none shrink-0">▼</span>
+            </div>
+          </div>
+
+          {/* Quick Actions Stack: Swap + GPS */}
+          <div className="flex flex-col gap-1.5 shrink-0">
             <button
-              onClick={() => setGpsToast(null)}
-              className="p-1 text-slate-400 hover:text-white rounded-lg hover:bg-white/10 transition cursor-pointer shrink-0"
-              aria-label="Dismiss message"
+              type="button"
+              onClick={handleSwapPoints}
+              title="Swap Start & Destination"
+              className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 transition cursor-pointer text-xs flex items-center justify-center font-bold"
             >
-              ✕
+              ⇅
             </button>
-          </motion.div>
-        )}
-      </AnimatePresence>
+
+            <button
+              type="button"
+              onClick={handleToggleGps}
+              title="Toggle Live GPS Location"
+              className={`p-2 rounded-xl text-xs font-semibold flex items-center justify-center transition cursor-pointer border ${
+                gpsStatus === "on_campus"
+                  ? "bg-emerald-600 text-white border-emerald-500 shadow-sm shadow-emerald-500/30"
+                  : gpsStatus === "tracking"
+                  ? "bg-amber-600 text-white border-amber-500 animate-pulse shadow-sm shadow-amber-500/30"
+                  : "bg-slate-800 text-slate-300 border-slate-700 hover:border-blue-400"
+              }`}
+            >
+              {gpsStatus === "on_campus" ? "📍" : "🛰️"}
+            </button>
+          </div>
+        </div>
+
+        {/* GPS Status Floating Toast Banner */}
+        <AnimatePresence>
+          {gpsToast && (
+            <motion.div
+              initial={{ opacity: 0, height: 0, marginTop: 0 }}
+              animate={{ opacity: 1, height: "auto", marginTop: 8 }}
+              exit={{ opacity: 0, height: 0, marginTop: 0 }}
+              className={`px-2.5 py-1.5 rounded-xl border backdrop-blur-md flex items-center justify-between gap-2 text-[11px] shadow-sm overflow-hidden ${
+                gpsToast.type === "success"
+                  ? "bg-emerald-950/80 border-emerald-500/40 text-emerald-200"
+                  : "bg-slate-800/90 border-blue-500/40 text-blue-200"
+              }`}
+            >
+              <div className="flex items-center gap-1.5 min-w-0">
+                <span className="shrink-0">📍</span>
+                <span className="truncate leading-tight font-medium">
+                  {gpsToast.message}
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setGpsToast(null)}
+                className="p-0.5 text-slate-400 hover:text-white rounded transition cursor-pointer shrink-0"
+                aria-label="Dismiss message"
+              >
+                ✕
+              </button>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
 
       {/* ========================================================= */}
       {/* 2. INTERACTIVE VECTOR MAP CANVAS                          */}
