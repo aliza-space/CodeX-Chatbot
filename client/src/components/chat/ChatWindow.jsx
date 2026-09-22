@@ -261,9 +261,8 @@ export default function ChatWindow({ onToggleSidebar, sidebarOpen }) {
           </div>
 
           {/* Micro Footer Disclaimer */}
-          <p className="text-center text-[11px] text-slate-500 dark:text-slate-400 mt-2 select-none">
-            CodeX Buddy is grounded in official GPREC Coders' Club documents. • Developed By{" "}
-            <span className="font-bold text-blue-600 dark:text-blue-400">Aliza Juhaina</span>
+          <p className="text-center text-[11px] text-slate-400 dark:text-slate-500 mt-2 select-none">
+            CodeX Buddy is grounded in official GPREC Coders' Club documents.
           </p>
         </div>
       </div>
