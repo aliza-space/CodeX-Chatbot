@@ -166,7 +166,9 @@ export default function MainSidebar({
         <button
           onClick={() => {
             openMap();
-            if (isMobile && onClose) onClose();
+            // On mobile, let the map open first then close sidebar
+            // to avoid z-index conflict during sidebar exit animation
+            if (isMobile && onClose) setTimeout(onClose, 50);
           }}
           className="w-full py-2 px-2.5 rounded-xl bg-gradient-to-r from-blue-500/10 to-indigo-500/10 hover:from-blue-500/20 hover:to-indigo-500/20 border border-blue-500/20 text-xs font-semibold text-blue-700 dark:text-blue-300 flex items-center justify-between transition-all group cursor-pointer"
         >

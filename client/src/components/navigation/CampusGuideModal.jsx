@@ -108,7 +108,7 @@ export default function CampusGuideModal({ isOpen, onClose, initialDestinationId
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-0 sm:p-3 md:p-4">
+    <div className="fixed inset-0 z-[60] flex items-center justify-center p-0 sm:p-3 md:p-4">
       {/* Backdrop */}
       <motion.div
         initial={{ opacity: 0 }}
@@ -116,7 +116,7 @@ export default function CampusGuideModal({ isOpen, onClose, initialDestinationId
         exit={{ opacity: 0 }}
         transition={{ duration: 0.2 }}
         onClick={onClose}
-        className="fixed inset-0 bg-slate-950/85 backdrop-blur-md z-40"
+        className="fixed inset-0 bg-slate-950/85 backdrop-blur-md z-[61]"
       />
 
       {/* Main Walking Navigation Modal */}
@@ -125,7 +125,7 @@ export default function CampusGuideModal({ isOpen, onClose, initialDestinationId
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.97, y: 10 }}
         transition={{ type: "spring", damping: 26, stiffness: 320 }}
-        className="relative w-full max-w-5xl h-[100dvh] sm:h-[94vh] sm:max-h-[900px] bg-[#060c18] rounded-none sm:rounded-3xl border-0 sm:border border-slate-800 shadow-2xl z-50 flex flex-col overflow-hidden text-slate-100"
+        className="relative w-full max-w-5xl h-[100dvh] sm:h-[94vh] sm:max-h-[900px] bg-[#060c18] rounded-none sm:rounded-3xl border-0 sm:border border-slate-800 shadow-2xl z-[62] flex flex-col overflow-hidden text-slate-100"
       >
         {/* TOP HEADER */}
         <header className="px-3 py-2.5 sm:px-5 sm:py-3 border-b border-slate-800 bg-slate-900/95 backdrop-blur-md shrink-0 flex items-center justify-between gap-3">

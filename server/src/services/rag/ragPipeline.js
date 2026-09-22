@@ -52,10 +52,10 @@ function detectConversationalGreeting(text) {
   }
 
   // 2. Pure Greetings
-  const pureGreetings = ["hi", "hello", "hey", "hola", "namaste", "good morning", "good afternoon", "good evening", "yo", "sup", "helo", "hii", "hiii"];
+  const pureGreetings = ["hi", "hello", "hey", "hola", "namaste", "good morning", "good afternoon", "good evening", "yo", "sup", "helo", "hii", "hiii", "hlo", "hllo", "hellow"];
   if (pureGreetings.includes(clean)) {
     return {
-      answer: `👋 Hello! How can I help you today?\n\nI'm **CodeX Buddy**, ready to answer any questions about the **CodeX 4.0 Hackathon** rules, cash prizes, registration, guest speaker session, or GPREC campus navigation!`,
+      answer: `Hi! 👋 How can I help you?`,
       suggestions: ["What are the eligibility rules?", "What are the prizes?", "How do I register?", "Show me campus map"]
     };
   }
