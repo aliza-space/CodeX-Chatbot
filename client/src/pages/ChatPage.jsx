@@ -111,7 +111,7 @@ export default function ChatPage() {
                   <IconTrophy className="w-4 h-4 text-orange-500" />
                   <span>Prize Pool</span>
                 </span>
-                <span className="font-bold text-orange-600 dark:text-orange-400">₹50,000</span>
+                <span className="font-bold text-orange-600 dark:text-orange-400">Up to ₹50,000</span>
               </div>
             </div>
           </div>

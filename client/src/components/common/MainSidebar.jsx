@@ -222,8 +222,8 @@ export default function MainSidebar({ open, onClose, onOpenProfile }) {
                       </div>
                       <div className="p-1.5 rounded-xl bg-white dark:bg-slate-800/60">
                         <IconTrophy className="w-3 h-3 text-orange-500 mx-auto mb-0.5" />
-                        <span className="text-[10px] font-bold text-orange-600 dark:text-orange-400 block truncate">
-                          ₹50,000
+                        <span className="text-[10px] font-bold text-orange-600 dark:text-orange-400 block truncate" title="Up to ₹50,000">
+                          Up to ₹50,000
                         </span>
                       </div>
                     </div>

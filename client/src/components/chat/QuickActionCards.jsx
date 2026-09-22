@@ -5,7 +5,7 @@ const TILES = [
   {
     icon: IconTrophy,
     title: "Prizes & Perks",
-    desc: "₹50,000 prize pool, certificates & internship opportunities with WeDevit",
+    desc: "Up to ₹50,000 prize pool, certificates & internship opportunities with WeDevit and other tech companies",
     badge: "Rewards",
     badgeColor: "bg-orange-50 dark:bg-orange-950/60 text-orange-600 dark:text-orange-400 border-orange-200 dark:border-orange-800/60",
     iconColor: "bg-orange-50 dark:bg-orange-950/60 text-orange-600 dark:text-orange-400 border-orange-200 dark:border-orange-800/60",
