@@ -237,7 +237,7 @@ export default function CampusInteractiveMap({
   return (
     <div className="flex flex-col w-full h-full bg-slate-950 text-slate-100 rounded-3xl border border-slate-800 overflow-hidden shadow-2xl">
       {/* ========================================================= */}
-      {/* 1. MAP HEADER CONTROLS                                    */}
+      {/* 1. MAP TOP NAVIGATION & ORIGIN/DESTINATION BAR            */}
       {/* ========================================================= */}
       <div className="p-2.5 sm:p-3.5 bg-slate-900/90 border-b border-slate-800/90 backdrop-blur-md flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2 z-20">
         {/* Quick Map Search */}
@@ -246,7 +246,7 @@ export default function CampusInteractiveMap({
             type="text"
             value={mapSearchQuery}
             onChange={(e) => setMapSearchQuery(e.target.value)}
-            placeholder="Search map buildings (e.g. Intel AI, Food Court, CIE)..."
+            placeholder="Search map venues (e.g. Intel AI, Food Court, CIE)..."
             className="w-full pl-8 pr-7 py-1.5 text-xs rounded-xl border border-slate-700 bg-slate-800/90 text-white placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition"
           />
           <IconSearch className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2" />
@@ -263,7 +263,8 @@ export default function CampusInteractiveMap({
         {/* Start Point & GPS Controls */}
         <div className="flex items-center gap-1.5 shrink-0 text-xs">
           {/* Start Point Picker */}
-          <div className="flex items-center gap-1 bg-slate-800/90 px-2 py-1 rounded-xl border border-slate-700 text-[11px]">
+          <div className="flex items-center gap-1 bg-slate-800/90 px-2.5 py-1 rounded-xl border border-slate-700 text-[11px]">
+            <span className="w-2 h-2 rounded-full bg-blue-400 shrink-0" />
             <span className="text-blue-400 font-bold">Start:</span>
             <select
               value={startNodeId}
@@ -304,7 +305,7 @@ export default function CampusInteractiveMap({
         </div>
       </div>
 
-      {/* GPS Status Floating Toast (Dark Theme Glassmorphism) */}
+      {/* GPS Status Floating Toast */}
       <AnimatePresence>
         {gpsToast && (
           <motion.div
@@ -629,7 +630,7 @@ export default function CampusInteractiveMap({
             )}
 
             {/* ========================================================= */}
-            {/* "YOU ARE HERE" PULSATING START BEACON (BOTH ENDS PULSE)   */}
+            {/* "YOU ARE HERE" PULSATING START BEACON                     */}
             {/* ========================================================= */}
             {startPointCoords && (
               <g transform={`translate(${startPointCoords.x}, ${startPointCoords.y})`}>
