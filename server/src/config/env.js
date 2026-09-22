@@ -31,10 +31,6 @@ const schema = z.object({
 
   RATE_LIMIT_WINDOW_MS: z.string().default("60000"),
   RATE_LIMIT_MAX: z.string().default("30"),
-
-  GOOGLE_CLIENT_ID: z.string().optional(),
-  GOOGLE_CLIENT_SECRET: z.string().optional(),
-  GOOGLE_CALLBACK_URL: z.string().default("http://localhost:5000/api/auth/google/callback"),
 });
 
 const parsed = schema.safeParse(process.env);

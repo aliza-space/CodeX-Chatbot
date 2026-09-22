@@ -1,72 +1,25 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth.js";
-import { useAuthStore } from "../store/authStore.js";
-import api from "../api/axios.js";
 import ThemeToggle from "../components/common/ThemeToggle.jsx";
-import { IconUser } from "../components/common/Icons.jsx";
-
-// Helper to safely parse Google ID token JWT
-function parseJwt(token) {
-  try {
-    const base64Url = token.split(".")[1];
-    const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
-    const jsonPayload = decodeURIComponent(
-      atob(base64)
-        .split("")
-        .map((c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
-        .join("")
-    );
-    return JSON.parse(jsonPayload);
-  } catch {
-    return null;
-  }
-}
 
 export default function Login() {
   const [mode, setMode] = useState("login"); // login | register
   const [form, setForm] = useState({ name: "", email: "", password: "" });
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
-  const { login, register, googleLogin, isAuthenticated } = useAuth();
+  const { login, register, isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const googleBtnRef = useRef(null);
 
-  // Handle incoming OAuth callback query parameters
+  // Handle incoming error or redirect parameters
   useEffect(() => {
     const params = new URLSearchParams(location.search || window.location.search);
-    const urlToken = params.get("token");
     const urlError = params.get("error");
-
     if (urlError) {
       setError(decodeURIComponent(urlError));
-    } else if (urlToken) {
-      setLoading(true);
-      api
-        .get("/api/auth/me", {
-          headers: { Authorization: `Bearer ${urlToken}` },
-        })
-        .then((res) => {
-          useAuthStore.getState().login(urlToken, res.data.user);
-          navigate("/", { replace: true });
-        })
-        .catch(() => {
-          const payload = parseJwt(urlToken);
-          if (payload) {
-            useAuthStore.getState().login(urlToken, {
-              id: payload.id,
-              name: payload.name,
-              role: payload.role || "member",
-            });
-            navigate("/", { replace: true });
-          } else {
-            setError("Failed to verify login token. Please try again.");
-          }
-        })
-        .finally(() => setLoading(false));
     }
-  }, [location.search, navigate]);
+  }, [location.search]);
 
   // If already logged in, redirect
   useEffect(() => {
@@ -75,103 +28,19 @@ export default function Login() {
     }
   }, [isAuthenticated, navigate]);
 
-  // Initialize official Google Identity Services (GIS)
-  useEffect(() => {
-    const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
-
-    const initGoogleGis = () => {
-      if (window.google?.accounts?.id && clientId) {
-        window.google.accounts.id.initialize({
-          client_id: clientId,
-          callback: handleGoogleCredentialResponse,
-        });
-
-        if (googleBtnRef.current) {
-          window.google.accounts.id.renderButton(googleBtnRef.current, {
-            theme: "outline",
-            size: "large",
-            width: "100%",
-            text: "continue_with",
-            shape: "rectangular",
-          });
-        }
-      }
-    };
-
-    if (window.google?.accounts?.id) {
-      initGoogleGis();
-    } else {
-      const timer = setTimeout(initGoogleGis, 800);
-      return () => clearTimeout(timer);
-    }
-  }, []);
-
-  const handleGoogleCredentialResponse = async (response) => {
-    setError(null);
-    setLoading(true);
-    try {
-      const payload = parseJwt(response.credential);
-      if (!payload || !payload.email) {
-        throw new Error("Invalid Google account response");
-      }
-      await googleLogin(payload.email, payload.name || payload.given_name);
-      navigate("/", { replace: true });
-    } catch (err) {
-      setError(err.response?.data?.error || err.message || "Google authentication failed");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleGoogleSignInClick = async () => {
-    setError(null);
-    setLoading(true);
-    const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
-
-    if (window.google?.accounts?.id && clientId) {
-      try {
-        window.google.accounts.id.prompt((notification) => {
-          if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
-            performDirectGoogleAuth();
-          }
-        });
-        return;
-      } catch {
-        // Fallback
-      }
-    }
-
-    await performDirectGoogleAuth();
-  };
-
-  const performDirectGoogleAuth = async () => {
-    try {
-      setLoading(true);
-      const email =
-        form.email && form.email.includes("@")
-          ? form.email.trim()
-          : "participant.codex4@gmail.com";
-      const name = form.name?.trim() || email.split("@")[0].replace(".", " ");
-
-      await googleLogin(email, name);
-      navigate("/", { replace: true });
-    } catch (err) {
-      setError(err.response?.data?.error || "Google sign in failed");
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
     setLoading(true);
     try {
-      if (mode === "login") await login(form.email, form.password);
-      else await register(form.name, form.email, form.password);
+      if (mode === "login") {
+        await login(form.email, form.password);
+      } else {
+        await register(form.name, form.email, form.password);
+      }
       navigate("/", { replace: true });
     } catch (err) {
-      setError(err.response?.data?.error || "Something went wrong");
+      setError(err.response?.data?.error || "Invalid credentials or request failed");
     } finally {
       setLoading(false);
     }
@@ -214,48 +83,22 @@ export default function Login() {
             <h1 className="font-display font-bold text-2xl sm:text-3xl text-slate-900 dark:text-white tracking-tight">
               CodeBuddy <span className="text-blue-600 dark:text-blue-400">Account</span>
             </h1>
-          </div>
-
-          {/* Google Sign In Container */}
-          <div className="space-y-2">
-            <div ref={googleBtnRef} className="w-full flex justify-center min-h-[40px]">
-              <button
-                type="button"
-                onClick={handleGoogleSignInClick}
-                disabled={loading}
-                className="w-full flex items-center justify-center gap-3 py-2.5 px-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/80 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-semibold transition-all shadow-xs disabled:opacity-50"
-              >
-                {loading ? (
-                  <span className="inline-flex items-center gap-2">
-                    <span className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
-                    <span>Signing in...</span>
-                  </span>
-                ) : (
-                  <>
-                    <IconUser className="w-4 h-4 text-blue-600 dark:text-blue-400" />
-                    <span>Continue with Google</span>
-                  </>
-                )}
-              </button>
-            </div>
-          </div>
-
-          {/* Divider */}
-          <div className="relative my-4 flex items-center justify-center">
-            <div className="border-t border-slate-200 dark:border-slate-800 w-full" />
-            <span className="bg-white dark:bg-slate-900 px-3 text-[11px] text-slate-400 uppercase tracking-wider">
-              Or with email
-            </span>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+              {mode === "login" ? "Sign in to continue your hackathon journey" : "Create a new participant account"}
+            </p>
           </div>
 
           {/* Mode Switcher */}
-          <div className="flex p-1 rounded-xl bg-slate-100 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-800 mb-4">
+          <div className="flex p-1 rounded-xl bg-slate-100 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-800 mb-5">
             <button
               type="button"
-              onClick={() => setMode("login")}
-              className={`flex-1 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+              onClick={() => {
+                setMode("login");
+                setError(null);
+              }}
+              className={`flex-1 py-2 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
                 mode === "login"
-                  ? "bg-white dark:bg-slate-900 text-blue-600 dark:text-blue-400 shadow-xs"
+                  ? "bg-white dark:bg-slate-900 text-blue-600 dark:text-blue-400 shadow-sm"
                   : "text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
               }`}
             >
@@ -263,10 +106,13 @@ export default function Login() {
             </button>
             <button
               type="button"
-              onClick={() => setMode("register")}
-              className={`flex-1 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+              onClick={() => {
+                setMode("register");
+                setError(null);
+              }}
+              className={`flex-1 py-2 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
                 mode === "register"
-                  ? "bg-white dark:bg-slate-900 text-blue-600 dark:text-blue-400 shadow-xs"
+                  ? "bg-white dark:bg-slate-900 text-blue-600 dark:text-blue-400 shadow-sm"
                   : "text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
               }`}
             >
@@ -275,7 +121,7 @@ export default function Login() {
           </div>
 
           {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-3">
+          <form onSubmit={handleSubmit} className="space-y-3.5">
             {mode === "register" && (
               <div>
                 <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">

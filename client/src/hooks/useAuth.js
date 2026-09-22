@@ -16,19 +16,12 @@ export function useAuth() {
     return data.user;
   };
 
-  const doGoogleLogin = async (email, name) => {
-    const { data } = await api.post("/api/auth/google", { email, name });
-    login(data.token, data.user);
-    return data.user;
-  };
-
   return {
     token,
     user,
     isAuthenticated,
     login: doLogin,
     register: doRegister,
-    googleLogin: doGoogleLogin,
     logout,
   };
 }
