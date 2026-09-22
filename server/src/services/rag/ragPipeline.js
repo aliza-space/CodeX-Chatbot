@@ -478,7 +478,7 @@ function synthesizeConciseAnswer(query, chunks) {
     return `### 🤝 CodeX 4.0 Official Sponsors & Partners
 - **Technical Sponsor:** **WeDevit** *(Offering internship opportunities to top winning teams)*
 - **Ice Cream Partner:** **Havmor**
-- **Education & Training Partner:** **Microcare**
+- **Education & Training Partner:** **Microcare Academy** *(Offering software training, internship & placement support)*
 - **Food & Beverage Partners:** **Fiarro Pizza** and **RC Cola**`;
   }
 
