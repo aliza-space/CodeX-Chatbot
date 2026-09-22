@@ -14,6 +14,16 @@ export default function Login() {
   const navigate = useNavigate();
   const location = useLocation();
 
+  const [isDark, setIsDark] = useState(false);
+
+  useEffect(() => {
+    const checkDark = () => setIsDark(document.documentElement.classList.contains("dark"));
+    checkDark();
+    const observer = new MutationObserver(checkDark);
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
+    return () => observer.disconnect();
+  }, []);
+
   // Handle incoming error or redirect parameters
   useEffect(() => {
     const params = new URLSearchParams(location.search || window.location.search);
@@ -167,12 +177,12 @@ export default function Login() {
           </div>
 
           {/* Google Sign-In Button (First / Top Option) */}
-          <div className="flex justify-center w-full min-h-[44px]">
+          <div className="flex justify-center w-full min-h-[44px] overflow-hidden rounded-full bg-transparent">
             <GoogleLogin
               onSuccess={handleGoogleSuccess}
               onError={handleGoogleError}
               useOneTap={false}
-              theme="outline"
+              theme={isDark ? "filled_black" : "outline"}
               shape="pill"
               size="large"
               text="continue_with"
