@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import Navbar from "../components/common/Navbar.jsx";
 import ChatWindow from "../components/chat/ChatWindow.jsx";
-import CampusGuideModal from "../components/navigation/CampusGuideModal.jsx";
 import { useChatStore } from "../store/chatStore.js";
 import { useChatStream } from "../hooks/useChatStream.js";
 import api from "../api/axios.js";
@@ -174,13 +173,6 @@ export default function ChatPage() {
           <ChatWindow variant="full" />
         </main>
       </div>
-
-      {/* GPREC Campus Guide Mini Visualization Modal */}
-      <CampusGuideModal
-        isOpen={isMapOpen}
-        onClose={closeMap}
-        initialDestinationId={mapDestinationId}
-      />
     </div>
   );
 }
